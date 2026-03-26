@@ -7,10 +7,11 @@ import {
   MapPin, 
   Clock, 
   Globe, 
+  AtSign,
+  MessageCircle,
   BookOpen, 
   User, 
   ArrowRight,
-  ExternalLink,
   ChevronRight,
   Info,
   Library,
@@ -109,6 +110,10 @@ function App() {
         animate={{ width: isMenuOpen ? 300 : 86 }}
         transition={{ type: 'spring', damping: 24, stiffness: 220 }}
       >
+        <div className="left-menu-logo">
+          <img src="/logo-st.svg" alt="Instituto Profesional Santo Tomás" />
+        </div>
+
         <button className="menu-toggle-btn" onClick={() => setIsMenuOpen((prev) => !prev)}>
           <Menu size={22} />
           <AnimatePresence>
@@ -123,10 +128,6 @@ function App() {
             )}
           </AnimatePresence>
         </button>
-
-        <div className="left-menu-logo">
-          <img src="https://www.santotomas.cl/wp-content/themes/santotomas/assets/img/logo-st.png" alt="ST" />
-        </div>
 
         <nav className="left-menu-links">
           {menuItems.map(({ icon: Icon, label, href, highlight }) => (
@@ -149,7 +150,7 @@ function App() {
 
         <div className="left-menu-theme">
           <button onClick={toggleTheme} className="left-menu-theme-btn" title={theme === 'dark' ? 'Modo día' : 'Modo noche'}>
-            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            {theme === 'dark' ? <Sun size={26} /> : <Moon size={26} />}
             <AnimatePresence>
               {isMenuOpen && (
                 <motion.span
@@ -167,6 +168,7 @@ function App() {
 
       <section className="hero">
         <motion.div
+          className="hero-content hero-content-right"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -174,9 +176,12 @@ function App() {
           <span className="meta" style={{ marginBottom: '1.5rem', display: 'block' }}>
             ADMISIÓN 2026
           </span>
-          <h1>Semana Cero</h1>
-          <p>Comienza tu viaje universitario con la mejor energía. Descubre todo lo que Santo Tomás tiene preparado para ti.</p>
-          <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
+          <h1 className="hero-title">
+            <span className="hero-title-main">Únete</span>
+            <span className="hero-title-sub">A LA SEMANA CERO</span>
+          </h1>
+          <p>Comienza tu experiencia en el Instituto Profesional Santo Tomás con la mejor energía. Descubre todo lo que tenemos preparado para ti.</p>
+          <div className="hero-actions" style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
             <a href="#schedule" className="btn-primary">EXPLORAR ACTIVIDADES</a>
             <button className="btn-primary" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', color: 'var(--text-primary)' }}>VER MAPA CAMPUS</button>
           </div>
@@ -266,14 +271,17 @@ function App() {
         </section>
       </main>
 
-      <div className="quicklinks">
-        <QuickLink icon={Globe} href="#" label="Instagram" />
-        <QuickLink icon={ChevronRight} href="#" label="Portales ST" />
+      <div className="right-rail">
+        <div className="quicklinks">
+          <QuickLink icon={AtSign} href="#" label="Instagram" />
+          <QuickLink icon={ChevronRight} href="#" label="Portales ST" />
+          <QuickLink icon={MessageCircle} href="#" label="Chatbot (Próximamente)" />
+        </div>
       </div>
 
       <footer>
         <img src="https://www.santotomas.cl/wp-content/themes/santotomas/assets/img/logo-st.png" alt="Santo Tomás" style={{ height: '35px', filter: 'brightness(1)', marginBottom: '2rem' }} />
-        <p>&copy; 2026 Universidad Santo Tomás. Todos los derechos reservados.</p>
+        <p>&copy; 2026 Instituto Profesional Santo Tomás. Todos los derechos reservados.</p>
         <p style={{ marginTop: '0.8rem', fontSize: '0.85rem' }}>Dirección Nacional de Asuntos Estudiantiles</p>
       </footer>
     </div>

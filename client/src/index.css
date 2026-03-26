@@ -35,7 +35,7 @@
   --glass-bg: rgba(255, 255, 255, 0.78);
   --glass-border: rgba(13, 138, 77, 0.18);
   --glass-border-hover: rgba(13, 138, 77, 0.32);
-  --text-primary: #14221b;
+  --text-primary: #000000;
   --text-secondary: #4f665a;
   color-scheme: light;
 }

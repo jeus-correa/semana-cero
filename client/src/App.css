@@ -5,6 +5,12 @@
   width: 100vw;
   display: flex;
   flex-direction: column;
+  padding-left: 86px;
+  transition: padding-left 0.35s ease;
+}
+
+.app-wrapper.menu-open {
+  padding-left: 300px;
 }
 
 .bg-blobs {
@@ -26,9 +32,9 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: 
-    linear-gradient(rgba(37, 184, 106, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(37, 184, 106, 0.03) 1px, transparent 1px);
+  background-image:
+    linear-gradient(rgba(37, 184, 106, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 184, 106, 0.025) 1px, transparent 1px);
   background-size: 50px 50px;
   z-index: 1;
 }
@@ -37,7 +43,7 @@
   position: absolute;
   border-radius: 50%;
   filter: blur(100px);
-  opacity: 0.15;
+  opacity: 0.1;
   animation: float 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -66,8 +72,8 @@
 
 /* Hero Section */
 .hero {
-  margin-top: 15vh;
-  padding: 4rem 5%;
+  margin-top: 11vh;
+  padding: 3.2rem 5%;
   text-align: center;
   max-width: 1000px;
   margin-left: auto;
@@ -76,12 +82,99 @@
   z-index: 10;
 }
 
+/* Left Side Menu */
+.left-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  background: color-mix(in srgb, var(--bg-dark) 88%, transparent);
+  border-right: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 1.2rem 1rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  box-shadow: 6px 0 20px rgba(0, 0, 0, 0.12);
+}
+
+.menu-toggle-btn {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.8rem;
+  font-weight: 800;
+}
+
+.left-menu-logo {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0 0.2rem;
+}
+
+.left-menu-logo img {
+  height: 36px;
+  width: auto;
+}
+
+.left-menu-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.left-menu-links a {
+  min-height: 48px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.left-menu-links a:hover {
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
+}
+
+.left-menu-links a.highlight {
+  color: var(--primary);
+  border-color: var(--glass-border);
+}
+
+.left-menu-theme {
+  margin-top: auto;
+}
+
+.left-menu-theme-btn {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.8rem;
+  font-weight: 700;
+}
+
 .hero p {
-  font-size: 1.2rem;
+  font-size: 1.08rem;
   color: var(--text-secondary);
   max-width: 600px;
   margin: 1.5rem auto 3rem;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 /* Sections and Containers */
@@ -101,8 +194,8 @@ section {
 }
 
 .section-title {
-  font-size: 2.5rem;
-  font-weight: 800;
+  font-size: 2.2rem;
+  font-weight: 700;
   margin-bottom: 3rem;
   text-align: center;
   background: linear-gradient(90deg, #fff, var(--primary));
@@ -125,12 +218,12 @@ section {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  padding: 2.5rem;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border-radius: 14px;
+  padding: 2.1rem;
+  transition: all 0.28s ease;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 
 .glass-card::before {
@@ -146,9 +239,9 @@ section {
 }
 
 .glass-card:hover {
-  transform: translateY(-10px);
+  transform: translateY(-4px);
   border-color: var(--glass-border-hover);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px var(--primary-glow);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
 }
 
 .glass-card:hover::before {
@@ -156,9 +249,9 @@ section {
 }
 
 .glass-card h3 {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   margin: 0.5rem 0 1.5rem;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 /* Text and Meta Tags */
@@ -166,7 +259,7 @@ section {
   font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 1.2px;
   color: var(--primary);
 }
 
@@ -185,7 +278,7 @@ section {
 .link-item {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
+  border-radius: 12px;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(10px);
@@ -194,7 +287,7 @@ section {
   justify-content: center;
   color: var(--text-primary);
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   position: relative;
 }
 
@@ -228,6 +321,21 @@ section {
 }
 
 @media (max-width: 768px) {
+  .app-wrapper,
+  .app-wrapper.menu-open {
+    padding-left: 86px;
+  }
+
+  .left-menu {
+    width: 86px !important;
+  }
+
+  .left-menu-links a span,
+  .left-menu-theme-btn span,
+  .menu-toggle-btn span {
+    display: none;
+  }
+
   .quicklinks {
     right: 1rem;
     bottom: 2rem;
@@ -250,7 +358,7 @@ footer {
   text-align: center;
   padding: 4rem 5%;
   border-top: 1px solid var(--glass-border);
-  background: rgba(4, 9, 7, 0.8);
+  background: color-mix(in srgb, var(--bg-dark) 88%, transparent);
   backdrop-filter: blur(10px);
   margin-top: auto;
   color: var(--text-secondary);

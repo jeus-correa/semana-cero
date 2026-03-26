@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { 
+  Menu,
+  Sun,
+  Moon,
   MapPin, 
   Clock, 
   Globe, 
@@ -8,7 +11,11 @@ import {
   User, 
   ArrowRight,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  Info,
+  Library,
+  Book,
+  Star
 } from 'lucide-react'
 import './App.css'
 
@@ -24,18 +31,27 @@ const QuickLink = ({ icon: Icon, href, label }: { icon: any, href: string, label
   <motion.a 
     href={href}
     className="link-item"
-    whileHover={{ x: -5, backgroundColor: 'var(--primary)' }}
+    whileHover={{ x: -10, scale: 1.1, backgroundColor: 'var(--primary)' }}
     initial={{ opacity: 0, x: 20 }}
     animate={{ opacity: 1, x: 0 }}
     title={label}
   >
-    <Icon size={20} />
+    <Icon size={22} />
   </motion.a>
 )
 
 function App() {
   const [schedule, setSchedule] = useState<Activity[]>([])
   const [loading, setLoading] = useState(true)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const savedTheme = localStorage.getItem('theme')
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+      return savedTheme
+    }
+
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+  })
 
   useEffect(() => {
     fetch('http://localhost:3000/api/schedule')
@@ -50,6 +66,15 @@ function App() {
       })
   }, [])
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark')
+  }
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -59,61 +84,101 @@ function App() {
   }
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: 30, opacity: 0 },
     visible: { y: 0, opacity: 1 }
   }
 
+  const menuItems = [
+    { icon: Info, label: 'Centro Información', href: '#' },
+    { icon: User, label: 'Intranet', href: '#' },
+    { icon: BookOpen, label: 'Aulas Virtuales', href: '#' },
+    { icon: Book, label: 'Libro Tu Puedes', href: '#' },
+    { icon: Library, label: 'Biblioteca Virtual', href: '#' },
+    { icon: Star, label: 'Personaje Sello 2026', href: '#', highlight: true }
+  ]
+
   return (
-    <div className="app-wrapper">
+    <div className={`app-wrapper ${isMenuOpen ? 'menu-open' : ''}`} data-theme={theme}>
       <div className="bg-blobs">
         <div className="blob blob-1"></div>
         <div className="blob blob-2"></div>
       </div>
 
-      <div className="nav-wrapper">
-        <div className="top-bar">
-          <div className="top-bar-links">
-            <a href="#"><Globe size={14} /> <span>Instagram</span></a>
-            <a href="#"><MapPin size={14} /> <span>Ubicación</span></a>
-          </div>
-          <div className="top-bar-links">
-            <a href="#"><User size={14} /> <span>Intranet</span></a>
-            <a href="#"><BookOpen size={14} /> <span>Aulas Virtuales</span></a>
-            <a href="#" className="btn-primary" style={{ padding: '0.3rem 0.8rem', height: '24px', fontSize: '0.65rem', display: 'flex', alignItems: 'center' }}>TU PUEDES</a>
-          </div>
+      <motion.aside
+        className="left-menu"
+        animate={{ width: isMenuOpen ? 300 : 86 }}
+        transition={{ type: 'spring', damping: 24, stiffness: 220 }}
+      >
+        <button className="menu-toggle-btn" onClick={() => setIsMenuOpen((prev) => !prev)}>
+          <Menu size={22} />
+          <AnimatePresence>
+            {isMenuOpen && (
+              <motion.span
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -8 }}
+              >
+                MENÚ
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </button>
+
+        <div className="left-menu-logo">
+          <img src="https://www.santotomas.cl/wp-content/themes/santotomas/assets/img/logo-st.png" alt="ST" />
         </div>
-        <div className="main-nav">
-          <div className="logo-container">
-            <img src="https://www.santotomas.cl/wp-content/themes/santotomas/assets/img/logo-st.png" alt="Santo Tomás" />
-          </div>
-          <div className="nav-links">
-            <a href="#" className="active">INICIO</a>
-            <a href="#">CFT</a>
-            <a href="#">IP</a>
-            <a href="#">BIBLIOTECA VIRTUAL</a>
-            <a href="#">PERSONAJES SELLO 2026</a>
-            <a href="#" style={{ color: 'var(--accent)' }}>SOPORTE</a>
-          </div>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-             <button className="btn-primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.75rem' }}>ADMISIÓN</button>
-          </div>
+
+        <nav className="left-menu-links">
+          {menuItems.map(({ icon: Icon, label, href, highlight }) => (
+            <a key={label} href={href} className={highlight ? 'highlight' : ''} title={label}>
+              <Icon size={18} />
+              <AnimatePresence>
+                {isMenuOpen && (
+                  <motion.span
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -8 }}
+                  >
+                    {label}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </a>
+          ))}
+        </nav>
+
+        <div className="left-menu-theme">
+          <button onClick={toggleTheme} className="left-menu-theme-btn" title={theme === 'dark' ? 'Modo día' : 'Modo noche'}>
+            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            <AnimatePresence>
+              {isMenuOpen && (
+                <motion.span
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -8 }}
+                >
+                  {theme === 'dark' ? 'MODO DÍA' : 'MODO NOCHE'}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
         </div>
-      </div>
+      </motion.aside>
 
       <section className="hero">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <span className="meta" style={{ color: 'var(--primary)', fontWeight: 800, letterSpacing: '4px', marginBottom: '1rem', display: 'block' }}>
+          <span className="meta" style={{ marginBottom: '1.5rem', display: 'block' }}>
             ADMISIÓN 2026
           </span>
           <h1>Semana Cero</h1>
           <p>Comienza tu viaje universitario con la mejor energía. Descubre todo lo que Santo Tomás tiene preparado para ti.</p>
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
             <a href="#schedule" className="btn-primary">EXPLORAR ACTIVIDADES</a>
-            <a href="#" className="btn-primary" style={{ background: 'transparent', border: '1px solid var(--glass-border)', boxShadow: 'none' }}>VER MAPA CAMPUS</a>
+            <button className="btn-primary" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', color: 'var(--text-primary)' }}>VER MAPA CAMPUS</button>
           </div>
         </motion.div>
       </section>
@@ -137,27 +202,27 @@ function App() {
             viewport={{ once: true }}
           >
             {loading ? (
-              <p style={{ textAlign: 'center', gridColumn: '1/-1' }}>Cargando futuro...</p>
+              <p style={{ textAlign: 'center', gridColumn: '1/-1', color: 'var(--primary)', fontWeight: 600 }}>Cargando eventos...</p>
             ) : (
               schedule.map((item) => (
                 <motion.div key={item.id} className="glass-card" variants={itemVariants}>
                   <div className="meta">{item.day}</div>
                   <h3>{item.activity}</h3>
-                  <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                      <Clock size={16} color="var(--primary)" />
+                  <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+                      <Clock size={18} color="var(--primary)" />
                       {item.time}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                      <MapPin size={16} color="var(--primary)" />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+                      <MapPin size={18} color="var(--primary)" />
                       {item.location}
                     </div>
                   </div>
                   <motion.div 
-                    style={{ marginTop: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', fontWeight: 600, cursor: 'pointer' }}
-                    whileHover={{ x: 5 }}
+                    style={{ marginTop: '2.5rem', display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--primary)', fontWeight: 800, cursor: 'pointer', fontSize: '0.9rem' }}
+                    whileHover={{ x: 10 }}
                   >
-                    Saber más <ArrowRight size={16} />
+                    MÁS INFORMACIÓN <ArrowRight size={18} />
                   </motion.div>
                 </motion.div>
               ))
@@ -174,29 +239,27 @@ function App() {
           >
             Ecosistema Digital
           </motion.h2>
-          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+          <div className="grid">
             {[
-              { title: 'Intranet', desc: 'Gestiona tu vida académica', icon: User, label: 'CENTRO DE FORMACIÓN TÉCNICA' },
-              { title: 'Aula Virtual', desc: 'Tus clases y materiales', icon: BookOpen, label: 'INSTITUTO PROFESIONAL' },
-              { title: 'Biblioteca', desc: 'Recursos de investigación', icon: ExternalLink, label: 'BIBLIOTECA VIRTUAL' },
-              { title: 'Soporte IT', desc: 'Ayuda técnica 24/7', icon: Globe, label: 'UBICACIÓN' },
+              { title: 'Intranet', desc: 'Gestiona tu vida académica y notas', icon: User, label: 'MI PORTAL' },
+              { title: 'Aula Virtual', desc: 'Accede a tus clases y materiales', icon: BookOpen, label: 'ESTUDIOS' },
+              { title: 'Biblioteca', desc: 'Recursos digitales y catálogos', icon: Library, label: 'APOYO' },
+              { title: 'Soporte IT', desc: 'Ayuda técnica para tus plataformas', icon: Globe, label: 'AYUDA' },
             ].map((res, idx) => (
               <motion.div 
                 key={idx} 
                 className="glass-card" 
-                style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
-                whileHover={{ scale: 1.02, borderColor: 'var(--primary)' }}
+                variants={itemVariants}
+                whileHover={{ scale: 1.05 }}
               >
-                 <div className="meta" style={{ fontSize: '0.7rem' }}>{res.label}</div>
-                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <div style={{ padding: '0.8rem', background: 'var(--primary-glow)', borderRadius: '12px' }}>
-                    <res.icon size={24} color="var(--primary)" />
+                 <div className="meta">{res.label}</div>
+                 <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', margin: '1.5rem 0' }}>
+                  <div style={{ padding: '1rem', background: 'var(--primary-glow)', borderRadius: '16px', display: 'flex' }}>
+                    <res.icon size={28} color="var(--primary)" />
                   </div>
-                  <div>
-                    <h4 style={{ marginBottom: '0.1rem' }}>{res.title}</h4>
-                  </div>
+                  <h4 style={{ fontSize: '1.4rem' }}>{res.title}</h4>
                  </div>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{res.desc}</p>
+                <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{res.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -205,14 +268,13 @@ function App() {
 
       <div className="quicklinks">
         <QuickLink icon={Globe} href="#" label="Instagram" />
-        <QuickLink icon={Globe} href="#" label="Sitio Web" />
-        <QuickLink icon={ChevronRight} href="#" label="Más Info" />
+        <QuickLink icon={ChevronRight} href="#" label="Portales ST" />
       </div>
 
       <footer>
-        <img src="https://www.santotomas.cl/wp-content/themes/santotomas/assets/img/logo-st.png" alt="Santo Tomás" style={{ height: '30px', filter: 'brightness(0) invert(1)', marginBottom: '1.5rem', opacity: 0.5 }} />
+        <img src="https://www.santotomas.cl/wp-content/themes/santotomas/assets/img/logo-st.png" alt="Santo Tomás" style={{ height: '35px', filter: 'brightness(1)', marginBottom: '2rem' }} />
         <p>&copy; 2026 Universidad Santo Tomás. Todos los derechos reservados.</p>
-        <p style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>Dirección Nacional de Asuntos Estudiantiles</p>
+        <p style={{ marginTop: '0.8rem', fontSize: '0.85rem' }}>Dirección Nacional de Asuntos Estudiantiles</p>
       </footer>
     </div>
   )

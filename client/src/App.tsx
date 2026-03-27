@@ -4,14 +4,11 @@ import {
   Menu,
   Sun,
   Moon,
-  MapPin, 
-  Clock, 
   Globe, 
   AtSign,
   MessageCircle,
   BookOpen, 
   User, 
-  ArrowRight,
   ChevronRight,
   Info,
   Library,
@@ -19,14 +16,6 @@ import {
   Star
 } from 'lucide-react'
 import './App.css'
-
-interface Activity {
-  id: number;
-  day: string;
-  activity: string;
-  time: string;
-  location: string;
-}
 
 const QuickLink = ({ icon: Icon, href, label }: { icon: any, href: string, label: string }) => (
   <motion.a 
@@ -42,9 +31,10 @@ const QuickLink = ({ icon: Icon, href, label }: { icon: any, href: string, label
 )
 
 function App() {
-  const [schedule, setSchedule] = useState<Activity[]>([])
-  const [loading, setLoading] = useState(true)
+  // Estado UI
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [showMoreInfo, setShowMoreInfo] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme === 'dark' || savedTheme === 'light') {
@@ -54,19 +44,7 @@ function App() {
     return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
   })
 
-  useEffect(() => {
-    fetch('http://localhost:3000/api/schedule')
-      .then((res) => res.json())
-      .then((data) => {
-        setSchedule(data)
-        setLoading(false)
-      })
-      .catch((err) => {
-        console.error(err)
-        setLoading(false)
-      })
-  }, [])
-
+  // Persistencia de tema
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
     localStorage.setItem('theme', theme)
@@ -75,6 +53,15 @@ function App() {
   const toggleTheme = () => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark')
   }
+
+  // Carrusel automático
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
+    }, 6500)
+
+    return () => clearInterval(interval)
+  }, [])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -85,9 +72,29 @@ function App() {
   }
 
   const itemVariants = {
-    hidden: { y: 30, opacity: 0 },
-    visible: { y: 0, opacity: 1 }
+    hidden: { y: 64, opacity: 0, scale: 0.96 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.8 }
+    }
   }
+
+  const textRevealVariants = {
+    hidden: { y: 36, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.7 }
+    }
+  }
+
+  const heroSlides = [
+    'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1100&q=45',
+    'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1100&q=45',
+    'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1100&q=45'
+  ]
 
   const menuItems = [
     { icon: Info, label: 'Centro Información', href: '#' },
@@ -167,14 +174,30 @@ function App() {
       </motion.aside>
 
       <section className="hero">
+        <div className="hero-carousel" aria-hidden="true">
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={heroSlides[currentSlide]}
+              src={heroSlides[currentSlide]}
+              alt=""
+              className="hero-slide"
+              initial={{ opacity: 0, scale: 1.06 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.03 }}
+              transition={{ duration: 1.2, ease: 'easeOut' }}
+            />
+          </AnimatePresence>
+          <div className="hero-overlay"></div>
+        </div>
+
         <motion.div
-          className="hero-content hero-content-right"
+          className="hero-content hero-content-right hero-content-shift-left"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
           <span className="meta" style={{ marginBottom: '1.5rem', display: 'block' }}>
-            ADMISIÓN 2026
+            BIENVENIDOS TOMACIN@S
           </span>
           <h1 className="hero-title">
             <span className="hero-title-main">Únete</span>
@@ -182,21 +205,22 @@ function App() {
           </h1>
           <p>Comienza tu experiencia en el Instituto Profesional Santo Tomás con la mejor energía. Descubre todo lo que tenemos preparado para ti.</p>
           <div className="hero-actions" style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
-            <a href="#schedule" className="btn-primary">EXPLORAR ACTIVIDADES</a>
+            <a href="#mision-vision" className="btn-primary hero-explore-btn">EXPLORAR INFORMACIÓN</a>
             <button className="btn-primary" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', color: 'var(--text-primary)' }}>VER MAPA CAMPUS</button>
           </div>
         </motion.div>
       </section>
+      <div className="hero-divider" aria-hidden="true"></div>
 
       <main className="container">
-        <section id="schedule">
+        <section id="mision-vision">
           <motion.h2 
             className="section-title"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
           >
-            Tu Cronograma
+            Misión y Visión
           </motion.h2>
           
           <motion.div 
@@ -206,32 +230,21 @@ function App() {
             whileInView="visible"
             viewport={{ once: true }}
           >
-            {loading ? (
-              <p style={{ textAlign: 'center', gridColumn: '1/-1', color: 'var(--primary)', fontWeight: 600 }}>Cargando eventos...</p>
-            ) : (
-              schedule.map((item) => (
-                <motion.div key={item.id} className="glass-card" variants={itemVariants}>
-                  <div className="meta">{item.day}</div>
-                  <h3>{item.activity}</h3>
-                  <div style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-                      <Clock size={18} color="var(--primary)" />
-                      {item.time}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-                      <MapPin size={18} color="var(--primary)" />
-                      {item.location}
-                    </div>
-                  </div>
-                  <motion.div 
-                    style={{ marginTop: '2.5rem', display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--primary)', fontWeight: 800, cursor: 'pointer', fontSize: '0.9rem' }}
-                    whileHover={{ x: 10 }}
-                  >
-                    MÁS INFORMACIÓN <ArrowRight size={18} />
-                  </motion.div>
-                </motion.div>
-              ))
-            )}
+            <motion.div className="glass-card" variants={itemVariants}>
+              <div className="meta">Misión</div>
+              <motion.h3 variants={textRevealVariants}>Compromiso Institucional</motion.h3>
+              <motion.p variants={textRevealVariants} style={{ fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: 1.75 }}>
+                Contribuir al desarrollo sostenible del país, transmitiendo conocimiento mediante la formación de personas a lo largo de la vida, inspirada en valores cristianos, la vinculación con el medio y la innovación.
+              </motion.p>
+            </motion.div>
+
+            <motion.div className="glass-card" variants={itemVariants}>
+              <div className="meta">Visión</div>
+              <motion.h3 variants={textRevealVariants}>Proyección de Excelencia</motion.h3>
+              <motion.p variants={textRevealVariants} style={{ fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: 1.75 }}>
+                Ser un Instituto Profesional reconocido por su compromiso con la transformación de sus estudiantes y el desarrollo sostenible de las comunidades con que se vincula, y una gestión de excelencia.
+              </motion.p>
+            </motion.div>
           </motion.div>
         </section>
 
@@ -242,14 +255,15 @@ function App() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
           >
-            Ecosistema Digital
+            Conoce sobre tu semana cero
           </motion.h2>
+          <p className="section-subtitle">Todo lo que necesitas sabes en un solo lugar.</p>
           <div className="grid">
             {[
-              { title: 'Intranet', desc: 'Gestiona tu vida académica y notas', icon: User, label: 'MI PORTAL' },
-              { title: 'Aula Virtual', desc: 'Accede a tus clases y materiales', icon: BookOpen, label: 'ESTUDIOS' },
-              { title: 'Biblioteca', desc: 'Recursos digitales y catálogos', icon: Library, label: 'APOYO' },
-              { title: 'Soporte IT', desc: 'Ayuda técnica para tus plataformas', icon: Globe, label: 'AYUDA' },
+              { title: 'Valores Institucionales', desc: 'Conoce los principios que guían tu formación en Santo Tomás.', icon: User, label: 'IDENTIDAD' },
+              { title: 'Reglamento', desc: 'Revisa normas académicas y de convivencia para tu vida estudiantil.', icon: BookOpen, label: 'NORMATIVA' },
+              { title: 'Vías de Evacuasion', desc: 'Ubica rutas de seguridad y protocolos frente a emergencias.', icon: Library, label: 'SEGURIDAD' },
+              { title: 'Activacion de Correo', desc: 'Activa y usa tu correo institucional para todas tus plataformas.', icon: Globe, label: 'CONECTIVIDAD' },
             ].map((res, idx) => (
               <motion.div 
                 key={idx} 
@@ -268,6 +282,37 @@ function App() {
               </motion.div>
             ))}
           </div>
+
+          <div className="more-info-action">
+            <button className="btn-primary" onClick={() => setShowMoreInfo((prev) => !prev)}>
+              INFORMATE MAS SOBRE LA SEMANA 0
+            </button>
+          </div>
+
+          <AnimatePresence>
+            {showMoreInfo && (
+              <motion.div
+                className="grid extra-info-grid"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.45 }}
+              >
+                {[
+                  { title: 'Espacio 1', desc: 'Aqui agregaremos el contenido que nos indiques.' },
+                  { title: 'Espacio 2', desc: 'Aqui agregaremos el contenido que nos indiques.' },
+                  { title: 'Espacio 3', desc: 'Aqui agregaremos el contenido que nos indiques.' },
+                  { title: 'Espacio 4', desc: 'Aqui agregaremos el contenido que nos indiques.' }
+                ].map((item) => (
+                  <motion.div key={item.title} className="glass-card" variants={itemVariants}>
+                    <div className="meta">Proximamente</div>
+                    <h3>{item.title}</h3>
+                    <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{item.desc}</p>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </section>
       </main>
 

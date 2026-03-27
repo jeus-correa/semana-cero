@@ -27,23 +27,37 @@
 
 [data-theme='light'] {
   --primary: #0b4f3d;
-  --primary-glow: rgba(11, 79, 61, 0.20);
-  --primary-hover: #0f6a52;
+  --primary-glow: rgba(11, 79, 61, 0.22);
+  --primary-hover: #0d6b52;
   --accent: #0b4f3d;
-  --bg-dark: #f5f8f7;
-  --bg-darker: #eaf1ee;
-  --glass-bg: rgba(255, 255, 255, 0.78);
+  --bg-dark: #e8f0ec;
+  --bg-darker: #dce8e2;
+  --glass-bg: rgba(210, 228, 218, 0.82);
   --glass-border: rgba(11, 79, 61, 0.28);
-  --glass-border-hover: rgba(11, 79, 61, 0.42);
-  --text-primary: #000000;
-  --text-secondary: #4f665a;
+  --glass-border-hover: rgba(11, 79, 61, 0.45);
+  --text-primary: #0d241c;
+  --text-secondary: #2d4a3e;
   color-scheme: light;
+}
+
+html {
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+#root {
+  width: 100%;
+  min-height: 100dvh;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
-  min-width: 320px;
+  min-width: 280px;
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--bg-dark);
   color: var(--text-primary);
   overflow-x: hidden;
@@ -55,7 +69,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: 4rem;
+  font-size: clamp(1.75rem, 5vw + 0.5rem, 4rem);
   line-height: 1.15;
   font-weight: 800;
   letter-spacing: -0.6px;

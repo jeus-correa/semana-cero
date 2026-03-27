@@ -1,3 +1,300 @@
+import { useEffect, useState } from 'react'
+import {
+  AtSign,
+  BookOpen,
+  ChevronRight,
+  Clock3,
+  Camera,
+  Globe,
+  Library,
+  Menu,
+  MessageCircle,
+  Moon,
+  Star,
+  Sun,
+  User
+} from 'lucide-react'
+import './App.css'
+
+let visitIncrementedThisLoad = false
+
+function App() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [visits, setVisits] = useState(0)
+  const [semanaPanelOpen, setSemanaPanelOpen] = useState(false)
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const savedTheme = localStorage.getItem('theme')
+    if (savedTheme === 'dark' || savedTheme === 'light') return savedTheme
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+  })
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 3000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    if (visitIncrementedThisLoad) return
+    visitIncrementedThisLoad = true
+    const antes = Number(localStorage.getItem('st_visits') ?? '0')
+    const despues = antes + 1
+    localStorage.setItem('st_visits', String(despues))
+    setVisits(antes)
+    const t = window.setTimeout(() => setVisits(despues), 420)
+    return () => window.clearTimeout(t)
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
+    }, 9000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const menuItems = [
+    { icon: User, label: 'Centro Información', href: '#' },
+    { icon: User, label: 'Intranet', href: '#' },
+    { icon: BookOpen, label: 'Aulas Virtuales', href: '#' },
+    { icon: BookOpen, label: 'Libro Tú Puedes', href: '#' },
+    { icon: Library, label: 'Biblioteca Virtual', href: '#' },
+    { icon: Star, label: 'Personaje Sello 2026', href: '#', highlight: true },
+    { icon: Globe, label: 'Sede en 360', href: 'https://storage.net-fs.com/hosting/6520281/118/', external: true }
+  ]
+
+  const serviceCards = [
+    { icon: BookOpen, title: 'Aula Virtual', desc: 'Accede a tus cursos y materiales' },
+    { icon: AtSign, title: 'Correo', desc: 'Revisa tus mensajes institucionales' },
+    { icon: Library, title: 'Biblioteca', desc: 'Recursos académicos y más' },
+    { icon: Clock3, title: 'Horarios', desc: 'Revisa tu programación semanal' }
+  ]
+
+  const missionVision = [
+    {
+      title: 'Misión',
+      text: 'Contribuir al desarrollo sostenible del país, transmitiendo conocimiento mediante la formación de personas a lo largo de la vida, inspirada en valores cristianos, la vinculación con el medio y la innovación.'
+    },
+    {
+      title: 'Visión',
+      text: 'Ser un Instituto Profesional reconocido por su compromiso con la transformación de sus estudiantes y el desarrollo sostenible de las comunidades con que se vincula, y una gestión de excelencia.'
+    }
+  ]
+
+  const heroSlides = [
+    'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1600&q=60',
+    'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1600&q=60',
+    'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1600&q=60'
+  ]
+
+  const openSemanaPanel = () => {
+    setSemanaPanelOpen(true)
+  }
+
+  const closeSemanaPanel = () => {
+    setSemanaPanelOpen(false)
+  }
+
+  if (loading) {
+    return (
+      <div className="n-loader-screen">
+        <div className="n-loader-bg-motion" aria-hidden="true" />
+        <div className="n-loader-inner">
+          <div className="n-loader-logo-wrap">
+            <img src="/logo-st.svg" alt="Santo Tomás" />
+            <div className="n-loader-ring" />
+          </div>
+          <h2>Cargando Semana Cero...</h2>
+          <p>Preparando tu experiencia de bienvenida</p>
+          <div className="n-loader-bar">
+            <span />
+          </div>
+          <div className="n-loader-dots" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className={`n-dashboard ${isMenuOpen ? 'menu-open' : ''}`}>
+      <div className="n-quick-rail" aria-label="Accesos rápidos">
+        <a
+          className="n-quick-btn"
+          href="https://www.instagram.com/santotomas.cl/"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Instagram"
+        >
+          <Camera size={20} />
+        </a>
+        <a
+          className="n-quick-btn"
+          href="https://portales.santotomas.cl/"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Portales ST"
+        >
+          <ChevronRight size={20} />
+        </a>
+        <button type="button" className="n-quick-btn" title="Chatbot (próximamente)" disabled>
+          <MessageCircle size={20} />
+        </button>
+      </div>
+
+      <aside className="n-sidebar">
+        <div className="n-sidebar-brand">
+          <img src="/logo-st.svg" alt="Santo Tomás" />
+          {isMenuOpen && <span>SANTO TOMÁS</span>}
+        </div>
+
+        <button className="n-sidebar-toggle" onClick={() => setIsMenuOpen((prev) => !prev)}>
+          <Menu size={17} />
+          {isMenuOpen && <span>MENÚ</span>}
+        </button>
+
+        <nav className="n-sidebar-menu">
+          {menuItems.map(({ icon: Icon, label, href, external, highlight }) => (
+            <a
+              key={label}
+              href={href}
+              className={highlight ? 'highlight' : ''}
+              target={external ? '_blank' : undefined}
+              rel={external ? 'noopener noreferrer' : undefined}
+            >
+              <Icon size={16} />
+              {isMenuOpen && <span>{label}</span>}
+            </a>
+          ))}
+        </nav>
+
+        <button className="n-theme-switch" onClick={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}>
+          {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+          {isMenuOpen && <span>{theme === 'dark' ? 'MODO DÍA' : 'MODO NOCHE'}</span>}
+        </button>
+      </aside>
+
+      <main className="n-content">
+        <section className="n-hero-panel">
+          <div className="n-hero-bg-stack" aria-hidden="true">
+            {heroSlides.map((slide, idx) => (
+              <div
+                key={slide}
+                className={`n-hero-bg ${currentSlide === idx ? 'active' : ''}`}
+                style={{ backgroundImage: `url(${slide})` }}
+              />
+            ))}
+          </div>
+          <div className="n-hero-shade" />
+          <div className="n-views-chip">Vistas: {visits.toLocaleString('es-CL')}</div>
+
+          <div className="n-hero-text">
+            <div className="n-hero-pill">
+              <span>BIENVENIDO TOMACIN@S</span>
+            </div>
+
+            <h1>
+              <span>SEMANA CERO</span>
+              <strong>SANTO TOMÁS</strong>
+            </h1>
+
+            <p>
+              Tu primera semana es el comienzo de algo grande.
+              Explora, conéctate y descubre todo lo que tenemos para ti.
+            </p>
+
+            <div className="n-hero-actions">
+              <button type="button" className="n-btn-main" onClick={openSemanaPanel}>
+                Tu semana cero
+              </button>
+            </div>
+
+            <div className="n-hero-dots">
+              {heroSlides.map((_, idx) => (
+                <span key={idx} className={currentSlide === idx ? 'active' : ''} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="n-services" id="conoce-semana-cero">
+          {serviceCards.map(({ icon: Icon, title, desc }, idx) => (
+            <article key={title} className={`n-service-card n-service-${idx + 1}`}>
+              <div className="n-service-icon">
+                <Icon size={18} />
+              </div>
+              <div className="n-service-copy">
+                <h3>{title}</h3>
+                <p>{desc}</p>
+              </div>
+              <ChevronRight size={14} />
+            </article>
+          ))}
+        </section>
+
+        <section className="n-mv-section">
+          <h2>Misión y Visión</h2>
+          <div className="n-mv-grid">
+            {missionVision.map((item) => (
+              <article key={item.title} className="n-mv-card">
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="n-campus-video">
+          <h2>Conoce tu sede</h2>
+          <div className="n-video-box">ESPACIO PARA VIDEO INSTITUCIONAL</div>
+        </section>
+      </main>
+
+      {semanaPanelOpen && (
+        <div className="n-semana-overlay" role="presentation" onClick={closeSemanaPanel}>
+          <div
+            className="n-semana-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="semana-cero-titulo"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button type="button" className="n-semana-close" onClick={closeSemanaPanel} aria-label="Cerrar">
+              ×
+            </button>
+            <h2 id="semana-cero-titulo">Tu Semana Cero</h2>
+            <p>
+              Acá encontrarás la información clave para partir con el pie derecho: accesos, horarios, recursos y todo lo
+              que necesitas para vivir tu Semana Cero en el Instituto Profesional Santo Tomás.
+            </p>
+            <p className="n-semana-hint">Desplázate hacia abajo para ver servicios, misión y sede.</p>
+            <button
+              type="button"
+              className="n-btn-main"
+              onClick={() => {
+                closeSemanaPanel()
+                document.getElementById('conoce-semana-cero')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }}
+            >
+              Ir a servicios y recursos
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default App
+/*
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -54,6 +351,20 @@ function App() {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark')
   }
 
+  const goToInfoSection = () => {
+    const infoSection = document.getElementById('conoce-semana-cero')
+    if (infoSection) {
+      infoSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  const goToCampusSection = () => {
+    const campusSection = document.getElementById('conoce-nuestra-sede')
+    if (campusSection) {
+      campusSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
   // Carrusel automático
   useEffect(() => {
     const interval = setInterval(() => {
@@ -102,7 +413,8 @@ function App() {
     { icon: BookOpen, label: 'Aulas Virtuales', href: '#' },
     { icon: Book, label: 'Libro Tu Puedes', href: '#' },
     { icon: Library, label: 'Biblioteca Virtual', href: '#' },
-    { icon: Star, label: 'Personaje Sello 2026', href: '#', highlight: true }
+    { icon: Star, label: 'Personaje Sello 2026', href: '#', highlight: true },
+    { icon: Globe, label: 'Sede en 360', href: 'https://storage.net-fs.com/hosting/6520281/118/', external: true }
   ]
 
   return (
@@ -138,7 +450,14 @@ function App() {
 
         <nav className="left-menu-links">
           {menuItems.map(({ icon: Icon, label, href, highlight }) => (
-            <a key={label} href={href} className={highlight ? 'highlight' : ''} title={label}>
+            <a
+              key={label}
+              href={href}
+              className={highlight ? 'highlight' : ''}
+              title={label}
+              target={external ? '_blank' : undefined}
+              rel={external ? 'noopener noreferrer' : undefined}
+            >
               <Icon size={18} />
               <AnimatePresence>
                 {isMenuOpen && (
@@ -205,8 +524,8 @@ function App() {
           </h1>
           <p>Comienza tu experiencia en el Instituto Profesional Santo Tomás con la mejor energía. Descubre todo lo que tenemos preparado para ti.</p>
           <div className="hero-actions" style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
-            <a href="#mision-vision" className="btn-primary hero-explore-btn">EXPLORAR INFORMACIÓN</a>
-            <button className="btn-primary" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', color: 'var(--text-primary)' }}>VER MAPA CAMPUS</button>
+            <button className="btn-primary hero-explore-btn" onClick={goToInfoSection}>EXPLORAR INFORMACIÓN</button>
+            <button className="btn-primary" onClick={goToCampusSection} style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', color: 'var(--text-primary)' }}>CONOCE NUESTRA CEDE</button>
           </div>
         </motion.div>
       </section>
@@ -248,14 +567,14 @@ function App() {
           </motion.div>
         </section>
 
-        <section className="resources">
+        <section className="resources" id="conoce-semana-cero">
           <motion.h2 
             className="section-title"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
           >
-            Conoce sobre tu semana cero
+            Conoce sobre tu semana Cero 
           </motion.h2>
           <p className="section-subtitle">Todo lo que necesitas sabes en un solo lugar.</p>
           <div className="grid">
@@ -285,34 +604,66 @@ function App() {
 
           <div className="more-info-action">
             <button className="btn-primary" onClick={() => setShowMoreInfo((prev) => !prev)}>
-              INFORMATE MAS SOBRE LA SEMANA 0
+              {showMoreInfo ? 'OCULTAR INFORMACION ADICIONAL' : 'INFORMATE MAS SOBRE LA SEMANA CERO'}
             </button>
           </div>
 
-          <AnimatePresence>
-            {showMoreInfo && (
-              <motion.div
-                className="grid extra-info-grid"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ duration: 0.45 }}
+          <div className="campus-media-section" id="conoce-nuestra-sede">
+            <h3>CONOCE NUESTRA SEDE</h3>
+            <div className="campus-media-grid">
+            <div className="video-placeholder-section">
+              <div className="video-embed-placeholder">ESPACIO RESERVADO PARA VIDEO INSTITUCIONAL</div>
+            </div>
+            </div>
+            <div className="campus-360-action">
+              <a
+                className="btn-primary campus-360-btn"
+                href="https://storage.net-fs.com/hosting/6520281/118/"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                {[
-                  { title: 'Espacio 1', desc: 'Aqui agregaremos el contenido que nos indiques.' },
-                  { title: 'Espacio 2', desc: 'Aqui agregaremos el contenido que nos indiques.' },
-                  { title: 'Espacio 3', desc: 'Aqui agregaremos el contenido que nos indiques.' },
-                  { title: 'Espacio 4', desc: 'Aqui agregaremos el contenido que nos indiques.' }
-                ].map((item) => (
-                  <motion.div key={item.title} className="glass-card" variants={itemVariants}>
-                    <div className="meta">Proximamente</div>
-                    <h3>{item.title}</h3>
-                    <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{item.desc}</p>
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                CONOCE NUESTRA SEDE EN 360
+              </a>
+            </div>
+          </div>
+
+          {showMoreInfo && (
+            <motion.div
+              className="grid extra-info-grid"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35 }}
+            >
+              {[
+                {
+                  title: 'Calendario de Actividades',
+                  desc: 'Revisa fechas clave, horarios y jornadas especiales de tu Semana Cero.',
+                  label: 'PLANIFICACION'
+                },
+                {
+                  title: 'Induccion Academica',
+                  desc: 'Conoce tu malla, reglamento interno y recomendaciones para el primer semestre.',
+                  label: 'ACADEMICO'
+                },
+                {
+                  title: 'Vida Estudiantil',
+                  desc: 'Descubre talleres, apoyo estudiantil, beneficios y canales de acompañamiento.',
+                  label: 'BIENESTAR'
+                },
+                {
+                  title: 'Servicios Digitales',
+                  desc: 'Aprende a usar correo institucional, plataformas de aula y herramientas online.',
+                  label: 'TECNOLOGIA'
+                }
+              ].map((item) => (
+                <div key={item.title} className="glass-card">
+                  <div className="meta">{item.label}</div>
+                  <h3>{item.title}</h3>
+                  <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{item.desc}</p>
+                </div>
+              ))}
+            </motion.div>
+          )}
         </section>
       </main>
 
@@ -334,3 +685,4 @@ function App() {
 }
 
 export default App
+*/

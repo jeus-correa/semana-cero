@@ -196,7 +196,7 @@ button:focus-visible {
   align-items: center;
   justify-content: center;
   background: var(--primary);
-  color: var(--bg-darker);
+  color: #ffffff;
   font-weight: 700;
   padding: 0.8rem 1.8rem;
   border-radius: 12px;
@@ -211,7 +211,7 @@ button:focus-visible {
 
 .btn-primary:hover {
   background: var(--primary-hover);
-  color: var(--bg-darker);
+  color: #ffffff;
   box-shadow: 0 0 25px var(--primary-glow);
   transform: translateY(-2px);
 }

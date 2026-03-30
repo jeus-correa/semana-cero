@@ -17,11 +17,32 @@ export const LINKS = {
   canalDenuncias: 'https://www.ust.cl/genero-e-inclusion/canal-de-denuncias',
   formacionDocenteDrive:
     'https://drive.google.com/drive/folders/1lSfa_dTOaIZMrs_u5fIFR5vvyNqmFrdn?usp=sharing',
+  pdfCentroAprendizaje: 'https://drive.google.com/file/d/1aQECKNIjJwFH7Irjd0guVIMQ3jnYSrvL/view?usp=sharing',
+  pdfBiblioteca: 'https://drive.google.com/file/d/1RbFh7y2l8-oOIIiNHdvWU0BUmtGArN6I/view?usp=sharing',
+  pdfDae: 'https://drive.google.com/file/d/1vkwNpxBK4WIteDfFmQaGiIQ1eUZVQaSb/view?usp=sharing',
+  pdfRegistro: 'https://drive.google.com/file/d/11QETpuKU-rtpPuVTtBNQubrXZK5ZB1vc/view?usp=sharing',
+  pdfDao: 'https://drive.google.com/file/d/1sd_iANRlTyB7zqPuOj5RLeduUemJpYEO/view?usp=sharing',
+  pdfSoporte: 'https://drive.google.com/file/d/1MVLkEoC7CXg6EspmUJW0wqBZgiK0V0b2/view?usp=sharing',
+  pdfFormacion: 'https://drive.google.com/file/d/1Haw21v8bRlhtuZow8DB1qsNINZwqvYXJ/view?usp=sharing',
+  pdfFormacionDocente: 'https://drive.google.com/file/d/1GAO-aa4Wp4fSEGtHAJU6FHDjliGYGJJ5/view?usp=sharing',
+  pdfComoImprimir: 'https://drive.google.com/file/d/1aucpW3M-2wfvujAPWkT4hOKYsdlhbqdU/view?usp=sharing',
   ipPortalReglamentos:
     'https://www.ipsantotomas.cl/informacion-institucional/politicas-y-reglamentos/politicas-reglamentos-y-documentos/',
   cftPortalReglamentos:
     'https://www.cftsantotomas.cl/informacion-institucional/politicas-y-reglamentos/politicas-reglamentos-y-documentos/'
 } as const
+
+export const APOYO_PDFS: { title: string; subtitle: string; href: string }[] = [
+  { title: 'Centro de Aprendizaje', subtitle: 'Apoyo académico y tutorías', href: LINKS.pdfCentroAprendizaje },
+  { title: 'Biblioteca', subtitle: 'Recursos y servicios bibliotecarios', href: LINKS.pdfBiblioteca },
+  { title: 'DAE', subtitle: 'Beneficios y vida estudiantil', href: LINKS.pdfDae },
+  { title: 'Registro Curricular', subtitle: 'Procesos y documentos académicos', href: LINKS.pdfRegistro },
+  { title: 'DAO', subtitle: 'Aranceles y convenios de pago', href: LINKS.pdfDao },
+  { title: 'Soporte de Informática', subtitle: 'Plataformas y accesos', href: LINKS.pdfSoporte },
+  { title: 'Formación', subtitle: 'Material de apoyo institucional', href: LINKS.pdfFormacion },
+  { title: 'Formación Docente', subtitle: 'Información y acompañamiento docente', href: LINKS.pdfFormacionDocente },
+  { title: 'Cómo imprimir', subtitle: 'Guía rápida de impresión', href: LINKS.pdfComoImprimir }
+]
 
 export type SemanaTabId =
   | 'mision'

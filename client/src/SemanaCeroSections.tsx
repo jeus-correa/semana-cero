@@ -12,6 +12,7 @@ import {
   Video
 } from 'lucide-react'
 import {
+  APOYO_PDFS,
   CFT_LINKS,
   COMITE_CURICO,
   EVACUATION_VIDEOS,
@@ -208,37 +209,19 @@ export function SemanaCeroSections({ tab, onTabChange }: Props) {
           <h2 id="sec-ap" className="scp-h2">
             Unidades de apoyo
           </h2>
-          <p className="scp-lead">Recursos para tu formación y bienestar.</p>
-          <div className="scp-banner">
-            <GraduationCap size={28} aria-hidden />
-            <div className="scp-banner-text">
-              <strong>Formación y desarrollo docente</strong>
-              <span>Cursos gratuitos y modalidad virtual — material en Drive institucional.</span>
-            </div>
-            <a className="scp-btn-primary" href={LINKS.formacionDocenteDrive} target="_blank" rel="noopener noreferrer">
-              Ver carpeta Drive
-            </a>
-          </div>
-          <ul className="scp-list">
-            <li>
-              <strong>Centro de Aprendizaje:</strong> apoyo académico y tutorías.
-            </li>
-            <li>
-              <strong>Biblioteca:</strong>{' '}
-              <a href={LINKS.bibliotecaVirtual} target="_blank" rel="noopener noreferrer">
-                Descubridor Santo Tomás
+          <p className="scp-lead">Selecciona el apartado que necesitas y abre su PDF directo.</p>
+          <div className="scp-cards">
+            {APOYO_PDFS.map((item) => (
+              <a key={item.title} className="scp-scard" href={item.href} target="_blank" rel="noopener noreferrer">
+                <GraduationCap size={22} />
+                <div>
+                  <strong>{item.title}</strong>
+                  <span>{item.subtitle}</span>
+                </div>
+                <ExternalLink size={16} />
               </a>
-            </li>
-            <li>
-              <strong>DAE:</strong> becas, beneficios y vida estudiantil.
-            </li>
-            <li>
-              <strong>DAO:</strong> aranceles y convenios de pago.
-            </li>
-            <li>
-              <strong>Soporte de Informática:</strong> plataformas y accesos.
-            </li>
-          </ul>
+            ))}
+          </div>
         </section>
       )}
 

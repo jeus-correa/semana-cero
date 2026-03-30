@@ -28,7 +28,9 @@ let visitIncrementedThisLoad = false
 
 function App() {
   const navigate = useNavigate()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(() =>
+    typeof window !== 'undefined' ? !window.matchMedia('(max-width: 1024px)').matches : true
+  )
   const [loading, setLoading] = useState(true)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [visits, setVisits] = useState(0)
@@ -102,6 +104,10 @@ function App() {
     mq.addEventListener('change', apply)
     return () => mq.removeEventListener('change', apply)
   }, [])
+
+  useEffect(() => {
+    setIsMenuOpen(!isMobileLayout)
+  }, [isMobileLayout])
 
   useEffect(() => {
     if (!isMobileLayout || !isMenuOpen) return
@@ -359,7 +365,12 @@ function App() {
           {isMenuOpen && <span>SANTO TOMÁS</span>}
         </div>
 
-        <button className="n-sidebar-toggle" onClick={() => setIsMenuOpen((prev) => !prev)}>
+        <button
+          className="n-sidebar-toggle"
+          onClick={() => {
+            if (isMobileLayout) setIsMenuOpen((prev) => !prev)
+          }}
+        >
           <Menu size={17} />
           {isMenuOpen && <span>MENÚ</span>}
         </button>

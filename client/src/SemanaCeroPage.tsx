@@ -46,25 +46,13 @@ export function SemanaCeroPage() {
 
   const currentMeta = SEMANA_TABS.find((t) => t.id === tab)
 
-  const [visitedTabs, setVisitedTabs] = useState<Set<SemanaTabId>>(() => {
-    const saved = localStorage.getItem('scp_visited_tabs')
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved)
-        if (Array.isArray(parsed)) return new Set(parsed)
-      } catch (e) {
-        console.error('Error parsing visited tabs', e)
-      }
-    }
-    return new Set(['mision'])
-  })
+  const [visitedTabs, setVisitedTabs] = useState<Set<SemanaTabId>>(new Set())
 
   useEffect(() => {
     setVisitedTabs((prev) => {
       if (prev.has(tab)) return prev
       const next = new Set(prev)
       next.add(tab)
-      localStorage.setItem('scp_visited_tabs', JSON.stringify(Array.from(next)))
       return next
     })
   }, [tab])

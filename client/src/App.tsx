@@ -5,6 +5,7 @@ import {
   BookOpen,
   Camera,
   ChevronRight,
+  ChevronDown,
   Globe,
   GraduationCap,
   Heart,
@@ -32,6 +33,13 @@ function App() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [visits, setVisits] = useState(0)
   const [selloOpen, setSelloOpen] = useState(false)
+  const [showChatHint, setShowChatHint] = useState(false)
+  const [chatOpen, setChatOpen] = useState(false)
+  const [chatSection, setChatSection] = useState<'inicio' | 'academica' | 'seguridad' | 'digital' | 'institucional'>(
+    'inicio'
+  )
+  const [progressFill, setProgressFill] = useState(0)
+  const [showConfetti, setShowConfetti] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme === 'dark' || savedTheme === 'light') return savedTheme
@@ -64,6 +72,23 @@ function App() {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
     }, 9000)
     return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    const initialTimer = window.setTimeout(() => {
+      setShowChatHint(true)
+      window.setTimeout(() => setShowChatHint(false), 5000)
+    }, 7000)
+
+    const interval = window.setInterval(() => {
+      setShowChatHint(true)
+      window.setTimeout(() => setShowChatHint(false), 5000)
+    }, 20000)
+
+    return () => {
+      window.clearTimeout(initialTimer)
+      window.clearInterval(interval)
+    }
   }, [])
 
   const [isMobileLayout, setIsMobileLayout] = useState(
@@ -154,6 +179,55 @@ function App() {
     'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1600&q=60'
   ]
 
+  useEffect(() => {
+    const durationMs = 9000
+    const start = performance.now()
+    let raf = 0
+
+    const tick = (now: number) => {
+      const pct = Math.min(((now - start) / durationMs) * 100, 100)
+      setProgressFill(pct)
+      if (pct < 100) {
+        raf = requestAnimationFrame(tick)
+      } else {
+        setShowConfetti(true)
+        window.setTimeout(() => setShowConfetti(false), 2600)
+      }
+    }
+
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [])
+
+  const chatFaq = {
+    inicio: [
+      {
+        q: '¿Qué necesitas hoy?',
+        a: 'Elige una sección: académica, seguridad, digital o institucional. Te responderé corto y directo.'
+      }
+    ],
+    academica: [
+      { q: '¿Dónde entro a Aulas Virtuales?', a: 'Tu acceso está aquí.', ctaLabel: 'Abrir Aulas Virtuales', href: LINKS.aulasVirtuales },
+      { q: '¿Dónde veo Libro Tú Puedes?', a: 'Puedes revisarlo en este portal.', ctaLabel: 'Abrir Libro Tú Puedes', href: LINKS.libroTuPuedes },
+      { q: '¿Dónde busco en Biblioteca Virtual?', a: 'Ingresa aquí al buscador institucional.', ctaLabel: 'Abrir Biblioteca Virtual', href: LINKS.bibliotecaVirtual }
+    ],
+    seguridad: [
+      { q: 'Vías de evacuación', a: 'Revisa la sección "Vías de evacuación" en Semana Cero para videos por piso y salida.' },
+      { q: '¿Cómo denuncio una situación?', a: 'Puedes usar el canal oficial confidencial.', ctaLabel: 'Ir a canal de denuncias', href: LINKS.canalDenuncias },
+      { q: '¿Dónde veo seguros estudiantiles?', a: 'La información está en DAE.', ctaLabel: 'Ver seguros DAE', href: LINKS.segurosDae }
+    ],
+    digital: [
+      { q: '¿Tu clave se puede cambiar?', a: 'Sí, se puede cambiar aquí.', ctaLabel: 'Cambiar clave', href: LINKS.actualizaClave },
+      { q: '¿Olvidaste tu clave?', a: 'Recupérala en este acceso.', ctaLabel: 'Recuperar clave', href: LINKS.recuperaClave },
+      { q: '¿Dónde está la sede en 360?', a: 'Puedes entrar aquí al recorrido.', ctaLabel: 'Abrir sede 360', href: LINKS.sede360 }
+    ],
+    institucional: [
+      { q: '¿Cuál es el Instagram de la sede?', a: 'Este es el perfil oficial de Curicó.', ctaLabel: 'Abrir Instagram', href: LINKS.instagramCurico },
+      { q: '¿Dónde veo el portal IP?', a: 'Puedes entrar desde este botón.', ctaLabel: 'Abrir portal IP', href: LINKS.ip },
+      { q: '¿Dónde veo el portal CFT?', a: 'Puedes entrar desde este botón.', ctaLabel: 'Abrir portal CFT', href: LINKS.cft }
+    ]
+  } as const
+
   const goSemanaCero = (tab: SemanaTabId = 'mision') => {
     navigate(tab === 'mision' ? '/semana-cero' : `/semana-cero?tab=${tab}`)
   }
@@ -220,9 +294,60 @@ function App() {
         >
           <GraduationCap size={20} />
         </a>
-        <button type="button" className="n-quick-btn" title="Chatbot (próximamente)" disabled>
+        <button
+          type="button"
+          className="n-quick-btn"
+          title="Chatbot Semana Cero"
+          aria-expanded={chatOpen}
+          onClick={() => {
+            setChatOpen((prev) => !prev)
+            setShowChatHint(false)
+          }}
+        >
           <MessageCircle size={20} />
         </button>
+        {showChatHint && !chatOpen && <div className="n-chatbot-hint">Tienes alguna consulta?</div>}
+        {chatOpen && (
+          <div className="n-chat-panel" role="dialog" aria-label="Chatbot Semana Cero">
+            <div className="n-chat-head">
+              <strong>Asistente Semana Cero</strong>
+              <button type="button" onClick={() => setChatOpen(false)} aria-label="Cerrar chatbot">
+                <ChevronDown size={16} />
+              </button>
+            </div>
+            <div className="n-chat-sections">
+              {[
+                { id: 'inicio', label: 'Inicio' },
+                { id: 'academica', label: 'Académica' },
+                { id: 'seguridad', label: 'Seguridad' },
+                { id: 'digital', label: 'Digital' },
+                { id: 'institucional', label: 'Institucional' }
+              ].map((section) => (
+                <button
+                  key={section.id}
+                  type="button"
+                  className={chatSection === section.id ? 'active' : ''}
+                  onClick={() => setChatSection(section.id as typeof chatSection)}
+                >
+                  {section.label}
+                </button>
+              ))}
+            </div>
+            <div className="n-chat-body">
+              {chatFaq[chatSection].map((item) => (
+                <div key={item.q} className="n-chat-item">
+                  <p className="n-chat-q">{item.q}</p>
+                  <p className="n-chat-a">{item.a}</p>
+                  {'href' in item && item.href && (
+                    <a className="n-chat-link" href={item.href} target="_blank" rel="noopener noreferrer">
+                      {item.ctaLabel}
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <aside className="n-sidebar">
@@ -290,7 +415,7 @@ function App() {
 
           <div className="n-hero-text">
             <div className="n-hero-pill">
-              <span>BIENVENIDO TOMASIN@S</span>
+              <span>BIENVENIDO TOMACIN@S</span>
             </div>
 
             <h1>
@@ -302,6 +427,26 @@ function App() {
               Tu primera semana es el comienzo de algo grande.
               Explora, conéctate y descubre todo lo que tenemos para ti.
             </p>
+
+            <div className="n-ingreso-progress" aria-label="Barra de avance desde ingreso">
+              <div className="n-ingreso-progress-top">
+                <span>Ingreso estudiantes: 09/03/26</span>
+                <span>{Math.round(progressFill)}%</span>
+              </div>
+              <div className="n-ingreso-track">
+                <span style={{ width: `${progressFill}%` }} />
+              </div>
+              {showConfetti && (
+                <div className="n-fireworks-wrap" aria-hidden="true">
+                  {Array.from({ length: 4 }).map((_, idx) => (
+                    <span key={`burst-${idx}`} className={`n-firework-burst n-firework-${idx + 1}`} />
+                  ))}
+                  {Array.from({ length: 18 }).map((_, idx) => (
+                    <span key={`spark-${idx}`} className="n-firework-spark" />
+                  ))}
+                </div>
+              )}
+            </div>
 
             <div className="n-hero-actions">
               <button type="button" className="n-btn-main" onClick={() => goSemanaCero('mision')}>

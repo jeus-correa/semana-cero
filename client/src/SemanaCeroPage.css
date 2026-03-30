@@ -646,6 +646,11 @@
   text-align: center;
 }
 
+[data-theme='light'] .scp-val-card {
+  background: linear-gradient(145deg, rgba(217, 239, 229, 0.98), rgba(197, 228, 213, 0.95));
+  border-color: rgba(11, 79, 61, 0.18);
+}
+
 .scp-val-heart {
   color: #ffb8c9;
   margin-bottom: 0.35rem;
@@ -659,6 +664,10 @@
   color: #fff;
 }
 
+[data-theme='light'] .scp-val-card h3 {
+  color: #0f2c22;
+}
+
 .scp-val-badge {
   display: inline-block;
   margin-top: 0.35rem;
@@ -666,6 +675,10 @@
   font-weight: 800;
   letter-spacing: 0.06em;
   color: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme='light'] .scp-val-badge {
+  color: rgba(15, 44, 34, 0.86);
 }
 
 .scp-reg-grid {
@@ -745,6 +758,12 @@
   text-decoration: none;
 }
 
+[data-theme='light'] .scp-scard {
+  background: rgba(230, 244, 238, 0.95);
+  border-color: rgba(11, 79, 61, 0.2);
+  color: #10241d;
+}
+
 .scp-scard span {
   display: block;
   font-size: 0.78rem;
@@ -779,6 +798,12 @@
   color: #fff;
   font-size: 0.8rem;
   text-decoration: none;
+}
+
+[data-theme='light'] .scp-vid-card {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: rgba(11, 79, 61, 0.14);
+  color: #10241d;
 }
 
 .scp-vid-play {
@@ -879,6 +904,12 @@
   margin-bottom: 0.75rem;
 }
 
+[data-theme='light'] .scp-feature {
+  background: rgba(230, 244, 238, 0.95);
+  border-color: rgba(11, 79, 61, 0.22);
+  color: #10241d;
+}
+
 .scp-feature-ic {
   width: 50px;
   height: 50px;
@@ -903,6 +934,12 @@
 .scp-feature span {
   font-size: 0.82rem;
   opacity: 0.88;
+}
+
+[data-theme='light'] .scp-feature span,
+[data-theme='light'] .scp-feature strong {
+  color: #10241d;
+  opacity: 0.95;
 }
 
 .scp-comite-grid {

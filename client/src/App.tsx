@@ -202,8 +202,8 @@ function App() {
   const chatFaq = {
     inicio: [
       {
-        q: '¿Qué necesitas hoy?',
-        a: 'Elige una sección: académica, seguridad, digital o institucional. Te responderé corto y directo.'
+        q: '¡Hola! Soy Tomasin 🤖',
+        a: 'Tu asistente virtual especializado en los servicios de Santo Tomás. ¡Tu Puedes! ¿En qué puedo ayudarte hoy?'
       }
     ],
     academica: [
@@ -310,7 +310,10 @@ function App() {
         {chatOpen && (
           <div className="n-chat-panel" role="dialog" aria-label="Chatbot Semana Cero">
             <div className="n-chat-head">
-              <strong>Asistente Semana Cero</strong>
+              <div className="n-chat-head-info">
+                <strong>Tomasin Asistente</strong>
+                <span className="n-chat-slogan">#TuPuedes</span>
+              </div>
               <button type="button" onClick={() => setChatOpen(false)} aria-label="Cerrar chatbot">
                 <ChevronDown size={16} />
               </button>

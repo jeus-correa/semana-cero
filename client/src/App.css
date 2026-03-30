@@ -274,7 +274,7 @@
 }
 
 .n-chat-head {
-  padding: 0.6rem 0.7rem;
+  padding: 0.7rem 0.8rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -282,9 +282,25 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
 }
 
+.n-chat-head-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
 .n-chat-head strong {
   color: #fff;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
+  display: block;
+}
+
+.n-chat-slogan {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #22da86;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.9;
 }
 
 .n-chat-head button {
@@ -471,6 +487,10 @@
 [data-theme='light'] .n-chat-head button,
 [data-theme='light'] .n-chat-sections button {
   color: #10241d;
+}
+
+[data-theme='light'] .n-chat-slogan {
+  color: #0b6e4d;
 }
 
 [data-theme='light'] .n-chat-head button {

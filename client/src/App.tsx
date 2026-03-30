@@ -174,9 +174,9 @@ function App() {
   ]
 
   const heroSlides = [
-    'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1600&q=60',
-    'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1600&q=60',
-    'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1600&q=60'
+    '/santo-tomas-curico.jpg',
+    '/alumnos_santo_tomas.png',
+    '/Biblioteca.jpg'
   ]
 
   useEffect(() => {
@@ -514,7 +514,18 @@ function App() {
 
         <section className="n-campus-video">
           <h2>Conoce tu sede</h2>
-          <div className="n-video-box">ESPACIO PARA VIDEO INSTITUCIONAL</div>
+          <div className="n-video-box">
+            <iframe
+              width="100%"
+              height="100%"
+              src="https://www.youtube.com/embed/WWnK0FpAspM"
+              title="Conoce tu sede Santo Tomás Curicó"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              style={{ borderRadius: '12px' }}
+            ></iframe>
+          </div>
         </section>
       </main>
 
@@ -650,9 +661,9 @@ function App() {
   }
 
   const heroSlides = [
-    'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1100&q=45',
-    'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1100&q=45',
-    'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1100&q=45'
+    '/santo-tomas-curico.jpg',
+    '/alumnos_santo_tomas.png',
+    '/Biblioteca.jpg'
   ]
 
   const menuItems = [
@@ -860,7 +871,18 @@ function App() {
             <h3>CONOCE NUESTRA SEDE</h3>
             <div className="campus-media-grid">
             <div className="video-placeholder-section">
-              <div className="video-embed-placeholder">ESPACIO RESERVADO PARA VIDEO INSTITUCIONAL</div>
+            <div className="video-embed-placeholder">
+              <iframe
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/embed/WWnK0FpAspM"
+                title="Conoce tu sede Santo Tomás Curicó"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                style={{ borderRadius: '12px' }}
+              ></iframe>
+            </div>
             </div>
             </div>
             <div className="campus-360-action">

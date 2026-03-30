@@ -46,18 +46,21 @@ export function SemanaCeroPage() {
 
   const currentMeta = SEMANA_TABS.find((t) => t.id === tab)
 
-  const [visitedTabs, setVisitedTabs] = useState<Set<SemanaTabId>>(new Set())
+  const [maxIndex, setMaxIndex] = useState(() => {
+    const saved = localStorage.getItem('scp_max_index')
+    return saved ? parseInt(saved, 10) : 0
+  })
 
   useEffect(() => {
-    setVisitedTabs((prev) => {
-      if (prev.has(tab)) return prev
-      const next = new Set(prev)
-      next.add(tab)
-      return next
-    })
-  }, [tab])
+    const currentIndex = SEMANA_TABS.findIndex((t) => t.id === tab)
+    if (currentIndex > maxIndex) {
+      setMaxIndex(currentIndex)
+      localStorage.setItem('scp_max_index', currentIndex.toString())
+    }
+  }, [tab, maxIndex])
 
-  const progress = Math.round((visitedTabs.size / SEMANA_TABS.length) * 100)
+
+  const progress = Math.round(((maxIndex + 1) / SEMANA_TABS.length) * 100)
 
   return (
     <div className="scp-page">

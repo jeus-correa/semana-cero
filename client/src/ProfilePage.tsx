@@ -152,11 +152,9 @@ export function ProfilePage() {
             Crear cuentas
           </button>
         )}
-        {sessionUser.role !== 'STUDENT' && (
-          <button type="button" className={tab === 'contenidos' ? 'active' : ''} onClick={() => setTab('contenidos')}>
-            Contenidos por unidad
-          </button>
-        )}
+        <button type="button" className={tab === 'contenidos' ? 'active' : ''} onClick={() => setTab('contenidos')}>
+          Contenidos por unidad
+        </button>
       </nav>
 
       {error && <p className="pf-error">{error}</p>}
@@ -208,7 +206,6 @@ export function ProfilePage() {
             >
               <option value="ADMIN_UNIT">Admin unidad</option>
               <option value="ADMIN_GENERAL">Admin general</option>
-              <option value="STUDENT">Estudiante</option>
             </select>
             {newUser.role !== 'ADMIN_GENERAL' && (
               <select
@@ -241,7 +238,7 @@ export function ProfilePage() {
         </section>
       )}
 
-      {tab === 'contenidos' && sessionUser.role !== 'STUDENT' && (
+      {tab === 'contenidos' && (
         <section className="pf-admin">
           <form onSubmit={onCreateItem} className="pf-form">
             <h2>Subir contenido de unidad</h2>

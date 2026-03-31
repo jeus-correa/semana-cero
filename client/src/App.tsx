@@ -160,7 +160,7 @@ function App() {
     { kind: 'sello', icon: Star, label: 'Personaje Sello 2026', highlight: true },
     { kind: 'link', icon: Globe, label: 'Sede en 360', href: LINKS.sede360, external: true },
     { kind: 'link', icon: Sparkles, label: 'Conoce a Tomasín', href: LINKS.conoceTomasinGemini, external: true },
-    { kind: 'link', icon: User, label: 'Perfil / Login', href: '/login' }
+    { kind: 'link', icon: User, label: 'Acceso Docentes', href: '/login' }
   ]
 
   const serviceCards: {

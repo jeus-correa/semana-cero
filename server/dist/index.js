@@ -167,6 +167,9 @@ app.post('/api/admin/users', authRequired, requireGeneralAdmin, async (req, res)
         return res.status(400).json({ error: 'Datos inválidos para crear usuario.' });
     }
     const { email, password, fullName, role, unit } = parsed.data;
+    if (role === 'STUDENT') {
+        return res.status(400).json({ error: 'Las cuentas de estudiantes no se crean en este panel.' });
+    }
     if (role === 'ADMIN_UNIT' && !unit) {
         return res.status(400).json({ error: 'Admin de unidad debe tener una unidad asignada.' });
     }
@@ -193,7 +196,7 @@ app.get('/api/admin/users', authRequired, requireGeneralAdmin, async (_req, res)
     });
     return res.json(users);
 });
-app.get('/api/support-items', authRequired, async (req, res) => {
+app.get('/api/support-items', async (req, res) => {
     const rawUnit = req.query.unit;
     const unit = Array.isArray(rawUnit) ? rawUnit[0] : rawUnit;
     const where = typeof unit === 'string' ? { unit: unit } : undefined;

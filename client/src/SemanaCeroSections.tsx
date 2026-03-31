@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react'
 import {
   ArrowUpRight,
   BookOpen,
@@ -11,6 +12,7 @@ import {
   Target,
   Video
 } from 'lucide-react'
+import { listSupportItems, type SupportItem } from './api'
 import {
   APOYO_PDFS,
   CFT_LINKS,
@@ -56,6 +58,26 @@ const APOYO_INFO: Record<string, { detail: string; hours: string }> = {
 }
 
 export function SemanaCeroSections({ tab, onTabChange }: Props) {
+  const [dynamicSupport, setDynamicSupport] = useState<SupportItem[]>([])
+
+  useEffect(() => {
+    let active = true
+    const load = async () => {
+      try {
+        const items = await listSupportItems()
+        if (active) setDynamicSupport(items)
+      } catch {
+        if (active) setDynamicSupport([])
+      }
+    }
+    void load()
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const latestSupport = useMemo(() => dynamicSupport.slice(0, 10), [dynamicSupport])
+
   return (
     <div className="scp-panel">
       {tab === 'mision' && (
@@ -242,6 +264,24 @@ export function SemanaCeroSections({ tab, onTabChange }: Props) {
               </a>
             ))}
           </div>
+          {latestSupport.length > 0 && (
+            <>
+              <h3 className="scp-h3-inline">Contenidos cargados por docentes</h3>
+              <div className="scp-linklist">
+                {latestSupport.map((item) => (
+                  <a key={item.id} className="scp-linkrow" href={item.contentUrl} target="_blank" rel="noopener noreferrer">
+                    <div className="scp-linkrow-body">
+                      <strong>{item.title}</strong>
+                      <span>
+                        {item.unit} · {item.description}
+                      </span>
+                    </div>
+                    <ArrowUpRight size={18} aria-hidden />
+                  </a>
+                ))}
+              </div>
+            </>
+          )}
         </section>
       )}
 

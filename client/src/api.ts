@@ -112,7 +112,7 @@ export type SupportItem = {
 
 export function listSupportItems(unit?: UnitKey) {
   const qs = unit ? `?unit=${encodeURIComponent(unit)}` : ''
-  return apiFetch<SupportItem[]>(`/api/support-items${qs}`, { auth: true })
+  return apiFetch<SupportItem[]>(`/api/support-items${qs}`)
 }
 
 export function createSupportItem(payload: {

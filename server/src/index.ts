@@ -194,6 +194,9 @@ app.post('/api/admin/users', authRequired, requireGeneralAdmin, async (req: Auth
   }
 
   const { email, password, fullName, role, unit } = parsed.data
+  if (role === 'STUDENT') {
+    return res.status(400).json({ error: 'Las cuentas de estudiantes no se crean en este panel.' })
+  }
   if (role === 'ADMIN_UNIT' && !unit) {
     return res.status(400).json({ error: 'Admin de unidad debe tener una unidad asignada.' })
   }
@@ -224,7 +227,7 @@ app.get('/api/admin/users', authRequired, requireGeneralAdmin, async (_req: Auth
   return res.json(users)
 })
 
-app.get('/api/support-items', authRequired, async (req: AuthenticatedRequest, res: Response) => {
+app.get('/api/support-items', async (req: Request, res: Response) => {
   const rawUnit = req.query.unit
   const unit = Array.isArray(rawUnit) ? rawUnit[0] : rawUnit
   const where = typeof unit === 'string' ? { unit: unit as UnitKey } : undefined

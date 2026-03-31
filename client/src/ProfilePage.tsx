@@ -130,7 +130,7 @@ export function ProfilePage() {
     <main className="pf-page">
       <header className="pf-top">
         <div>
-          <h1>Perfil {sessionUser.role === 'ADMIN_GENERAL' ? 'Admin General' : 'Administrador'}</h1>
+          <h1>Panel de Gestión {sessionUser.role === 'ADMIN_GENERAL' ? 'General' : 'de Unidad'}</h1>
           <p>
             {sessionUser.fullName} · {sessionUser.email}
           </p>
@@ -161,6 +161,10 @@ export function ProfilePage() {
 
       {error && <p className="pf-error">{error}</p>}
       {ok && <p className="pf-ok">{ok}</p>}
+      <p className="pf-intro">
+        Panel profesional para gestión docente y administrativa. Usa pestañas para crear cuentas, cargar contenidos por
+        unidad y revisar información institucional.
+      </p>
 
       {tab === 'perfil' && (
         <section className="pf-grid">
@@ -168,6 +172,7 @@ export function ProfilePage() {
             <article key={unit.value} className="pf-card">
               <h3>{unit.label}</h3>
               <p>{unit.detail}</p>
+              <small>Disponible para equipos de apoyo y coordinación académica.</small>
             </article>
           ))}
         </section>
@@ -222,6 +227,7 @@ export function ProfilePage() {
 
           <div className="pf-list">
             <h2>Usuarios registrados</h2>
+            {users.length === 0 && <p className="pf-empty">No hay usuarios creados todavía.</p>}
             {users.map((u) => (
               <div key={u.id} className="pf-row">
                 <strong>{u.fullName}</strong>
@@ -272,6 +278,7 @@ export function ProfilePage() {
 
           <div className="pf-list">
             <h2>Contenidos cargados</h2>
+            {items.length === 0 && <p className="pf-empty">Aún no hay contenidos cargados para mostrar.</p>}
             {items.map((item) => (
               <div key={item.id} className="pf-row">
                 <strong>{item.title}</strong>

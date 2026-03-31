@@ -300,15 +300,20 @@
     position: fixed;
     left: 0;
     top: 0;
-    bottom: 0;
-    width: min(312px, 90vw);
+    bottom: auto;
+    height: 100svh;
+    width: min(340px, 92vw);
+    max-width: calc(100vw - max(0.5rem, env(safe-area-inset-right)));
     z-index: 200;
     max-height: none;
-    padding: 4.25rem 0.65rem 1rem 0.65rem;
+    padding: calc(4rem + env(safe-area-inset-top)) 0.65rem max(1rem, env(safe-area-inset-bottom)) 0.65rem;
     background: transparent;
-    transform: translateX(-100%);
+    transform: translate3d(-105%, 0, 0);
+    visibility: hidden;
+    pointer-events: none;
     transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     box-shadow: none;
+    will-change: transform;
   }
 
   .scp-sidebar-panel {
@@ -330,8 +335,10 @@
     box-shadow: 12px 0 40px rgba(11, 79, 61, 0.12);
   }
 
-  .scp-sidebar-open {
-    transform: translateX(0);
+  .scp-sidebar.scp-sidebar-open {
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+    pointer-events: auto;
   }
 }
 
@@ -347,8 +354,21 @@
     z-index: 150;
     background: rgba(1, 5, 4, 0.62);
     backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     border: none;
     cursor: pointer;
+    touch-action: none;
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  .scp-sidebar {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .scp-sidebar-panel {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 }
 

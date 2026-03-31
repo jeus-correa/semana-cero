@@ -20,11 +20,13 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? 'http://localhost:5173')
   .map((origin) => origin.trim())
   .filter(Boolean)
 
-function isAllowedLocalhostOrigin(origin: string) {
+function isAllowedDevOrigin(origin: string) {
   try {
     const url = new URL(origin)
-    const isLocalhost = url.hostname === 'localhost' || url.hostname === '127.0.0.1'
-    return isLocalhost
+    const host = url.hostname
+    const isLocalhost = host === 'localhost' || host === '127.0.0.1'
+    const isPrivateIp = /^192\.168\./.test(host) || /^10\./.test(host) || /^172\.(1[6-9]|2\d|3[0-1])\./.test(host)
+    return isLocalhost || isPrivateIp
   } catch {
     return false
   }
@@ -119,7 +121,7 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true)
-      if (allowedOrigins.includes(origin) || isAllowedLocalhostOrigin(origin)) return callback(null, true)
+      if (allowedOrigins.includes(origin) || isAllowedDevOrigin(origin)) return callback(null, true)
       return callback(new Error('Origen no permitido por CORS'))
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

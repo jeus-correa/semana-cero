@@ -8,11 +8,11 @@
 
 .auth-card {
   width: min(100%, 460px);
-  background: rgba(6, 20, 15, 0.9);
-  border: 1px solid rgba(67, 230, 161, 0.3);
+  background: linear-gradient(165deg, rgba(6, 20, 15, 0.94), rgba(7, 27, 20, 0.92));
+  border: 1px solid rgba(67, 230, 161, 0.25);
   border-radius: 18px;
-  padding: 1.2rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  padding: 1.25rem;
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.38);
 }
 
 .auth-brand {
@@ -30,12 +30,13 @@
 .auth-brand h1 {
   margin: 0;
   color: #fff;
-  font-size: 1.18rem;
+  font-size: 1.24rem;
+  letter-spacing: 0.01em;
 }
 
 .auth-brand p {
   margin: 0.2rem 0 0;
-  font-size: 0.85rem;
+  font-size: 0.83rem;
   color: rgba(255, 255, 255, 0.78);
 }
 
@@ -55,10 +56,15 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 10px;
-  padding: 0.55rem 0.7rem;
+  padding: 0.58rem 0.72rem;
   background: rgba(255, 255, 255, 0.04);
+}
+
+.auth-input-wrap:focus-within {
+  border-color: rgba(123, 238, 188, 0.7);
+  box-shadow: 0 0 0 3px rgba(123, 238, 188, 0.18);
 }
 
 .auth-input-wrap input {
@@ -78,6 +84,11 @@
   font-weight: 700;
   background: linear-gradient(90deg, #0d9f6c, #23da88);
   color: #fff;
+  letter-spacing: 0.01em;
+}
+
+.auth-submit:hover {
+  filter: brightness(1.06);
 }
 
 .auth-error {

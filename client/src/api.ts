@@ -1,6 +1,15 @@
 import { getToken, type SessionUser, type UnitKey, type UserRole } from './auth'
 
-const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+const API_CANDIDATES = Array.from(
+  new Set(
+    [
+      import.meta.env.VITE_API_URL,
+      `${window.location.protocol}//${window.location.hostname}:3000`,
+      'http://localhost:3000',
+      'http://127.0.0.1:3000'
+    ].filter(Boolean)
+  )
+) as string[]
 
 type ApiOptions = {
   method?: 'GET' | 'POST' | 'DELETE'
@@ -18,11 +27,25 @@ async function apiFetch<T>(path: string, options: ApiOptions = {}) {
     if (token) headers.Authorization = `Bearer ${token}`
   }
 
-  const res = await fetch(`${API_BASE}${path}`, {
-    method: options.method ?? 'GET',
-    headers,
-    body: options.body ? JSON.stringify(options.body) : undefined
-  })
+  let res: Response | null = null
+  let connected = false
+  for (const base of API_CANDIDATES) {
+    try {
+      res = await fetch(`${base}${path}`, {
+        method: options.method ?? 'GET',
+        headers,
+        body: options.body ? JSON.stringify(options.body) : undefined
+      })
+      connected = true
+      break
+    } catch {
+      // Intentar siguiente host candidato
+    }
+  }
+
+  if (!connected || !res) {
+    throw new Error('Error al conectar con el servidor. Inicia backend con: npm run server')
+  }
 
   if (!res.ok) {
     let message = 'Error de servidor'

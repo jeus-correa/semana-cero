@@ -1,7 +1,10 @@
 .pf-page {
   min-height: 100dvh;
-  padding: 1rem;
-  background: #06140f;
+  padding: clamp(0.9rem, 2vw, 1.6rem);
+  background:
+    radial-gradient(circle at 4% 4%, rgba(41, 170, 120, 0.14), transparent 28%),
+    radial-gradient(circle at 95% 95%, rgba(30, 110, 83, 0.18), transparent 30%),
+    #06140f;
   color: #fff;
 }
 
@@ -11,18 +14,24 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.85rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(123, 219, 178, 0.2);
+  background: rgba(8, 28, 20, 0.75);
 }
 
 .pf-top h1 {
   margin: 0;
   color: #fff;
-  font-size: clamp(1.2rem, 2vw, 1.6rem);
+  font-size: clamp(1.15rem, 2vw, 1.65rem);
+  letter-spacing: 0.01em;
 }
 
 .pf-top p {
   margin: 0.25rem 0 0;
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.9rem;
 }
 
 .pf-top-actions {
@@ -38,13 +47,20 @@
   border-radius: 10px;
   padding: 0.4rem 0.7rem;
   text-decoration: none;
+  font-weight: 600;
+}
+
+.pf-top-actions a:hover,
+.pf-top-actions button:hover {
+  border-color: rgba(126, 232, 186, 0.6);
+  background: rgba(126, 232, 186, 0.12);
 }
 
 .pf-tabs {
   display: flex;
   gap: 0.55rem;
   flex-wrap: wrap;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.65rem;
 }
 
 .pf-tabs button {
@@ -52,7 +68,9 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.04);
   color: #fff;
-  padding: 0.42rem 0.8rem;
+  padding: 0.48rem 0.9rem;
+  font-weight: 700;
+  font-size: 0.84rem;
 }
 
 .pf-tabs button.active {
@@ -63,7 +81,7 @@
 .pf-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-  gap: 0.75rem;
+  gap: 0.8rem;
 }
 
 .pf-card,
@@ -71,24 +89,34 @@
 .pf-list {
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.04);
-  border-radius: 14px;
-  padding: 0.85rem;
+  border-radius: 16px;
+  padding: 0.95rem;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.2);
 }
 
 .pf-card h3 {
   margin: 0 0 0.3rem;
   color: #7ee8ba;
+  font-size: 0.95rem;
 }
 
 .pf-card p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 0.84rem;
+}
+
+.pf-card small {
+  display: block;
+  margin-top: 0.45rem;
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 0.74rem;
 }
 
 .pf-admin {
   display: grid;
   grid-template-columns: 340px minmax(0, 1fr);
-  gap: 0.8rem;
+  gap: 0.9rem;
 }
 
 .pf-form {
@@ -96,11 +124,18 @@
   gap: 0.55rem;
 }
 
+.pf-form h2,
+.pf-list h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  color: #e8fff2;
+}
+
 .pf-form input,
 .pf-form select {
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 10px;
-  padding: 0.56rem 0.65rem;
+  padding: 0.6rem 0.7rem;
   background: rgba(255, 255, 255, 0.03);
   color: #fff;
 }
@@ -112,6 +147,7 @@
   color: #fff;
   padding: 0.62rem;
   font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 .pf-list {
@@ -122,9 +158,10 @@
 .pf-row {
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 10px;
-  padding: 0.62rem;
+  padding: 0.68rem;
   display: grid;
   gap: 0.2rem;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .pf-row a {
@@ -138,6 +175,19 @@
   background: rgba(240, 93, 93, 0.14);
   border-radius: 8px;
   padding: 0.25rem 0.55rem;
+}
+
+.pf-empty {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.84rem;
+}
+
+.pf-intro {
+  margin: 0 0 0.75rem;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.86rem;
+  line-height: 1.5;
 }
 
 .pf-error,

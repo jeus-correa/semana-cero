@@ -21,6 +21,16 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? 'http://localhost:5173')
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean);
+function isAllowedLocalhostOrigin(origin) {
+    try {
+        const url = new URL(origin);
+        const isLocalhost = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+        return isLocalhost;
+    }
+    catch {
+        return false;
+    }
+}
 const safeUserSelect = {
     id: true,
     email: true,
@@ -91,7 +101,7 @@ app.use((0, cors_1.default)({
     origin: (origin, callback) => {
         if (!origin)
             return callback(null, true);
-        if (allowedOrigins.includes(origin))
+        if (allowedOrigins.includes(origin) || isAllowedLocalhostOrigin(origin))
             return callback(null, true);
         return callback(new Error('Origen no permitido por CORS'));
     },

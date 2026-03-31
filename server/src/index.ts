@@ -119,13 +119,9 @@ app.use(
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true)
-      if (allowedOrigins.includes(origin) || isAllowedDevOrigin(origin)) return callback(null, true)
-      return callback(new Error('Origen no permitido por CORS'))
-    },
+    origin: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    credentials: false
+    credentials: true
   })
 )
 
@@ -143,6 +139,11 @@ const apiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Límite de peticiones API alcanzado, intenta más tarde.' }
+})
+
+app.use((req, res, next) => {
+  console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.path}`)
+  next()
 })
 
 app.use(globalLimiter)
@@ -288,5 +289,5 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 })
 
 app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`)
+  console.log(`Server is running at http://127.0.0.1:${port}`)
 })

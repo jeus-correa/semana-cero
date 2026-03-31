@@ -850,7 +850,12 @@
   border: 1px solid rgba(120, 200, 255, 0.22);
   color: #fff;
   text-decoration: none;
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  transition: 
+    transform 0.3s ease-out, 
+    background 0.35s ease-in-out, 
+    color 0.25s ease-in-out,
+    border-color 0.25s ease-in-out,
+    box-shadow 0.3s ease-out;
 }
 
 [data-theme='light'] .scp-scard {
@@ -876,9 +881,23 @@
 
 .scp-scard:hover,
 .scp-scard:focus-visible {
-  transform: translateY(-2px) scale(1.01);
-  border-color: rgba(62, 207, 142, 0.52);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+  transform: translateY(-4px);
+  border-color: rgba(62, 207, 142, 0.6);
+  background: rgba(14, 52, 42, 0.9);
+  color: #fff;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme='light'] .scp-scard:hover,
+[data-theme='light'] .scp-scard:focus-visible {
+  background: #0b4f3d;
+  color: #fff !important;
+  border-color: #1a7c5b;
+}
+
+[data-theme='light'] .scp-scard:hover * {
+  color: #fff !important;
+  opacity: 1;
 }
 
 .scp-scard:hover .scp-scard-meta,

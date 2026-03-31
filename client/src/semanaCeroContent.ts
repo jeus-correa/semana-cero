@@ -10,6 +10,7 @@ export const LINKS = {
   cft: 'https://www.cftsantotomas.cl/',
   ip: 'https://www.ipsantotomas.cl/',
   sede360: 'https://storage.net-fs.com/hosting/6520281/118/',
+  conoceTomasinGemini: 'https://gemini.google.com/gem/7d22f9f82e12/b72da718780f6c73?usp=sharing',
   personajeSelloImg: 'https://i.imgur.com/0RRUTf8.jpeg',
   segurosDae: 'https://www.daesantotomas.cl/apoyo-estudiantil/seguros-para-estudiantes/',
   recuperaClave: 'https://recuperatuclave.santotomas.cl/',

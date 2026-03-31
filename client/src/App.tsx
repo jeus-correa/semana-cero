@@ -16,6 +16,7 @@ import {
   Moon,
   Route,
   Shield,
+  Sparkles,
   Star,
   Sun
 } from 'lucide-react'
@@ -156,7 +157,8 @@ function App() {
     { kind: 'link', icon: BookOpen, label: 'Libro Tú Puedes', href: LINKS.libroTuPuedes, external: true },
     { kind: 'link', icon: Library, label: 'Biblioteca Virtual', href: LINKS.bibliotecaVirtual, external: true },
     { kind: 'sello', icon: Star, label: 'Personaje Sello 2026', highlight: true },
-    { kind: 'link', icon: Globe, label: 'Sede en 360', href: LINKS.sede360, external: true }
+    { kind: 'link', icon: Globe, label: 'Sede en 360', href: LINKS.sede360, external: true },
+    { kind: 'link', icon: Sparkles, label: 'Conoce a Tomasín', href: LINKS.conoceTomasinGemini, external: true }
   ]
 
   const serviceCards: {

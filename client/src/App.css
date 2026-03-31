@@ -1,4 +1,4 @@
-.n-loader-screen {
+ .n-loader-screen {
   min-height: 100vh;
   min-height: 100dvh;
   display: grid;
@@ -2526,6 +2526,89 @@ section {
   .link-item {
     width: 44px;
     height: 44px;
+  }
+}
+
+/* Global responsive hardening */
+.n-dashboard,
+.n-content,
+.n-landing {
+  min-width: 0;
+}
+
+.n-content,
+.n-landing,
+.n-service-copy,
+.n-mv-card,
+.n-chat-item {
+  overflow-wrap: anywhere;
+}
+
+.n-video-box {
+  width: 100%;
+  max-width: 100%;
+}
+
+.n-video-box iframe {
+  width: 100%;
+  min-height: clamp(220px, 45vw, 420px);
+}
+
+@media (max-width: 1024px) {
+  .n-content {
+    padding-inline: max(0.8rem, env(safe-area-inset-left)) max(0.8rem, env(safe-area-inset-right));
+  }
+
+  .n-hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .n-hero-actions .n-btn-main,
+  .n-hero-actions .n-btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .n-chat-panel {
+    right: max(0.55rem, env(safe-area-inset-right));
+    left: max(0.55rem, env(safe-area-inset-left));
+    width: auto;
+    max-height: min(72dvh, 520px);
+  }
+
+  .n-quick-rail {
+    right: max(0.55rem, env(safe-area-inset-right));
+  }
+}
+
+@media (max-width: 560px) {
+  .n-hero-text h1 {
+    line-height: 1.08;
+  }
+
+  .n-service-card-btn {
+    grid-template-columns: auto 1fr;
+  }
+
+  .n-service-card-btn > svg:last-child {
+    display: none;
+  }
+}
+
+@media (min-width: 1600px) {
+  .n-content {
+    max-width: 1540px;
+    margin-inline: auto;
+  }
+}
+
+@media (min-width: 2560px) {
+  .n-content {
+    max-width: 1800px;
   }
 }
 

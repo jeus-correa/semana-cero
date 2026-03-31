@@ -14,6 +14,9 @@ function isSemanaTabId(v: string | null): v is SemanaTabId {
 export function SemanaCeroPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [navOpen, setNavOpen] = useState(false)
+  const [isMobileLayout, setIsMobileLayout] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches
+  )
 
   const tabFromUrl = searchParams.get('tab')
   const tab: SemanaTabId = useMemo(
@@ -39,6 +42,27 @@ export function SemanaCeroPage() {
     }
   }, [])
 
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 1023px)')
+    const onChange = () => setIsMobileLayout(mq.matches)
+    onChange()
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+
+  useEffect(() => {
+    if (!isMobileLayout && navOpen) setNavOpen(false)
+  }, [isMobileLayout, navOpen])
+
+  useEffect(() => {
+    if (!isMobileLayout) return
+    const prevOverflow = document.body.style.overflow
+    if (navOpen) document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prevOverflow
+    }
+  }, [isMobileLayout, navOpen])
+
   const setTab = (id: SemanaTabId) => {
     setSearchParams({ tab: id }, { replace: true })
     setNavOpen(false)
@@ -63,7 +87,7 @@ export function SemanaCeroPage() {
   const progress = Math.round(((maxIndex + 1) / SEMANA_TABS.length) * 100)
 
   return (
-    <div className="scp-page">
+    <div className={`scp-page ${navOpen ? 'scp-nav-open' : ''}`}>
       <header className="scp-topbar">
         <div className="scp-topbar-inner">
           <Link to="/" className="scp-back">
@@ -85,6 +109,7 @@ export function SemanaCeroPage() {
               className="scp-icon-btn scp-only-mobile"
               aria-label={navOpen ? 'Cerrar menú de secciones' : 'Abrir menú de secciones'}
               aria-expanded={navOpen}
+              aria-controls="scp-sections-menu"
               onClick={() => setNavOpen((v) => !v)}
             >
               <Menu size={20} />
@@ -112,7 +137,7 @@ export function SemanaCeroPage() {
 
       <div className="scp-layout">
         <aside className={`scp-sidebar ${navOpen ? 'scp-sidebar-open' : ''}`}>
-          <div className="scp-sidebar-panel">
+          <div className="scp-sidebar-panel" id="scp-sections-menu">
             <div className="scp-sidebar-head">
               <p className="scp-sidebar-eyebrow">Contenidos</p>
               <p className="scp-sidebar-title">Selecciona una sección</p>

@@ -40,6 +40,12 @@
   color-scheme: light;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html {
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
@@ -61,6 +67,44 @@ body {
   background-color: var(--bg-dark);
   color: var(--text-primary);
   overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas,
+iframe {
+  max-width: 100%;
+}
+
+iframe {
+  border: 0;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+@media (max-width: 420px) {
+  html,
+  body {
+    min-width: 320px;
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    font-size: 17px;
+  }
+}
+
+@media (min-width: 2560px) {
+  :root {
+    font-size: 18px;
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {

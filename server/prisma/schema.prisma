@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  ADMIN_UNIT
+  ADMIN_GENERAL
+}
+
+enum UnitKey {
+  BIBLIOTECA
+  DAE
+  CENTRO_APRENDIZAJE
+  REGISTRO_CURRICULAR
+  DAO
+  SOPORTE_INFORMATICA
+  FORMACION
+  FORMACION_DOCENTE
+  COMO_IMPRIMIR
+}
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  passwordHash String
+  fullName     String
+  role         Role         @default(STUDENT)
+  unit         UnitKey?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  contents     SupportItem[] @relation("CreatedBy")
+}
+
+model SupportItem {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  contentUrl  String
+  unit        UnitKey
+  createdById String
+  createdBy   User      @relation("CreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}

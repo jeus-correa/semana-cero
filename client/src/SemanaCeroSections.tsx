@@ -40,6 +40,21 @@ type Props = {
   onTabChange: (id: SemanaTabId) => void
 }
 
+const APOYO_INFO: Record<string, { detail: string; hours: string }> = {
+  Biblioteca: { detail: 'Atención y apoyo bibliográfico para estudiantes.', hours: '08:00 a 23:00 horas' },
+  DAE: { detail: 'Atendido por equipo DAE para orientación y beneficios.', hours: '08:00 a 23:00 horas' },
+  'Centro de Aprendizaje': { detail: 'Tutorías y reforzamiento académico personalizado.', hours: '08:00 a 23:00 horas' },
+  'Registro Curricular': { detail: 'Gestión de documentos y procesos curriculares.', hours: '08:00 a 23:00 horas' },
+  DAO: { detail: 'Apoyo financiero, aranceles y convenios de pago.', hours: '08:00 a 23:00 horas' },
+  'Soporte de Informática': {
+    detail: 'Informática atendido por Maikel, Javier y Sebastián.',
+    hours: '08:00 a 23:00 horas'
+  },
+  Formación: { detail: 'Acompañamiento institucional y contenidos formativos.', hours: '08:00 a 23:00 horas' },
+  'Formación Docente': { detail: 'Soporte para desarrollo docente y recursos.', hours: '08:00 a 23:00 horas' },
+  'Cómo imprimir': { detail: 'Guía de impresión y uso de equipos de sede.', hours: '08:00 a 23:00 horas' }
+}
+
 export function SemanaCeroSections({ tab, onTabChange }: Props) {
   return (
     <div className="scp-panel">
@@ -217,6 +232,11 @@ export function SemanaCeroSections({ tab, onTabChange }: Props) {
                 <div>
                   <strong>{item.title}</strong>
                   <span>{item.subtitle}</span>
+                  <span className="scp-scard-meta">
+                    {APOYO_INFO[item.title]?.detail ?? 'Información de la unidad.'} ·{' '}
+                    {APOYO_INFO[item.title]?.hours ?? 'Horario por confirmar'}
+                  </span>
+                  <span className="scp-scard-link">¿Quieres ver los contenidos? Abrir ahora</span>
                 </div>
                 <ExternalLink size={16} />
               </a>

@@ -1,0 +1,164 @@
+.pf-page {
+  min-height: 100dvh;
+  padding: 1rem;
+  background: #06140f;
+  color: #fff;
+}
+
+.pf-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.pf-top h1 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+}
+
+.pf-top p {
+  margin: 0.25rem 0 0;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.pf-top-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.pf-top-actions a,
+.pf-top-actions button {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 0.4rem 0.7rem;
+  text-decoration: none;
+}
+
+.pf-tabs {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.8rem;
+}
+
+.pf-tabs button {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  padding: 0.42rem 0.8rem;
+}
+
+.pf-tabs button.active {
+  background: #17a96f;
+  border-color: #17a96f;
+}
+
+.pf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 0.75rem;
+}
+
+.pf-card,
+.pf-form,
+.pf-list {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+  padding: 0.85rem;
+}
+
+.pf-card h3 {
+  margin: 0 0 0.3rem;
+  color: #7ee8ba;
+}
+
+.pf-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.pf-admin {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 0.8rem;
+}
+
+.pf-form {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.pf-form input,
+.pf-form select {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 0.56rem 0.65rem;
+  background: rgba(255, 255, 255, 0.03);
+  color: #fff;
+}
+
+.pf-form button {
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #17a96f, #29da89);
+  color: #fff;
+  padding: 0.62rem;
+  font-weight: 700;
+}
+
+.pf-list {
+  display: grid;
+  gap: 0.52rem;
+}
+
+.pf-row {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 0.62rem;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.pf-row a {
+  color: #8beac2;
+}
+
+.pf-delete {
+  justify-self: start;
+  border: 1px solid rgba(240, 93, 93, 0.6);
+  color: #ffb0b0;
+  background: rgba(240, 93, 93, 0.14);
+  border-radius: 8px;
+  padding: 0.25rem 0.55rem;
+}
+
+.pf-error,
+.pf-ok {
+  border-radius: 10px;
+  padding: 0.45rem 0.65rem;
+  margin: 0 0 0.75rem;
+}
+
+.pf-error {
+  background: rgba(230, 72, 72, 0.18);
+  border: 1px solid rgba(230, 72, 72, 0.35);
+}
+
+.pf-ok {
+  background: rgba(39, 205, 132, 0.18);
+  border: 1px solid rgba(39, 205, 132, 0.35);
+}
+
+@media (max-width: 980px) {
+  .pf-admin {
+    grid-template-columns: 1fr;
+  }
+}

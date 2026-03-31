@@ -6,6 +6,9 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev --name init",
+    "prisma:seed": "ts-node src/seed.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,18 +16,25 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@prisma/client": "^6.6.0",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "express-rate-limit": "^8.3.2",
     "helmet": "^8.1.0",
-    "web_semana-cero": "file:.."
+    "jsonwebtoken": "^9.0.2",
+    "web_semana-cero": "file:..",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.5.0",
     "nodemon": "^3.1.14",
+    "prisma": "^6.6.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.2"
   }

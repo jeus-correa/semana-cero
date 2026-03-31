@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   ArrowUpRight,
   BookOpen,
+  ChevronDown,
   ExternalLink,
   Flag,
   GraduationCap,
@@ -59,6 +60,7 @@ const APOYO_INFO: Record<string, { detail: string; hours: string }> = {
 
 export function SemanaCeroSections({ tab, onTabChange }: Props) {
   const [dynamicSupport, setDynamicSupport] = useState<SupportItem[]>([])
+  const [openSupportCard, setOpenSupportCard] = useState<string | null>(null)
 
   useEffect(() => {
     let active = true
@@ -249,19 +251,30 @@ export function SemanaCeroSections({ tab, onTabChange }: Props) {
           <p className="scp-lead">Selecciona el apartado que necesitas y abre su PDF directo.</p>
           <div className="scp-cards">
             {APOYO_PDFS.map((item) => (
-              <a key={item.title} className="scp-scard" href={item.href} target="_blank" rel="noopener noreferrer">
-                <GraduationCap size={22} />
-                <div>
-                  <strong>{item.title}</strong>
-                  <span>{item.subtitle}</span>
+              <article key={item.title} className={`scp-scard scp-scard-expand ${openSupportCard === item.title ? 'is-open' : ''}`}>
+                <button
+                  type="button"
+                  className="scp-scard-head"
+                  onClick={() => setOpenSupportCard((prev) => (prev === item.title ? null : item.title))}
+                  aria-expanded={openSupportCard === item.title}
+                >
+                  <GraduationCap size={22} />
+                  <div>
+                    <strong>{item.title}</strong>
+                    <span>{item.subtitle}</span>
+                  </div>
+                  <ChevronDown size={16} className="scp-scard-chevron" />
+                </button>
+                <div className="scp-scard-body">
                   <span className="scp-scard-meta">
                     {APOYO_INFO[item.title]?.detail ?? 'Información de la unidad.'} ·{' '}
                     {APOYO_INFO[item.title]?.hours ?? 'Horario por confirmar'}
                   </span>
-                  <span className="scp-scard-link">¿Quieres ver los contenidos? Abrir ahora</span>
+                  <a className="scp-scard-link" href={item.href} target="_blank" rel="noopener noreferrer">
+                    ¿Quieres ver los contenidos? Abrir ahora <ExternalLink size={14} />
+                  </a>
                 </div>
-                <ExternalLink size={16} />
-              </a>
+              </article>
             ))}
           </div>
           {latestSupport.length > 0 && (

@@ -841,21 +841,18 @@
 }
 
 .scp-scard {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.9rem 1rem;
+  display: block;
+  padding: 0.75rem 0.85rem;
   border-radius: 14px;
   background: rgba(2, 108, 158, 0.22);
   border: 1px solid rgba(120, 200, 255, 0.22);
   color: #fff;
   text-decoration: none;
-  transition: 
-    transform 0.3s ease-out, 
-    background 0.35s ease-in-out, 
-    color 0.25s ease-in-out,
-    border-color 0.25s ease-in-out,
-    box-shadow 0.3s ease-out;
+  transition:
+    transform 0.45s ease,
+    background 0.45s ease,
+    border-color 0.45s ease,
+    box-shadow 0.45s ease;
 }
 
 [data-theme='light'] .scp-scard {
@@ -870,47 +867,77 @@
   opacity: 0.9;
 }
 
-.scp-scard .scp-scard-meta,
-.scp-scard .scp-scard-link {
+.scp-scard-head {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+.scp-scard-head > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.scp-scard-chevron {
+  transition: transform 0.45s ease;
+}
+
+.scp-scard-body {
   max-height: 0;
   opacity: 0;
   overflow: hidden;
-  transform: translateY(-4px);
-  transition: max-height 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
+  transform: translateY(-2px);
+  transition:
+    max-height 0.55s ease,
+    opacity 0.45s ease,
+    transform 0.45s ease;
 }
 
+.scp-scard.spc-hover,
 .scp-scard:hover,
-.scp-scard:focus-visible {
-  transform: translateY(-4px);
+.scp-scard.is-open {
+  transform: translateY(-2px);
   border-color: rgba(62, 207, 142, 0.6);
   background: rgba(14, 52, 42, 0.9);
   color: #fff;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme='light'] .scp-scard:hover,
-[data-theme='light'] .scp-scard:focus-visible {
+[data-theme='light'] .scp-scard.is-open {
   background: #0b4f3d;
   color: #fff !important;
   border-color: #1a7c5b;
 }
 
-[data-theme='light'] .scp-scard:hover * {
+[data-theme='light'] .scp-scard:hover *,
+[data-theme='light'] .scp-scard.is-open * {
   color: #fff !important;
   opacity: 1;
 }
 
-.scp-scard:hover .scp-scard-meta,
-.scp-scard:hover .scp-scard-link,
-.scp-scard:focus-visible .scp-scard-meta,
-.scp-scard:focus-visible .scp-scard-link {
-  max-height: 88px;
+.scp-scard.is-open .scp-scard-body {
+  max-height: 140px;
   opacity: 0.95;
   transform: translateY(0);
-  margin-top: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.scp-scard.is-open .scp-scard-chevron {
+  transform: rotate(180deg);
 }
 
 .scp-scard .scp-scard-link {
+  margin-top: 0.45rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   font-weight: 700;
   text-decoration: underline;
 }

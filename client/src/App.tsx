@@ -1,9 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import type { LucideIcon } from 'lucide-react'
 import {
   BookOpen,
-  Camera,
   ChevronRight,
   ChevronDown,
   Globe,
@@ -25,6 +23,28 @@ import './App.css'
 import { LINKS, type SemanaTabId } from './semanaCeroContent'
 
 let visitIncrementedThisLoad = false
+const FALLBACK_HERO_SLIDES = ['/santo-tomas-curico.jpg', '/biblioteca--0.jpg', '/estudiantes--a.png'] as const
+
+function sanitizeExternalHref(href: string) {
+  try {
+    const url = new URL(href, window.location.origin)
+    if (url.protocol === 'http:' || url.protocol === 'https:' || url.protocol === 'mailto:' || url.protocol === 'tel:') {
+      return url.toString()
+    }
+  } catch {
+    return '#'
+  }
+  return '#'
+}
+
+function canLoadImage(src: string) {
+  return new Promise<boolean>((resolve) => {
+    const img = new Image()
+    img.onload = () => resolve(true)
+    img.onerror = () => resolve(false)
+    img.src = src
+  })
+}
 
 function App() {
   const navigate = useNavigate()
@@ -42,6 +62,9 @@ function App() {
   )
   const [progressFill, setProgressFill] = useState(0)
   const [showConfetti, setShowConfetti] = useState(false)
+  const [heroSlides, setHeroSlides] = useState<string[]>([...FALLBACK_HERO_SLIDES])
+  const [campusVideoActive, setCampusVideoActive] = useState(false)
+  const campusVideoSectionRef = useRef<HTMLElement | null>(null)
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme === 'dark' || savedTheme === 'light') return savedTheme
@@ -74,7 +97,7 @@ function App() {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
     }, 9000)
     return () => clearInterval(interval)
-  }, [])
+  }, [heroSlides.length])
 
   useEffect(() => {
     const initialTimer = window.setTimeout(() => {
@@ -124,8 +147,8 @@ function App() {
   }, [isMobileLayout, isMenuOpen])
 
   type MenuRow =
-    | { kind: 'link'; icon: LucideIcon; label: string; href: string; external?: boolean; highlight?: boolean }
-    | { kind: 'sello'; icon: LucideIcon; label: string; highlight?: boolean }
+    | { kind: 'link'; icon: any; label: string; href: string; external?: boolean; highlight?: boolean }
+    | { kind: 'sello'; icon: any; label: string; highlight?: boolean }
 
   const menuItems: MenuRow[] = [
     { kind: 'link', icon: Laptop, label: 'Aulas Virtuales', href: LINKS.aulasVirtuales, external: true },
@@ -137,7 +160,7 @@ function App() {
   ]
 
   const serviceCards: {
-    icon: LucideIcon
+    icon: any
     title: string
     desc: string
     tab: SemanaTabId
@@ -179,11 +202,36 @@ function App() {
     }
   ]
 
-  const heroSlides = [
-    '/santo-tomas-curico.jpg',
-    '/alumnos_santo_tomas.png',
-    '/Biblioteca.jpg'
-  ]
+  useEffect(() => {
+    let isMounted = true
+    const requestedSlides = ['/santo-tomas-curico.jpg', '/biblioteca--0.jpg', '/estudiantes--a.png']
+
+    const resolveSlides = async () => {
+      const checks = await Promise.all(requestedSlides.map((slide) => canLoadImage(slide)))
+      const safeSlides = requestedSlides.map((slide, idx) => (checks[idx] ? slide : FALLBACK_HERO_SLIDES[idx]))
+      if (isMounted) setHeroSlides(safeSlides)
+    }
+
+    void resolveSlides()
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  useEffect(() => {
+    const section = campusVideoSectionRef.current
+    if (!section) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setCampusVideoActive(entry.isIntersecting)
+      },
+      { threshold: 0.55 }
+    )
+
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const durationMs = 9000
@@ -220,7 +268,8 @@ function App() {
     seguridad: [
       { q: 'Vías de evacuación', a: 'Revisa la sección "Vías de evacuación" en Semana Cero para videos por piso y salida.' },
       { q: '¿Cómo denuncio una situación?', a: 'Puedes usar el canal oficial confidencial.', ctaLabel: 'Ir a canal de denuncias', href: LINKS.canalDenuncias },
-      { q: '¿Dónde veo seguros estudiantiles?', a: 'La información está en DAE.', ctaLabel: 'Ver seguros DAE', href: LINKS.segurosDae }
+      { q: '¿Dónde veo seguros estudiantiles?', a: 'La información está en DAE.', ctaLabel: 'Ver seguros DAE', href: LINKS.segurosDae },
+      { q: 'Números de emergencia', a: 'Salud responsable: *7100 · Carabineros: 133 · SAMU: 131.' }
     ],
     digital: [
       { q: '¿Tu clave se puede cambiar?', a: 'Sí, se puede cambiar aquí.', ctaLabel: 'Cambiar clave', href: LINKS.actualizaClave },
@@ -275,25 +324,20 @@ function App() {
       <div className="n-quick-rail" aria-label="Accesos rápidos">
         <a
           className="n-quick-btn"
-          href={LINKS.instagramCurico}
+          href={sanitizeExternalHref(LINKS.instagramCurico)}
           target="_blank"
           rel="noopener noreferrer"
           title="Instagram Sede Curicó"
         >
-          <Camera size={20} />
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5" ry="5" fill="none" stroke="currentColor" strokeWidth="2" />
+            <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
+            <circle cx="17.3" cy="6.7" r="1.2" fill="currentColor" />
+          </svg>
         </a>
         <a
           className="n-quick-btn"
-          href={LINKS.cft}
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Centro de Formación Técnica Santo Tomás"
-        >
-          <ChevronRight size={20} />
-        </a>
-        <a
-          className="n-quick-btn"
-          href={LINKS.ip}
+          href={sanitizeExternalHref(LINKS.ip)}
           target="_blank"
           rel="noopener noreferrer"
           title="Instituto Profesional Santo Tomás"
@@ -348,7 +392,7 @@ function App() {
                   <p className="n-chat-q">{item.q}</p>
                   <p className="n-chat-a">{item.a}</p>
                   {'href' in item && item.href && (
-                    <a className="n-chat-link" href={item.href} target="_blank" rel="noopener noreferrer">
+                    <a className="n-chat-link" href={sanitizeExternalHref(item.href)} target="_blank" rel="noopener noreferrer">
                       {item.ctaLabel}
                     </a>
                   )}
@@ -394,7 +438,7 @@ function App() {
             return (
               <a
                 key={item.label}
-                href={item.href}
+                href={sanitizeExternalHref(item.href)}
                 className={item.highlight ? 'highlight' : ''}
                 target={item.external ? '_blank' : undefined}
                 rel={item.external ? 'noopener noreferrer' : undefined}
@@ -468,7 +512,7 @@ function App() {
               </button>
               <a
                 className="n-btn-secondary"
-                href={LINKS.sede360}
+                href={sanitizeExternalHref(LINKS.sede360)}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -526,13 +570,15 @@ function App() {
           </div>
         </section>
 
-        <section className="n-campus-video">
+        <section className="n-campus-video" ref={campusVideoSectionRef}>
           <h2>Conoce tu sede</h2>
           <div className="n-video-box">
             <iframe
               width="100%"
               height="100%"
-              src="https://www.youtube.com/embed/WWnK0FpAspM"
+              src={`https://www.youtube.com/embed/WWnK0FpAspM?rel=0&modestbranding=1&playsinline=1&mute=1${
+                campusVideoActive ? '&autoplay=1' : ''
+              }`}
               title="Conoce tu sede Santo Tomás Curicó"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

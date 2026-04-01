@@ -131,6 +131,13 @@
   color: #e8fff2;
 }
 
+.pf-form-hint {
+  margin: 0 0 0.35rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.65);
+}
+
 .pf-form input,
 .pf-form select {
   border: 1px solid rgba(255, 255, 255, 0.2);

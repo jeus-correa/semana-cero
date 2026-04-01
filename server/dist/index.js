@@ -100,15 +100,9 @@ app.use((0, helmet_1.default)({
     crossOriginResourcePolicy: { policy: 'cross-origin' }
 }));
 app.use((0, cors_1.default)({
-    origin: (origin, callback) => {
-        if (!origin)
-            return callback(null, true);
-        if (allowedOrigins.includes(origin) || isAllowedDevOrigin(origin))
-            return callback(null, true);
-        return callback(new Error('Origen no permitido por CORS'));
-    },
+    origin: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    credentials: false
+    credentials: true
 }));
 const globalLimiter = (0, express_rate_limit_1.rateLimit)({
     windowMs: 15 * 60 * 1000,
@@ -123,6 +117,10 @@ const apiLimiter = (0, express_rate_limit_1.rateLimit)({
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: 'Límite de peticiones API alcanzado, intenta más tarde.' }
+});
+app.use((req, res, next) => {
+    console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.path}`);
+    next();
 });
 app.use(globalLimiter);
 app.use(express_1.default.json({ limit: '200kb' }));
@@ -247,6 +245,6 @@ app.use((err, _req, res, _next) => {
     }
     return res.status(500).json({ error: 'Error interno del servidor.' });
 });
-app.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+    console.log(`API escuchando en http://127.0.0.1:${port} (también LAN en :${port})`);
 });

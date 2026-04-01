@@ -86,8 +86,8 @@ export function ProfilePage() {
     setOk('')
     try {
       await createUser({
-        fullName: newUser.fullName,
-        email: newUser.email,
+        fullName: newUser.fullName.trim(),
+        email: newUser.email.trim(),
         password: newUser.password,
         role: newUser.role,
         unit: newUser.role === 'ADMIN_GENERAL' ? null : newUser.unit
@@ -180,6 +180,10 @@ export function ProfilePage() {
         <section className="pf-admin">
           <form onSubmit={onCreateUser} className="pf-form">
             <h2>Crear usuario nuevo</h2>
+            <p className="pf-form-hint">
+              Solo administradores generales pueden dar de alta cuentas aquí (no hay página de «registro» público).
+              Contraseña mínimo 6 caracteres; nombre completo mínimo 3.
+            </p>
             <input
               value={newUser.fullName}
               onChange={(e) => setNewUser((prev) => ({ ...prev, fullName: e.target.value }))}

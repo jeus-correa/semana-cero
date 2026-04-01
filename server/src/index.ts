@@ -288,6 +288,6 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   return res.status(500).json({ error: 'Error interno del servidor.' })
 })
 
-app.listen(port, () => {
-  console.log(`Server is running at http://127.0.0.1:${port}`)
+app.listen(port, '0.0.0.0', () => {
+  console.log(`API escuchando en http://127.0.0.1:${port} (también LAN en :${port})`)
 })

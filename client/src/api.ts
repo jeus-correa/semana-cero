@@ -1,15 +1,29 @@
 import { getToken, type SessionUser, type UnitKey, type UserRole } from './auth'
 
-const API_CANDIDATES = Array.from(
-  new Set(
-    [
-      import.meta.env.VITE_API_URL,
-      `${window.location.protocol}//${window.location.hostname}:3000`,
-      'http://localhost:3000',
-      'http://127.0.0.1:3000'
-    ].filter(Boolean)
-  )
-) as string[]
+/** Si abres Vite por IP (ej. iPhone en la misma red), VITE_API_URL=localhost apunta al dispositivo equivocado; priorizamos el mismo host que la página. */
+function buildApiCandidates(): string[] {
+  const proto = window.location.protocol
+  const host = window.location.hostname
+  const sameHost = `${proto}//${host}:3000`
+  const vite = import.meta.env.VITE_API_URL as string | undefined
+  const viteIsLocal =
+    vite &&
+    (vite.includes('localhost') || vite.includes('127.0.0.1'))
+  const onLoopback = host === 'localhost' || host === '127.0.0.1'
+
+  const list: string[] = []
+  if (!onLoopback) {
+    list.push(sameHost)
+    if (vite && !viteIsLocal) list.push(vite)
+  } else {
+    if (vite) list.push(vite)
+    list.push(sameHost)
+  }
+  list.push('http://localhost:3000', 'http://127.0.0.1:3000')
+  return Array.from(new Set(list.filter(Boolean)))
+}
+
+const API_CANDIDATES = buildApiCandidates()
 
 type ApiOptions = {
   method?: 'GET' | 'POST' | 'DELETE'

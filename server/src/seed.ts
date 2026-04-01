@@ -11,7 +11,7 @@ async function main() {
     return
   }
 
-  const passwordHash = await bcrypt.hash('Admin12345!', 12)
+  const passwordHash = await bcrypt.hash('admin123', 12)
 
   await prisma.user.create({
     data: {
@@ -22,7 +22,7 @@ async function main() {
     }
   })
 
-  console.log('Admin creado: admin@santotomas.cl / Admin12345!')
+  console.log('Admin creado: admin@santotomas.cl / admin123')
 }
 
 main()

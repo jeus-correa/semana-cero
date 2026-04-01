@@ -17,7 +17,7 @@ export function LoginPage() {
     setError('')
     setLoading(true)
     try {
-      const data = await login(email, password)
+      const data = await login(email.trim(), password)
       saveSession(data.token, data.user)
       navigate('/perfil')
     } catch (err) {
@@ -78,7 +78,10 @@ export function LoginPage() {
 
         <div className="auth-footer">
           <Link to="/">Volver al inicio</Link>
-          <span>Creación de cuentas solo disponible para admin general.</span>
+          <span>
+            No hay registro automático: si aún no tienes cuenta, un administrador general debe crearla desde el panel
+            (pestaña «Crear cuentas») y luego podrás entrar aquí con ese correo y contraseña.
+          </span>
         </div>
       </section>
     </main>

@@ -251,7 +251,12 @@ export function SemanaCeroSections({ tab, onTabChange }: Props) {
           <p className="scp-lead">Selecciona el apartado que necesitas y abre su PDF directo.</p>
           <div className="scp-cards">
             {APOYO_PDFS.map((item) => (
-              <article key={item.title} className={`scp-scard scp-scard-expand ${openSupportCard === item.title ? 'is-open' : ''}`}>
+              <article
+                key={item.title}
+                className={`scp-scard scp-scard-expand ${openSupportCard === item.title ? 'is-open' : ''}`}
+                onMouseEnter={() => setOpenSupportCard(item.title)}
+                onMouseLeave={() => setOpenSupportCard((prev) => (prev === item.title ? null : prev))}
+              >
                 <button
                   type="button"
                   className="scp-scard-head"

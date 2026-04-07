@@ -5,6 +5,7 @@ import {
   ChevronDown,
   ExternalLink,
   Flag,
+  Globe,
   GraduationCap,
   Heart,
   Mail,
@@ -15,6 +16,11 @@ import {
 } from 'lucide-react'
 import { listSupportItems, type SupportItem } from './api'
 import {
+  ACADEMIC_CFT_BLOCKS,
+  ACADEMIC_CFT_CARRERAS_PDFS,
+  ACADEMIC_IP_CARRERAS,
+  ACADEMIC_LIM,
+  ACADEMIC_PRACTICA_TITULOS,
   APOYO_PDFS,
   CFT_LINKS,
   COMITE_CURICO,
@@ -54,13 +60,13 @@ const APOYO_INFO: Record<string, { detail: string; hours: string }> = {
     hours: '08:00 a 23:00 horas'
   },
   Formación: { detail: 'Acompañamiento institucional y contenidos formativos.', hours: '08:00 a 23:00 horas' },
-  'Formación Docente': { detail: 'Soporte para desarrollo docente y recursos.', hours: '08:00 a 23:00 horas' },
   'Cómo imprimir': { detail: 'Guía de impresión y uso de equipos de sede.', hours: '08:00 a 23:00 horas' }
 }
 
 export function SemanaCeroSections({ tab, onTabChange }: Props) {
   const [dynamicSupport, setDynamicSupport] = useState<SupportItem[]>([])
   const [openSupportCard, setOpenSupportCard] = useState<string | null>(null)
+  const [cftPanelOpen, setCftPanelOpen] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -249,43 +255,101 @@ export function SemanaCeroSections({ tab, onTabChange }: Props) {
             Unidades de apoyo
           </h2>
           <p className="scp-lead">Selecciona el apartado que necesitas y abre su PDF directo.</p>
-          <div className="scp-cards">
-            {APOYO_PDFS.map((item) => (
-              <article
-                key={item.title}
-                className={`scp-scard scp-scard-expand ${openSupportCard === item.title ? 'is-open' : ''}`}
-                onMouseEnter={() => setOpenSupportCard(item.title)}
-                onMouseLeave={() => setOpenSupportCard((prev) => (prev === item.title ? null : prev))}
-              >
-                <button
-                  type="button"
-                  className="scp-scard-head"
-                  onClick={() => setOpenSupportCard((prev) => (prev === item.title ? null : item.title))}
-                  aria-expanded={openSupportCard === item.title}
-                >
-                  <GraduationCap size={22} />
-                  <div>
-                    <strong>{item.title}</strong>
-                    <span>{item.subtitle}</span>
-                  </div>
-                  <ChevronDown size={16} className="scp-scard-chevron" />
-                </button>
-                <div className="scp-scard-body">
-                  <span className="scp-scard-meta">
-                    {APOYO_INFO[item.title]?.detail ?? 'Información de la unidad.'} ·{' '}
-                    {APOYO_INFO[item.title]?.hours ?? 'Horario por confirmar'}
-                  </span>
-                  <a className="scp-scard-link" href={item.href} target="_blank" rel="noopener noreferrer">
-                    ¿Quieres ver los contenidos? Abrir ahora <ExternalLink size={14} />
+
+          <div className="scp-doc-hero" aria-labelledby="doc-hero-title">
+            <div className="scp-doc-hero-glow" aria-hidden />
+            <div className="scp-doc-hero-inner">
+              <div className="scp-doc-hero-icon" aria-hidden>
+                <Sparkles size={26} strokeWidth={1.75} />
+              </div>
+              <div className="scp-doc-hero-copy">
+                <p className="scp-doc-hero-kicker">Semana Cero · Docencia</p>
+                <h3 id="doc-hero-title" className="scp-doc-hero-title">
+                  Tu formación y desarrollo docente
+                </h3>
+                <p className="scp-doc-hero-desc">
+                  Inducción pedagógica, lineamientos y recursos para fortalecer tu práctica en el aula.
+                </p>
+                <div className="scp-doc-hero-actions">
+                  <a
+                    className="scp-doc-hero-btn scp-doc-hero-btn-primary"
+                    href={LINKS.pdfFormacionDocente}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Información <ExternalLink size={16} />
+                  </a>
+                  <a
+                    className="scp-doc-hero-btn scp-doc-hero-btn-secondary"
+                    href={LINKS.formacionDocenteDrive}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Materiales y curso (Drive) <ExternalLink size={16} />
                   </a>
                 </div>
-              </article>
-            ))}
+              </div>
+            </div>
           </div>
+
+          <ol className="scp-apoyo-list" aria-label="Listado de unidades de apoyo">
+            {APOYO_PDFS.map((item, index) => (
+              <li key={item.title}>
+                <article
+                  className={`scp-scard scp-scard-expand scp-apoyo-row ${openSupportCard === item.title ? 'is-open' : ''} ${item.extras?.length ? 'has-extras' : ''}`}
+                >
+                  <button
+                    type="button"
+                    className="scp-scard-head"
+                    onClick={() => setOpenSupportCard((prev) => (prev === item.title ? null : item.title))}
+                    aria-expanded={openSupportCard === item.title}
+                  >
+                    <span className="scp-nav-num">{String(index + 1).padStart(2, '0')}</span>
+                    <GraduationCap size={22} aria-hidden />
+                    <div>
+                      <strong>{item.title}</strong>
+                      <span>{item.subtitle}</span>
+                    </div>
+                    <ChevronDown size={16} className="scp-scard-chevron" aria-hidden />
+                  </button>
+                  <div className="scp-scard-body-wrap">
+                    <div className="scp-scard-body">
+                      <span className="scp-scard-meta">
+                        {APOYO_INFO[item.title]?.detail ?? 'Información de la unidad.'} ·{' '}
+                        {APOYO_INFO[item.title]?.hours ?? 'Horario por confirmar'}
+                      </span>
+                      {item.extras && item.extras.length > 0 && (
+                        <div className="scp-scard-extras">
+                          {item.extras.map((ex) => (
+                            <a
+                              key={ex.label}
+                              className="scp-scard-extra-btn"
+                              href={ex.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {ex.label} <ExternalLink size={13} />
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                      <a className="scp-scard-link" href={item.href} target="_blank" rel="noopener noreferrer">
+                        Ver PDF de la unidad <ExternalLink size={14} />
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              </li>
+            ))}
+          </ol>
           {latestSupport.length > 0 && (
             <>
-              <h3 className="scp-h3-inline">Contenidos cargados por docentes</h3>
-              <div className="scp-linklist">
+              <div className="scp-docentes-head">
+                <h3 className="scp-docentes-title">Contenidos cargados por docentes</h3>
+                <p className="scp-docentes-sub">Material complementario publicado por equipos académicos</p>
+              </div>
+              <div className="scp-linklist scp-linklist-docentes">
                 {latestSupport.map((item) => (
                   <a key={item.id} className="scp-linkrow" href={item.contentUrl} target="_blank" rel="noopener noreferrer">
                     <div className="scp-linkrow-body">
@@ -308,7 +372,49 @@ export function SemanaCeroSections({ tab, onTabChange }: Props) {
           <h2 id="sec-ac" className="scp-h2">
             Área académica
           </h2>
-          <p className="scp-lead">Carreras, prácticas y plataforma de aulas virtuales.</p>
+          <p className="scp-lead">
+            Carreras IP y CFT, práctica y titulación, unidades transversales (LIM) y accesos digitales institucionales.
+          </p>
+
+          <div className="scp-cft-accordion-wrap">
+            <article
+              className={`scp-scard scp-scard-expand scp-cft-panel ${cftPanelOpen ? 'is-open' : ''}`}
+            >
+              <button
+                type="button"
+                className="scp-scard-head"
+                onClick={() => setCftPanelOpen((v) => !v)}
+                aria-expanded={cftPanelOpen}
+                id="cft-panel-toggle"
+              >
+                <BookOpen size={22} />
+                <div>
+                  <strong>Centro de Formación Técnica (CFT)</strong>
+                  <span>Carreras Semana Cero — PDF por programa (toca para desplegar u ocultar)</span>
+                </div>
+                <ChevronDown size={16} className="scp-scard-chevron" />
+              </button>
+              <div className="scp-scard-body scp-cft-panel-body" role="region" aria-labelledby="cft-panel-toggle">
+                <p className="scp-cft-panel-intro">
+                  Elige tu carrera para abrir el PDF de inducción. Abajo, enlaces al portal oficial del CFT.
+                </p>
+                <div className="scp-linklist">
+                  {ACADEMIC_CFT_CARRERAS_PDFS.map((l) => (
+                    <LinkRow key={l.href + l.title} {...l} />
+                  ))}
+                </div>
+                <p className="scp-h3-inline scp-cft-portal-label">
+                  <Globe size={16} aria-hidden /> Portal CFT
+                </p>
+                <div className="scp-linklist">
+                  {ACADEMIC_CFT_BLOCKS.map((l) => (
+                    <LinkRow key={l.href + l.title} {...l} />
+                  ))}
+                </div>
+              </div>
+            </article>
+          </div>
+
           <a className="scp-feature" href={LINKS.aulasVirtuales} target="_blank" rel="noopener noreferrer">
             <div className="scp-feature-ic">
               <BookOpen size={24} />
@@ -319,9 +425,70 @@ export function SemanaCeroSections({ tab, onTabChange }: Props) {
             </div>
             <ArrowUpRight size={20} />
           </a>
+          <a className="scp-feature" href={LINKS.pdfPlataformasELearning} target="_blank" rel="noopener noreferrer">
+            <div className="scp-feature-ic">
+              <BookOpen size={24} />
+            </div>
+            <div>
+              <strong>Plataformas E-Learning — PDF Semana Cero</strong>
+              <span>Guía de plataformas y modalidad digital (documento institucional).</span>
+            </div>
+            <ArrowUpRight size={20} />
+          </a>
+          <a className="scp-feature scp-feature-neutral" href={LINKS.sede360} target="_blank" rel="noopener noreferrer">
+            <div className="scp-feature-ic scp-feature-ic-neutral">
+              <Globe size={24} />
+            </div>
+            <div>
+              <strong>Conoce la sede en 360°</strong>
+              <span>Recorrido virtual (se abre en una nueva pestaña; funciona en cualquier dispositivo).</span>
+            </div>
+            <ArrowUpRight size={20} />
+          </a>
+
+          <h3 className="scp-h3">
+            <GraduationCap size={18} aria-hidden /> Instituto Profesional (IP) — carreras
+          </h3>
+          <p className="scp-prose scp-prose-tight">
+            PDF de inducción Semana Cero por carrera; la fila «Ingeniería y carreras afines» lleva al sitio oficial para
+            revisar toda la oferta IP.
+          </p>
+          <div className="scp-linklist">
+            {ACADEMIC_IP_CARRERAS.map((l) => (
+              <LinkRow key={l.href + l.title} {...l} />
+            ))}
+          </div>
+
+          <h3 className="scp-h3">
+            <BookOpen size={18} aria-hidden /> Práctica y títulos
+          </h3>
+          <div className="scp-linklist">
+            {ACADEMIC_PRACTICA_TITULOS.map((l) => (
+              <LinkRow key={l.title} {...l} />
+            ))}
+          </div>
+
+          <h3 className="scp-h3">
+            <Sparkles size={18} aria-hidden /> Unidades transversales — LIM
+          </h3>
+          <p className="scp-prose scp-prose-tight">
+            Lenguaje, Inglés y Matemática (LIM): el PDF de coordinaciones reúne la información transversal para las
+            tres áreas.
+          </p>
+          <div className="scp-lim-grid">
+            {ACADEMIC_LIM.map((lim) => (
+              <article key={lim.title} className="scp-lim-card">
+                <h4 className="scp-lim-title">{lim.title}</h4>
+                <p className="scp-lim-body">{lim.body}</p>
+                <a className="scp-lim-link" href={lim.href} target="_blank" rel="noopener noreferrer">
+                  {lim.linkLabel} <ExternalLink size={14} />
+                </a>
+              </article>
+            ))}
+          </div>
+
           <p className="scp-footnote">
-            Información específica por carrera (práctica profesional, titulación, unidades transversales) la entrega tu
-            coordinación académica y DAE en sede.
+            Dudas de carrera, calendario o documentación: coordinación académica y DAE de tu sede.
           </p>
         </section>
       )}

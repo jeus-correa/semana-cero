@@ -952,7 +952,7 @@ function App() {
             <div className="campus-360-action">
               <a
                 className="btn-primary campus-360-btn"
-                href="https://storage.net-fs.com/hosting/6520281/118/"
+                href={sanitizeExternalHref(LINKS.sede360)}
                 target="_blank"
                 rel="noopener noreferrer"
               >

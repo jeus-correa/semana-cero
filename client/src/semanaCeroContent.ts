@@ -27,13 +27,32 @@ export const LINKS = {
   pdfFormacion: 'https://drive.google.com/file/d/1Haw21v8bRlhtuZow8DB1qsNINZwqvYXJ/view?usp=sharing',
   pdfFormacionDocente: 'https://drive.google.com/file/d/1GAO-aa4Wp4fSEGtHAJU6FHDjliGYGJJ5/view?usp=sharing',
   pdfComoImprimir: 'https://drive.google.com/file/d/1aucpW3M-2wfvujAPWkT4hOKYsdlhbqdU/view?usp=sharing',
+  /** PDF Semana Cero — Servicio Social (IP) */
+  pdfServicioSocial: 'https://drive.google.com/file/d/1-UV85Ld4UqrpuGEa4_0hFr7VG6FVPyWm/view?usp=sharing',
+  pdfIngAdministracionEmpresas:
+    'https://drive.google.com/file/d/1Mf1a2dsq5gEYC_BLttP86hRC0Nk83Y5Y/view?usp=sharing',
+  pdfIngAgricola: 'https://drive.google.com/file/d/1u0sWrIFpr25EwYLqGEUzXO6-dUVF2wyL/view?usp=sharing',
+  /** Un solo PDF cubre práctica profesional y titulación (Semana Cero) */
+  pdfPracticaTituloSemanaCero:
+    'https://drive.google.com/file/d/1-nV2wbtuNTT87KKu76rX8n9KY_PGlr1h/view?usp=sharing',
+  /** LIM: lenguaje, inglés y matemática (coordinaciones) */
+  pdfLimTransversales: 'https://drive.google.com/file/d/1RQ0YdRn1n4PnAWZyUyNxJVIvLD06ScKk/view?usp=sharing',
+  pdfPlataformasELearning: 'https://drive.google.com/file/d/1bzZnUaIbXyiyFPlM3B4dwNUuejxaZ_Lu/view?usp=sharing',
   ipPortalReglamentos:
     'https://www.ipsantotomas.cl/informacion-institucional/politicas-y-reglamentos/politicas-reglamentos-y-documentos/',
   cftPortalReglamentos:
     'https://www.cftsantotomas.cl/informacion-institucional/politicas-y-reglamentos/politicas-reglamentos-y-documentos/'
 } as const
 
-export const APOYO_PDFS: { title: string; subtitle: string; href: string }[] = [
+export type ApoyoPdfItem = {
+  title: string
+  subtitle: string
+  href: string
+  /** Enlaces extra (ej. Formación docente: infórmate + curso/materiales) */
+  extras?: { label: string; href: string }[]
+}
+
+export const APOYO_PDFS: ApoyoPdfItem[] = [
   { title: 'Centro de Aprendizaje', subtitle: 'Apoyo académico y tutorías', href: LINKS.pdfCentroAprendizaje },
   { title: 'Biblioteca', subtitle: 'Recursos y servicios bibliotecarios', href: LINKS.pdfBiblioteca },
   { title: 'DAE', subtitle: 'Beneficios y vida estudiantil', href: LINKS.pdfDae },
@@ -41,8 +60,132 @@ export const APOYO_PDFS: { title: string; subtitle: string; href: string }[] = [
   { title: 'DAO', subtitle: 'Aranceles y convenios de pago', href: LINKS.pdfDao },
   { title: 'Soporte de Informática', subtitle: 'Plataformas y accesos', href: LINKS.pdfSoporte },
   { title: 'Formación', subtitle: 'Material de apoyo institucional', href: LINKS.pdfFormacion },
-  { title: 'Formación Docente', subtitle: 'Información y acompañamiento docente', href: LINKS.pdfFormacionDocente },
   { title: 'Cómo imprimir', subtitle: 'Guía rápida de impresión', href: LINKS.pdfComoImprimir }
+]
+
+/** Carreras IP — enlaces oficiales (referencia web institucional). */
+export const ACADEMIC_IP_CARRERAS: { title: string; subtitle: string; href: string }[] = [
+  {
+    title: 'Servicio Social',
+    subtitle: 'PDF de inducción — Técnico en Trabajo Social (IP)',
+    href: LINKS.pdfServicioSocial
+  },
+  {
+    title: 'Ingeniería y carreras afines',
+    subtitle: 'Oferta académica institucional (busca tu sede y carrera)',
+    href: 'https://www.ipsantotomas.cl/informacion-institucional/proyecto-educativo/oferta-academica/'
+  },
+  {
+    title: 'Ingeniería en Administración de Empresas',
+    subtitle: 'PDF de inducción Semana Cero',
+    href: LINKS.pdfIngAdministracionEmpresas
+  },
+  {
+    title: 'Ingeniería Agrícola',
+    subtitle: 'PDF de inducción Semana Cero',
+    href: LINKS.pdfIngAgricola
+  }
+]
+
+export const ACADEMIC_PRACTICA_TITULOS: { title: string; subtitle: string; href: string }[] = [
+  {
+    title: 'Proceso de práctica profesional',
+    subtitle: 'PDF Semana Cero — práctica y título (material institucional)',
+    href: LINKS.pdfPracticaTituloSemanaCero
+  },
+  {
+    title: 'Proceso de titulación',
+    subtitle: 'Incluido en el mismo PDF de práctica y titulación',
+    href: LINKS.pdfPracticaTituloSemanaCero
+  }
+]
+
+/** Unidades transversales LIM — referencias y apoyo. */
+export const ACADEMIC_LIM: {
+  title: string
+  body: string
+  href: string
+  linkLabel: string
+}[] = [
+  {
+    title: 'Lenguaje',
+    body:
+      'Comprensión lectora, producción escrita y comunicación efectiva en el aula. Refuerza bases para todas las asignaturas.',
+    href: LINKS.pdfLimTransversales,
+    linkLabel: 'Abrir PDF LIM — coordinaciones (Semana Cero)'
+  },
+  {
+    title: 'Inglés',
+    body:
+      'Desarrollo de habilidades comunicativas en inglés para tu malla y competencias laborales. Detalle en el material LIM.',
+    href: LINKS.pdfLimTransversales,
+    linkLabel: 'Abrir PDF LIM — coordinaciones (Semana Cero)'
+  },
+  {
+    title: 'Matemática',
+    body:
+      'Apoyo en razonamiento matemático, modelación y resolución de problemas; alineado a asignaturas transversales y de carrera.',
+    href: LINKS.pdfLimTransversales,
+    linkLabel: 'Abrir PDF LIM — coordinaciones (Semana Cero)'
+  }
+]
+
+/** CFT — oferta y áreas (sitio oficial). */
+export const ACADEMIC_CFT_BLOCKS: { title: string; subtitle: string; href: string }[] = [
+  {
+    title: 'Áreas y carreras (CFT)',
+    subtitle: 'Listado por área del Centro de Formación Técnica',
+    href: 'https://www.cftsantotomas.cl/areas-y-carreras/'
+  },
+  {
+    title: 'Oferta académica CFT',
+    subtitle: 'Proyecto educativo y carreras técnicas',
+    href: 'https://www.cftsantotomas.cl/informacion-institucional/proyecto-educativo/oferta-academica/'
+  }
+]
+
+/** CFT Semana Cero — PDF por carrera (Sede / material institucional). */
+export const ACADEMIC_CFT_CARRERAS_PDFS: { title: string; subtitle: string; href: string }[] = [
+  {
+    title: 'Preparador físico',
+    subtitle: 'PDF de inducción Semana Cero',
+    href: 'https://drive.google.com/file/d/1SECb79MaX-Xjlmy4RgUruS0nw1GGBD-i/view?usp=sharing'
+  },
+  {
+    title: 'Técnico en Podología Clínica',
+    subtitle: 'PDF de inducción Semana Cero',
+    href: 'https://drive.google.com/file/d/1y5S9peQcOfvYDxpWDvgDX1tueEilrQxu/view?usp=sharing'
+  },
+  {
+    title: 'Técnico en Odontología, mención Higienista Dental',
+    subtitle: 'PDF de inducción Semana Cero',
+    href: 'https://drive.google.com/file/d/1m3bepcwrs6IFPA6GgS3Abyf5YUiXMB65/view?usp=sharing'
+  },
+  {
+    title: 'Técnico en Enfermería',
+    subtitle: 'PDF de inducción Semana Cero',
+    href: 'https://drive.google.com/file/d/18NlC3zvpjvjw1-QWAoOHwuCh_Unlk1HP/view?usp=sharing'
+  },
+  {
+    title: 'Gastronomía Internacional y Tradicional Chilena',
+    subtitle: 'PDF de inducción Semana Cero',
+    href: 'https://drive.google.com/file/d/1cywsZUmj-XcuA_AHiwB__RC7ocuM4vkG/view?usp=sharing'
+  },
+  {
+    title: 'Técnico en Educación Especial',
+    subtitle: 'PDF de inducción Semana Cero',
+    href: 'https://drive.google.com/file/d/19gBrx__LVvRtrGdzqFwVjLHyxIOX1tPV/view?usp=sharing'
+  },
+  {
+    title: 'Técnico en Educación Parvularia y 1.º y 2.º básico',
+    subtitle: 'PDF de inducción Semana Cero',
+    href: 'https://drive.google.com/file/d/19sYmOLki0DjfP5Zxa_QNgIfrUFDU0nrX/view?usp=sharing'
+  },
+  {
+    title: 'Técnico Agrícola',
+    subtitle: 'PDF de inducción Semana Cero',
+    href: 'https://drive.google.com/file/d/1e0MyqewKhcO9iU0HE0zoGoBeg26j-NcM/view?usp=sharing'
+  }
 ]
 
 export type SemanaTabId =

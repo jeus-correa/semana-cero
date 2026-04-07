@@ -60,12 +60,12 @@ function scrollToSemanaTab(tab: SemanaTabId) {
 }
 
 const BOTTOM_DOCK_ITEMS = [
-  { id: 'dock-inicio', targetId: 'inicio-hero', label: 'Inicio', Icon: Home },
-  { id: 'dock-explora', targetId: 'conoce-semana-cero', label: 'Explorá', Icon: Sparkles },
-  { id: 'dock-sede', targetId: 'n-sede-video', label: 'Sede', Icon: Video },
-  { id: 'dock-guia', targetId: 'contenido-semana-cero', label: 'Guía', Icon: Layers },
-  { id: 'dock-apoyo', targetId: 'semana-apoyo', label: 'Apoyo', Icon: LifeBuoy },
-  { id: 'dock-academica', targetId: 'semana-academica', label: 'Académica', Icon: GraduationCap }
+  { id: 'dock-inicio', targetId: 'inicio-hero', label: 'Inicio', num: 1, tone: 'mint', Icon: Home },
+  { id: 'dock-explora', targetId: 'conoce-semana-cero', label: 'Explorá', num: 2, tone: 'sky', Icon: Sparkles },
+  { id: 'dock-sede', targetId: 'n-sede-video', label: 'Sede', num: 3, tone: 'amber', Icon: Video },
+  { id: 'dock-guia', targetId: 'contenido-semana-cero', label: 'Guía', num: 4, tone: 'jade', Icon: Layers },
+  { id: 'dock-apoyo', targetId: 'semana-apoyo', label: 'Apoyo', num: 5, tone: 'rose', Icon: LifeBuoy },
+  { id: 'dock-academica', targetId: 'semana-academica', label: 'Académica', num: 6, tone: 'violet', Icon: GraduationCap }
 ] as const
 
 function scrollToAnchorId(elementId: string) {
@@ -638,21 +638,28 @@ function App() {
       </main>
 
       <nav className="n-bottom-dock" aria-label="Navegación rápida inferior">
-        {BOTTOM_DOCK_ITEMS.map(({ id, targetId, label, Icon }) => (
+        {BOTTOM_DOCK_ITEMS.map(({ id, targetId, label, num, tone, Icon }) => (
           <motion.button
             key={id}
             type="button"
-            className={`n-bottom-dock-item ${dockActive === id ? 'is-active' : ''}`}
+            className={`n-bottom-dock-item n-bottom-dock-item--${tone} ${dockActive === id ? 'is-active' : ''}`}
             onClick={() => {
               setDockActive(id)
               scrollToAnchorId(targetId)
             }}
-            whileHover={{ scale: 1.07, y: -2 }}
-            whileTap={{ scale: 0.93 }}
+            whileHover={{ scale: 1.06, y: -2 }}
+            whileTap={{ scale: 0.94 }}
             transition={{ type: 'spring', stiffness: 420, damping: 22 }}
           >
             <span className="n-bottom-dock-glow" aria-hidden />
-            <Icon size={22} strokeWidth={2.1} aria-hidden />
+            <span className="n-bottom-dock-item-head">
+              <span className="n-bottom-dock-index" aria-hidden>
+                {num}
+              </span>
+              <span className={`n-bottom-dock-chip n-bottom-dock-chip--${tone}`}>
+                <Icon size={20} strokeWidth={2.1} aria-hidden />
+              </span>
+            </span>
             <span className="n-bottom-dock-label">{label}</span>
           </motion.button>
         ))}

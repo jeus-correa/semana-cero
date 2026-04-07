@@ -32,6 +32,7 @@
   --scp-accent-soft: rgba(0, 153, 109, 0.12);
   --scp-accent-glow: rgba(0, 184, 130, 0.2);
   --scp-green-deep: #e8f5f0;
+<<<<<<< HEAD
   --scp-surface: #ffffff; /* Cajas y menús limpios */
   --scp-surface-hover: rgba(0, 153, 109, 0.06);
   --scp-border-ui: rgba(0, 153, 109, 0.15);
@@ -42,6 +43,19 @@
   background-image:
     radial-gradient(ellipse 90% 60% at 12% 8%, rgba(228, 245, 236, 0.6) 0%, transparent 80%),
     linear-gradient(165deg, #ffffff 0%, #f4fbf8 100%);
+=======
+  --scp-surface: rgba(0, 184, 130, 0.06);
+  --scp-surface-hover: rgba(0, 184, 130, 0.1);
+  --scp-border-ui: rgba(0, 153, 109, 0.18);
+  --scp-border-ui-soft: rgba(0, 153, 109, 0.12);
+  --scp-line-top: rgba(0, 153, 109, 0.12);
+  color: #0f1f19;
+  background-color: #e8f0ec;
+  background-image:
+    radial-gradient(ellipse 90% 60% at 12% 8%, rgba(180, 218, 200, 0.55) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 45% at 92% 88%, rgba(160, 205, 185, 0.35) 0%, transparent 50%),
+    linear-gradient(165deg, rgba(236, 244, 240, 0.98) 0%, rgba(220, 232, 226, 0.96) 50%, #dce8e2 100%);
+>>>>>>> 5ca07335dc7a1c600b70068dbbc020d793683a84
 }
 
 .scp-topbar {
@@ -2325,6 +2339,7 @@
   from { opacity: 0; transform: scale(0.95) translateY(10px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
+<<<<<<< HEAD
 
 .scp-tabs-container {
   display: flex;
@@ -2407,3 +2422,5 @@
   border-color: var(--scp-accent);
 }
 
+=======
+>>>>>>> 5ca07335dc7a1c600b70068dbbc020d793683a84

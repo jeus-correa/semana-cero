@@ -1308,7 +1308,23 @@
   background-color: transparent;
 }
 
+<<<<<<< HEAD
 /* The sidebar preserves its dark aesthetic in light mode */
+=======
+[data-theme='light'] .n-sidebar {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.97) 0%,
+    rgba(248, 250, 252, 0.96) 45%,
+    rgba(241, 245, 249, 0.98) 100%
+  );
+  border-right-color: rgba(15, 23, 42, 0.08);
+  box-shadow:
+    6px 0 24px rgba(15, 23, 42, 0.06),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
+>>>>>>> 5ca07335dc7a1c600b70068dbbc020d793683a84
 /* Título del hero: siempre legible sobre el carrusel (modo día y noche) */
 [data-theme='light'] .n-hero-panel .n-hero-text h1 {
   background: none;
@@ -1353,11 +1369,19 @@
 
 [data-theme='light'] .n-mv-card,
 [data-theme='light'] .n-video-box {
+<<<<<<< HEAD
   background: linear-gradient(165deg, #e4f7ec 0%, #d4f0df 100%);
   border-color: rgba(0, 153, 109, 0.25);
   box-shadow:
     0 8px 24px rgba(0, 100, 75, 0.08),
     0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+=======
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+  border-color: rgba(15, 23, 42, 0.1);
+  box-shadow:
+    0 8px 28px rgba(15, 23, 42, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+>>>>>>> 5ca07335dc7a1c600b70068dbbc020d793683a84
 }
 
 [data-theme='light'] .n-btn-main {
@@ -3350,8 +3374,12 @@ footer {
   .n-bottom-dock-label {
     font-size: 0.5rem;
   }
+<<<<<<< HEAD
 }
 .n-sidebar { color: #fff; }
 [data-theme='light'] .n-sidebar-brand span, [data-theme='light'] .n-sidebar-menu a { color: #fff !important; }
 [data-theme='light'] .n-sidebar-toggle, [data-theme='light'] .n-theme-switch { color: #fff !important; }
 
+=======
+}
+>>>>>>> 5ca07335dc7a1c600b70068dbbc020d793683a84

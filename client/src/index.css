@@ -28,6 +28,7 @@
 }
 
 [data-theme='light'] {
+<<<<<<< HEAD
   /* Día — limpio, contraste profesional y fondo no invasivo */
   --primary: #00885e; /* Verde corporativo Santo Tomás */
   --primary-glow: rgba(0, 136, 94, 0.2);
@@ -41,6 +42,21 @@
   --glass-border-hover: rgba(0, 136, 94, 0.4);
   --text-primary: #111827;
   --text-secondary: #4b5563;
+=======
+  /* Día — limpio, contraste claro título / cuerpo / enlaces */
+  --primary: #047857;
+  --primary-glow: rgba(4, 120, 87, 0.22);
+  --primary-hover: #059669;
+  --accent: #0284c7;
+  --accent-warm: #ea580c;
+  --bg-dark: #f1f5f9;
+  --bg-darker: #e2e8f0;
+  --glass-bg: rgba(255, 255, 255, 0.94);
+  --glass-border: rgba(15, 23, 42, 0.1);
+  --glass-border-hover: rgba(4, 120, 87, 0.35);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+>>>>>>> 5ca07335dc7a1c600b70068dbbc020d793683a84
   color-scheme: light;
 }
 

@@ -12,7 +12,8 @@ import {
   Shield,
   Sparkles,
   Target,
-  Video
+  Video,
+  X
 } from 'lucide-react'
 import { listSupportItems, type SupportItem } from './api'
 import {
@@ -67,6 +68,7 @@ export function SemanaCeroSections({ tab, onTabChange }: Props) {
   const [dynamicSupport, setDynamicSupport] = useState<SupportItem[]>([])
   const [openSupportCard, setOpenSupportCard] = useState<string | null>(null)
   const [cftPanelOpen, setCftPanelOpen] = useState(false)
+  const [selectedMember, setSelectedMember] = useState<{ nombre: string; cargo: string; foto: string } | null>(null)
 
   useEffect(() => {
     let active = true
@@ -534,8 +536,17 @@ export function SemanaCeroSections({ tab, onTabChange }: Props) {
           <p className="scp-lead">Equipo que lidera la gestión en la sede.</p>
           <div className="scp-comite-grid">
             {COMITE_CURICO.map((p) => (
-              <article key={p.nombre} className="scp-comite-card">
-                <img src={p.foto} alt="" loading="lazy" />
+              <article 
+                key={p.nombre} 
+                className="scp-comite-card"
+                role="button"
+                tabIndex={0}
+                onClick={() => setSelectedMember(p)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedMember(p); } }}
+              >
+                <div className="scp-comite-img-wrap">
+                  <img src={p.foto} alt="" loading="lazy" />
+                </div>
                 <div>
                   <strong>{p.nombre}</strong>
                   <span>{p.cargo}</span>
@@ -563,6 +574,29 @@ export function SemanaCeroSections({ tab, onTabChange }: Props) {
             <ArrowUpRight size={20} />
           </a>
         </section>
+      )}
+
+      {/* Modal para miembro del comité */}
+      {selectedMember && (
+        <div className="scp-comite-modal-overlay" onClick={() => setSelectedMember(null)}>
+          <div 
+            className="scp-comite-modal"
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              className="scp-comite-modal-close" 
+              onClick={() => setSelectedMember(null)}
+              aria-label="Cerrar"
+            >
+              <X size={20} strokeWidth={2.5} />
+            </button>
+            <img src={selectedMember.foto} alt={selectedMember.nombre} />
+            <h3>{selectedMember.nombre}</h3>
+            <p>{selectedMember.cargo}</p>
+          </div>
+        </div>
       )}
     </div>
   )

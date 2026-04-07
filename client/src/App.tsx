@@ -86,11 +86,12 @@ function App() {
   useEffect(() => {
     if (visitIncrementedThisLoad) return
     visitIncrementedThisLoad = true
-    const antes = Number(localStorage.getItem('st_visits') ?? '0')
-    const despues = antes + 1
+    const baseVisits = 2400
+    const historyVisits = Number(localStorage.getItem('st_visits') ?? '0')
+    const despues = historyVisits + 1
     localStorage.setItem('st_visits', String(despues))
-    setVisits(antes)
-    const t = window.setTimeout(() => setVisits(despues), 420)
+    setVisits(baseVisits + historyVisits)
+    const t = window.setTimeout(() => setVisits(baseVisits + despues), 420)
     return () => window.clearTimeout(t)
   }, [])
 
@@ -169,31 +170,31 @@ function App() {
     desc: string
     tab: SemanaTabId
   }[] = [
-    {
-      icon: Heart,
-      title: 'Valores institucionales',
-      desc: 'Identidad, principios y valor del año 2026.',
-      tab: 'valores'
-    },
-    {
-      icon: Shield,
-      title: 'Seguro académico',
-      desc: 'Coberturas y canal oficial DAE Santo Tomás.',
-      tab: 'seguros'
-    },
-    {
-      icon: Route,
-      title: 'Vías de evacuación',
-      desc: 'Videos y rutas de emergencia de la sede.',
-      tab: 'evacuacion'
-    },
-    {
-      icon: MailCheck,
-      title: 'Activación de correo',
-      desc: 'Recupera o actualiza tu clave institucional.',
-      tab: 'correo'
-    }
-  ]
+      {
+        icon: Heart,
+        title: 'Valores institucionales',
+        desc: 'Identidad, principios y valor del año 2026.',
+        tab: 'valores'
+      },
+      {
+        icon: Shield,
+        title: 'Seguro académico',
+        desc: 'Coberturas y canal oficial DAE Santo Tomás.',
+        tab: 'seguros'
+      },
+      {
+        icon: Route,
+        title: 'Vías de evacuación',
+        desc: 'Videos y rutas de emergencia de la sede.',
+        tab: 'evacuacion'
+      },
+      {
+        icon: MailCheck,
+        title: 'Activación de correo',
+        desc: 'Recupera o actualiza tu clave institucional.',
+        tab: 'correo'
+      }
+    ]
 
   const missionVision = [
     {
@@ -462,104 +463,104 @@ function App() {
 
       <main className="n-content">
         <div className="n-landing">
-        <section className="n-hero-panel">
-          <div className="n-hero-bg-stack" aria-hidden="true">
-            {heroSlides.map((slide, idx) => (
-              <div
-                key={slide}
-                className={`n-hero-bg ${currentSlide === idx ? 'active' : ''}`}
-                style={{ backgroundImage: `url(${slide})` }}
-              />
-            ))}
-          </div>
-          <div className="n-hero-shade" />
-          <div className="n-views-chip">Vistas: {visits.toLocaleString('es-CL')}</div>
-
-          <div className="n-hero-text">
-            <div className="n-hero-pill">
-              <span>BIENVENIDO TOMACIN@S</span>
-            </div>
-
-            <h1>
-              <span>SEMANA CERO</span>
-              <strong>SANTO TOMÁS</strong>
-            </h1>
-
-            <p>
-              Tu primera semana es el comienzo de algo grande.
-              Explora, conéctate y descubre todo lo que tenemos para ti.
-            </p>
-
-            <div className="n-ingreso-progress" aria-label="Barra de avance desde ingreso">
-              <div className="n-ingreso-progress-top">
-                <span>Ingreso estudiantes: 09/03/26</span>
-                <span>{Math.round(progressFill)}%</span>
-              </div>
-              <div className="n-ingreso-track">
-                <span style={{ width: `${progressFill}%` }} />
-              </div>
-              {showConfetti && (
-                <div className="n-fireworks-wrap" aria-hidden="true">
-                  {Array.from({ length: 4 }).map((_, idx) => (
-                    <span key={`burst-${idx}`} className={`n-firework-burst n-firework-${idx + 1}`} />
-                  ))}
-                  {Array.from({ length: 18 }).map((_, idx) => (
-                    <span key={`spark-${idx}`} className="n-firework-spark" />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="n-hero-actions">
-              <button type="button" className="n-btn-main" onClick={() => goSemanaCero('mision')}>
-                Tu semana cero
-              </button>
-              <a
-                className="n-btn-secondary"
-                href={sanitizeExternalHref(LINKS.sede360)}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Globe size={18} aria-hidden />
-                Visita la sede en 3D
-              </a>
-            </div>
-
-            <div className="n-hero-dots" role="tablist" aria-label="Cambiar imagen del carrusel">
-              {heroSlides.map((_, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  role="tab"
-                  aria-selected={currentSlide === idx}
-                  aria-label={`Imagen ${idx + 1} de ${heroSlides.length}`}
-                  className={currentSlide === idx ? 'active' : ''}
-                  onClick={() => setCurrentSlide(idx)}
+          <section className="n-hero-panel">
+            <div className="n-hero-bg-stack" aria-hidden="true">
+              {heroSlides.map((slide, idx) => (
+                <div
+                  key={slide}
+                  className={`n-hero-bg ${currentSlide === idx ? 'active' : ''}`}
+                  style={{ backgroundImage: `url(${slide})` }}
                 />
               ))}
             </div>
-          </div>
-        </section>
+            <div className="n-hero-shade" />
+            <div className="n-views-chip">Vistas: {visits.toLocaleString('es-CL')}</div>
 
-        <section className="n-services" id="conoce-semana-cero">
-          {serviceCards.map(({ icon: Icon, title, desc, tab }, idx) => (
-            <button
-              key={title}
-              type="button"
-              className={`n-service-card n-service-card-btn n-service-${idx + 1}`}
-              onClick={() => goSemanaCero(tab)}
-            >
-              <div className="n-service-icon">
-                <Icon size={18} />
+            <div className="n-hero-text">
+              <div className="n-hero-pill">
+                <span>BIENVENIDO TOMACIN@S</span>
               </div>
-              <div className="n-service-copy">
-                <h3>{title}</h3>
-                <p>{desc}</p>
+
+              <h1>
+                <span>SEMANA CERO</span>
+                <strong>SANTO TOMÁS</strong>
+              </h1>
+
+              <p>
+                Tu primera semana es el comienzo de algo grande.
+                Explora, conéctate y descubre todo lo que tenemos para ti.
+              </p>
+
+              <div className="n-ingreso-progress" aria-label="Barra de avance desde ingreso">
+                <div className="n-ingreso-progress-top">
+                  <span>Ingreso estudiantes: 09/03/26</span>
+                  <span>{Math.round(progressFill)}%</span>
+                </div>
+                <div className="n-ingreso-track">
+                  <span style={{ width: `${progressFill}%` }} />
+                </div>
+                {showConfetti && (
+                  <div className="n-fireworks-wrap" aria-hidden="true">
+                    {Array.from({ length: 4 }).map((_, idx) => (
+                      <span key={`burst-${idx}`} className={`n-firework-burst n-firework-${idx + 1}`} />
+                    ))}
+                    {Array.from({ length: 18 }).map((_, idx) => (
+                      <span key={`spark-${idx}`} className="n-firework-spark" />
+                    ))}
+                  </div>
+                )}
               </div>
-              <ChevronRight size={14} aria-hidden />
-            </button>
-          ))}
-        </section>
+
+              <div className="n-hero-actions">
+                <button type="button" className="n-btn-main" onClick={() => goSemanaCero('mision')}>
+                  Tu semana cero
+                </button>
+                <a
+                  className="n-btn-secondary"
+                  href={sanitizeExternalHref(LINKS.sede360)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Globe size={18} aria-hidden />
+                  Visita la sede en 3D
+                </a>
+              </div>
+
+              <div className="n-hero-dots" role="tablist" aria-label="Cambiar imagen del carrusel">
+                {heroSlides.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    role="tab"
+                    aria-selected={currentSlide === idx}
+                    aria-label={`Imagen ${idx + 1} de ${heroSlides.length}`}
+                    className={currentSlide === idx ? 'active' : ''}
+                    onClick={() => setCurrentSlide(idx)}
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="n-services" id="conoce-semana-cero">
+            {serviceCards.map(({ icon: Icon, title, desc, tab }, idx) => (
+              <button
+                key={title}
+                type="button"
+                className={`n-service-card n-service-card-btn n-service-${idx + 1}`}
+                onClick={() => goSemanaCero(tab)}
+              >
+                <div className="n-service-icon">
+                  <Icon size={18} />
+                </div>
+                <div className="n-service-copy">
+                  <h3>{title}</h3>
+                  <p>{desc}</p>
+                </div>
+                <ChevronRight size={14} aria-hidden />
+              </button>
+            ))}
+          </section>
         </div>
 
         <section className="n-mv-section">
@@ -580,9 +581,8 @@ function App() {
             <iframe
               width="100%"
               height="100%"
-              src={`https://www.youtube.com/embed/WWnK0FpAspM?rel=0&modestbranding=1&playsinline=1&mute=1${
-                campusVideoActive ? '&autoplay=1' : ''
-              }`}
+              src={`https://www.youtube.com/embed/WWnK0FpAspM?rel=0&modestbranding=1&playsinline=1&mute=1${campusVideoActive ? '&autoplay=1' : ''
+                }`}
               title="Conoce tu sede Santo Tomás Curicó"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

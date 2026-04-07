@@ -1,0 +1,11 @@
+{
+  "name": "web_semana-cero",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "client": "npm run dev --prefix client",
+    "dev": "npm run dev --prefix client",
+    "install:all": "npm install --prefix client",
+    "build": "npm run build --prefix client"
+  }
+}

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import {
   BookOpen,
   ChevronRight,
@@ -7,8 +7,11 @@ import {
   Globe,
   GraduationCap,
   Heart,
+  Home,
   Laptop,
+  Layers,
   Library,
+  LifeBuoy,
   MailCheck,
   MapPin,
   Menu,
@@ -19,15 +22,19 @@ import {
   Sparkles,
   Star,
   Sun,
-  User
+  User,
+  Video
 } from 'lucide-react'
 import './App.css'
+import './SemanaCeroPage.css'
+import { SemanaCeroFullSections } from './SemanaCeroSections'
 import { LINKS, type SemanaTabId } from './semanaCeroContent'
 
 let visitIncrementedThisLoad = false
 const FALLBACK_HERO_SLIDES = ['/santo-tomas-curico.jpg', '/biblioteca--0.jpg', '/estudiantes--a.png'] as const
 
 function sanitizeExternalHref(href: string) {
+  if (href.startsWith('#')) return href
   try {
     const url = new URL(href, window.location.origin)
     if (url.protocol === 'http:' || url.protocol === 'https:' || url.protocol === 'mailto:' || url.protocol === 'tel:') {
@@ -48,8 +55,24 @@ function canLoadImage(src: string) {
   })
 }
 
+function scrollToSemanaTab(tab: SemanaTabId) {
+  document.getElementById(`semana-${tab}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+const BOTTOM_DOCK_ITEMS = [
+  { id: 'dock-inicio', targetId: 'inicio-hero', label: 'Inicio', Icon: Home },
+  { id: 'dock-explora', targetId: 'conoce-semana-cero', label: 'Explorá', Icon: Sparkles },
+  { id: 'dock-sede', targetId: 'n-sede-video', label: 'Sede', Icon: Video },
+  { id: 'dock-guia', targetId: 'contenido-semana-cero', label: 'Guía', Icon: Layers },
+  { id: 'dock-apoyo', targetId: 'semana-apoyo', label: 'Apoyo', Icon: LifeBuoy },
+  { id: 'dock-academica', targetId: 'semana-academica', label: 'Académica', Icon: GraduationCap }
+] as const
+
+function scrollToAnchorId(elementId: string) {
+  document.getElementById(elementId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
 function App() {
-  const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(() =>
     typeof window !== 'undefined' ? !window.matchMedia('(max-width: 1024px)').matches : true
   )
@@ -67,6 +90,7 @@ function App() {
   const [heroSlides, setHeroSlides] = useState<string[]>([...FALLBACK_HERO_SLIDES])
   const [campusVideoActive, setCampusVideoActive] = useState(false)
   const campusVideoSectionRef = useRef<HTMLElement | null>(null)
+  const [dockActive, setDockActive] = useState<string>('dock-inicio')
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme === 'dark' || savedTheme === 'light') return savedTheme
@@ -160,7 +184,7 @@ function App() {
     { kind: 'sello', icon: Star, label: 'Personaje Sello 2026', highlight: true },
     { kind: 'link', icon: Globe, label: 'Sede en 360', href: LINKS.sede360, external: true },
     { kind: 'link', icon: Sparkles, label: 'Conoce a Tomasín', href: LINKS.conoceTomasinGemini, external: true },
-    { kind: 'link', icon: User, label: 'Acceso Docentes', href: '/login' }
+    { kind: 'link', icon: User, label: 'Unidades de apoyo', href: '#semana-apoyo', external: false }
   ]
 
   const serviceCards: {
@@ -192,17 +216,6 @@ function App() {
       title: 'Activación de correo',
       desc: 'Recupera o actualiza tu clave institucional.',
       tab: 'correo'
-    }
-  ]
-
-  const missionVision = [
-    {
-      title: 'Misión',
-      text: 'Contribuir al desarrollo sostenible del país, transmitiendo conocimiento mediante la formación de personas a lo largo de la vida, inspirada en valores cristianos, la vinculación con el medio y la innovación.'
-    },
-    {
-      title: 'Visión',
-      text: 'Ser un Instituto Profesional reconocido por su compromiso con la transformación de sus estudiantes y el desarrollo sostenible de las comunidades con que se vincula, y una gestión de excelencia.'
     }
   ]
 
@@ -257,6 +270,29 @@ function App() {
     return () => cancelAnimationFrame(raf)
   }, [])
 
+  useEffect(() => {
+    if (loading) return
+    const idToDock = new Map<string, string>(BOTTOM_DOCK_ITEMS.map((d) => [d.targetId, d.id]))
+    const obs = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting && e.intersectionRatio > 0.08)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)
+        const top = visible[0]
+        if (top?.target?.id) {
+          const next = idToDock.get(top.target.id)
+          if (next) setDockActive(next)
+        }
+      },
+      { threshold: [0.08, 0.15, 0.28, 0.45], rootMargin: '-6% 0px -48% 0px' }
+    )
+    BOTTOM_DOCK_ITEMS.forEach(({ targetId }) => {
+      const el = document.getElementById(targetId)
+      if (el) obs.observe(el)
+    })
+    return () => obs.disconnect()
+  }, [loading])
+
   const chatFaq = {
     inicio: [
       {
@@ -287,10 +323,6 @@ function App() {
     ]
   } as const
 
-  const goSemanaCero = (tab: SemanaTabId = 'mision') => {
-    navigate(tab === 'mision' ? '/semana-cero' : `/semana-cero?tab=${tab}`)
-  }
-
   if (loading) {
     return (
       <div className="n-loader-screen">
@@ -317,6 +349,13 @@ function App() {
 
   return (
     <div className={`n-dashboard ${isMenuOpen ? 'menu-open' : ''} ${isMobileLayout ? 'n-mobile-layout' : ''}`}>
+      <div className="n-dashboard-bg" aria-hidden="true">
+        <div className="n-dashboard-mesh" />
+        <div className="n-dashboard-blob n-dashboard-blob--a" />
+        <div className="n-dashboard-blob n-dashboard-blob--b" />
+        <div className="n-dashboard-blob n-dashboard-blob--c" />
+        <div className="n-dashboard-blob n-dashboard-blob--d" />
+      </div>
       {isMobileLayout && isMenuOpen && (
         <button
           type="button"
@@ -462,7 +501,7 @@ function App() {
 
       <main className="n-content">
         <div className="n-landing">
-        <section className="n-hero-panel">
+        <section className="n-hero-panel" id="inicio-hero">
           <div className="n-hero-bg-stack" aria-hidden="true">
             {heroSlides.map((slide, idx) => (
               <div
@@ -511,7 +550,7 @@ function App() {
             </div>
 
             <div className="n-hero-actions">
-              <button type="button" className="n-btn-main" onClick={() => goSemanaCero('mision')}>
+              <button type="button" className="n-btn-main" onClick={() => scrollToSemanaTab('mision')}>
                 Tu semana cero
               </button>
               <a
@@ -543,11 +582,14 @@ function App() {
 
         <section className="n-services" id="conoce-semana-cero">
           {serviceCards.map(({ icon: Icon, title, desc, tab }, idx) => (
-            <button
+            <motion.button
               key={title}
               type="button"
               className={`n-service-card n-service-card-btn n-service-${idx + 1}`}
-              onClick={() => goSemanaCero(tab)}
+              onClick={() => scrollToSemanaTab(tab)}
+              whileHover={{ y: -3 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 24 }}
             >
               <div className="n-service-icon">
                 <Icon size={18} />
@@ -557,24 +599,12 @@ function App() {
                 <p>{desc}</p>
               </div>
               <ChevronRight size={14} aria-hidden />
-            </button>
+            </motion.button>
           ))}
         </section>
         </div>
 
-        <section className="n-mv-section">
-          <h2>Misión y Visión</h2>
-          <div className="n-mv-grid">
-            {missionVision.map((item) => (
-              <article key={item.title} className="n-mv-card">
-                <h3>{item.title}</h3>
-                <p>{item.text}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="n-campus-video" ref={campusVideoSectionRef}>
+        <section className="n-campus-video" id="n-sede-video" ref={campusVideoSectionRef}>
           <h2>Conoce tu sede</h2>
           <div className="n-video-box">
             <iframe
@@ -591,7 +621,41 @@ function App() {
             ></iframe>
           </div>
         </section>
+
+        <div className="scp-page scp-page--embed" id="contenido-semana-cero">
+          <div className="scp-embed-intro">
+            <h2 className="scp-h2">Semana Cero — Información completa</h2>
+            <p className="scp-lead">
+              Todo el material de inducción en esta misma página: deslizá o tocá las tarjetas de arriba para ir a cada
+              bloque.
+            </p>
+          </div>
+          <article className="scp-article">
+            <SemanaCeroFullSections />
+          </article>
+        </div>
       </main>
+
+      <nav className="n-bottom-dock" aria-label="Navegación rápida inferior">
+        {BOTTOM_DOCK_ITEMS.map(({ id, targetId, label, Icon }) => (
+          <motion.button
+            key={id}
+            type="button"
+            className={`n-bottom-dock-item ${dockActive === id ? 'is-active' : ''}`}
+            onClick={() => {
+              setDockActive(id)
+              scrollToAnchorId(targetId)
+            }}
+            whileHover={{ scale: 1.07, y: -2 }}
+            whileTap={{ scale: 0.93 }}
+            transition={{ type: 'spring', stiffness: 420, damping: 22 }}
+          >
+            <span className="n-bottom-dock-glow" aria-hidden />
+            <Icon size={22} strokeWidth={2.1} aria-hidden />
+            <span className="n-bottom-dock-label">{label}</span>
+          </motion.button>
+        ))}
+      </nav>
 
       {selloOpen && (
         <div className="n-sello-overlay" role="presentation" onClick={() => setSelloOpen(false)}>
@@ -617,406 +681,3 @@ function App() {
 }
 
 export default App
-/*
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Menu,
-  Sun,
-  Moon,
-  Globe, 
-  AtSign,
-  MessageCircle,
-  BookOpen, 
-  User, 
-  ChevronRight,
-  Info,
-  Library,
-  Book,
-  Star
-} from 'lucide-react'
-import './App.css'
-
-const QuickLink = ({ icon: Icon, href, label }: { icon: any, href: string, label: string }) => (
-  <motion.a 
-    href={href}
-    className="link-item"
-    whileHover={{ x: -10, scale: 1.1, backgroundColor: 'var(--primary)' }}
-    initial={{ opacity: 0, x: 20 }}
-    animate={{ opacity: 1, x: 0 }}
-    title={label}
-  >
-    <Icon size={22} />
-  </motion.a>
-)
-
-function App() {
-  // Estado UI
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [currentSlide, setCurrentSlide] = useState(0)
-  const [showMoreInfo, setShowMoreInfo] = useState(false)
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    const savedTheme = localStorage.getItem('theme')
-    if (savedTheme === 'dark' || savedTheme === 'light') {
-      return savedTheme
-    }
-
-    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
-  })
-
-  // Persistencia de tema
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('theme', theme)
-  }, [theme])
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark')
-  }
-
-  const goToInfoSection = () => {
-    const infoSection = document.getElementById('conoce-semana-cero')
-    if (infoSection) {
-      infoSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }
-
-  const goToCampusSection = () => {
-    const campusSection = document.getElementById('conoce-nuestra-sede')
-    if (campusSection) {
-      campusSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }
-
-  // Carrusel automático
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
-    }, 6500)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { y: 64, opacity: 0, scale: 0.96 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.8 }
-    }
-  }
-
-  const textRevealVariants = {
-    hidden: { y: 36, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.7 }
-    }
-  }
-
-  const heroSlides = [
-    '/santo-tomas-curico.jpg',
-    '/alumnos_santo_tomas.png',
-    '/Biblioteca.jpg'
-  ]
-
-  const menuItems = [
-    { icon: Info, label: 'Centro Información', href: '#' },
-    { icon: User, label: 'Intranet', href: '#' },
-    { icon: BookOpen, label: 'Aulas Virtuales', href: '#' },
-    { icon: Book, label: 'Libro Tu Puedes', href: '#' },
-    { icon: Library, label: 'Biblioteca Virtual', href: '#' },
-    { icon: Star, label: 'Personaje Sello 2026', href: '#', highlight: true },
-    { icon: Globe, label: 'Sede en 360', href: 'https://storage.net-fs.com/hosting/6520281/118/', external: true }
-  ]
-
-  return (
-    <div className={`app-wrapper ${isMenuOpen ? 'menu-open' : ''}`} data-theme={theme}>
-      <div className="bg-blobs">
-        <div className="blob blob-1"></div>
-        <div className="blob blob-2"></div>
-      </div>
-
-      <motion.aside
-        className="left-menu"
-        animate={{ width: isMenuOpen ? 300 : 86 }}
-        transition={{ type: 'spring', damping: 24, stiffness: 220 }}
-      >
-        <div className="left-menu-logo">
-          <img src="/logo-st.svg" alt="Instituto Profesional Santo Tomás" />
-        </div>
-
-        <button className="menu-toggle-btn" onClick={() => setIsMenuOpen((prev) => !prev)}>
-          <Menu size={22} />
-          <AnimatePresence>
-            {isMenuOpen && (
-              <motion.span
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -8 }}
-              >
-                MENÚ
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </button>
-
-        <nav className="left-menu-links">
-          {menuItems.map(({ icon: Icon, label, href, highlight }) => (
-            <a
-              key={label}
-              href={href}
-              className={highlight ? 'highlight' : ''}
-              title={label}
-              target={external ? '_blank' : undefined}
-              rel={external ? 'noopener noreferrer' : undefined}
-            >
-              <Icon size={18} />
-              <AnimatePresence>
-                {isMenuOpen && (
-                  <motion.span
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -8 }}
-                  >
-                    {label}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </a>
-          ))}
-        </nav>
-
-        <div className="left-menu-theme">
-          <button onClick={toggleTheme} className="left-menu-theme-btn" title={theme === 'dark' ? 'Modo día' : 'Modo noche'}>
-            {theme === 'dark' ? <Sun size={26} /> : <Moon size={26} />}
-            <AnimatePresence>
-              {isMenuOpen && (
-                <motion.span
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -8 }}
-                >
-                  {theme === 'dark' ? 'MODO DÍA' : 'MODO NOCHE'}
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </button>
-        </div>
-      </motion.aside>
-
-      <section className="hero">
-        <div className="hero-carousel" aria-hidden="true">
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={heroSlides[currentSlide]}
-              src={heroSlides[currentSlide]}
-              alt=""
-              className="hero-slide"
-              initial={{ opacity: 0, scale: 1.06 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.03 }}
-              transition={{ duration: 1.2, ease: 'easeOut' }}
-            />
-          </AnimatePresence>
-          <div className="hero-overlay"></div>
-        </div>
-
-        <motion.div
-          className="hero-content hero-content-right hero-content-shift-left"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <span className="meta" style={{ marginBottom: '1.5rem', display: 'block' }}>
-            BIENVENIDOS TOMACIN@S
-          </span>
-          <h1 className="hero-title">
-            <span className="hero-title-main">Únete</span>
-            <span className="hero-title-sub">A LA SEMANA CERO</span>
-          </h1>
-          <p>Comienza tu experiencia en el Instituto Profesional Santo Tomás con la mejor energía. Descubre todo lo que tenemos preparado para ti.</p>
-          <div className="hero-actions" style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center' }}>
-            <button className="btn-primary hero-explore-btn" onClick={goToInfoSection}>EXPLORAR INFORMACIÓN</button>
-            <button className="btn-primary" onClick={goToCampusSection} style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', color: 'var(--text-primary)' }}>CONOCE NUESTRA CEDE</button>
-          </div>
-        </motion.div>
-      </section>
-      <div className="hero-divider" aria-hidden="true"></div>
-
-      <main className="container">
-        <section id="mision-vision">
-          <motion.h2 
-            className="section-title"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            Misión y Visión
-          </motion.h2>
-          
-          <motion.div 
-            className="grid"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            <motion.div className="glass-card" variants={itemVariants}>
-              <div className="meta">Misión</div>
-              <motion.h3 variants={textRevealVariants}>Compromiso Institucional</motion.h3>
-              <motion.p variants={textRevealVariants} style={{ fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: 1.75 }}>
-                Contribuir al desarrollo sostenible del país, transmitiendo conocimiento mediante la formación de personas a lo largo de la vida, inspirada en valores cristianos, la vinculación con el medio y la innovación.
-              </motion.p>
-            </motion.div>
-
-            <motion.div className="glass-card" variants={itemVariants}>
-              <div className="meta">Visión</div>
-              <motion.h3 variants={textRevealVariants}>Proyección de Excelencia</motion.h3>
-              <motion.p variants={textRevealVariants} style={{ fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: 1.75 }}>
-                Ser un Instituto Profesional reconocido por su compromiso con la transformación de sus estudiantes y el desarrollo sostenible de las comunidades con que se vincula, y una gestión de excelencia.
-              </motion.p>
-            </motion.div>
-          </motion.div>
-        </section>
-
-        <section className="resources" id="conoce-semana-cero">
-          <motion.h2 
-            className="section-title"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            Conoce sobre tu semana Cero 
-          </motion.h2>
-          <p className="section-subtitle">Todo lo que necesitas sabes en un solo lugar.</p>
-          <div className="grid">
-            {[
-              { title: 'Valores Institucionales', desc: 'Conoce los principios que guían tu formación en Santo Tomás.', icon: User, label: 'IDENTIDAD' },
-              { title: 'Reglamento', desc: 'Revisa normas académicas y de convivencia para tu vida estudiantil.', icon: BookOpen, label: 'NORMATIVA' },
-              { title: 'Vías de Evacuasion', desc: 'Ubica rutas de seguridad y protocolos frente a emergencias.', icon: Library, label: 'SEGURIDAD' },
-              { title: 'Activacion de Correo', desc: 'Activa y usa tu correo institucional para todas tus plataformas.', icon: Globe, label: 'CONECTIVIDAD' },
-            ].map((res, idx) => (
-              <motion.div 
-                key={idx} 
-                className="glass-card" 
-                variants={itemVariants}
-                whileHover={{ scale: 1.05 }}
-              >
-                 <div className="meta">{res.label}</div>
-                 <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', margin: '1.5rem 0' }}>
-                  <div style={{ padding: '1rem', background: 'var(--primary-glow)', borderRadius: '16px', display: 'flex' }}>
-                    <res.icon size={28} color="var(--primary)" />
-                  </div>
-                  <h4 style={{ fontSize: '1.4rem' }}>{res.title}</h4>
-                 </div>
-                <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{res.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="more-info-action">
-            <button className="btn-primary" onClick={() => setShowMoreInfo((prev) => !prev)}>
-              {showMoreInfo ? 'OCULTAR INFORMACION ADICIONAL' : 'INFORMATE MAS SOBRE LA SEMANA CERO'}
-            </button>
-          </div>
-
-          <div className="campus-media-section" id="conoce-nuestra-sede">
-            <h3>CONOCE NUESTRA SEDE</h3>
-            <div className="campus-media-grid">
-            <div className="video-placeholder-section">
-            <div className="video-embed-placeholder">
-              <iframe
-                width="100%"
-                height="100%"
-                src="https://www.youtube.com/embed/WWnK0FpAspM"
-                title="Conoce tu sede Santo Tomás Curicó"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                style={{ borderRadius: '12px' }}
-              ></iframe>
-            </div>
-            </div>
-            </div>
-            <div className="campus-360-action">
-              <a
-                className="btn-primary campus-360-btn"
-                href={sanitizeExternalHref(LINKS.sede360)}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                CONOCE NUESTRA SEDE EN 360
-              </a>
-            </div>
-          </div>
-
-          {showMoreInfo && (
-            <motion.div
-              className="grid extra-info-grid"
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35 }}
-            >
-              {[
-                {
-                  title: 'Calendario de Actividades',
-                  desc: 'Revisa fechas clave, horarios y jornadas especiales de tu Semana Cero.',
-                  label: 'PLANIFICACION'
-                },
-                {
-                  title: 'Induccion Academica',
-                  desc: 'Conoce tu malla, reglamento interno y recomendaciones para el primer semestre.',
-                  label: 'ACADEMICO'
-                },
-                {
-                  title: 'Vida Estudiantil',
-                  desc: 'Descubre talleres, apoyo estudiantil, beneficios y canales de acompañamiento.',
-                  label: 'BIENESTAR'
-                },
-                {
-                  title: 'Servicios Digitales',
-                  desc: 'Aprende a usar correo institucional, plataformas de aula y herramientas online.',
-                  label: 'TECNOLOGIA'
-                }
-              ].map((item) => (
-                <div key={item.title} className="glass-card">
-                  <div className="meta">{item.label}</div>
-                  <h3>{item.title}</h3>
-                  <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{item.desc}</p>
-                </div>
-              ))}
-            </motion.div>
-          )}
-        </section>
-      </main>
-
-      <div className="right-rail">
-        <div className="quicklinks">
-          <QuickLink icon={AtSign} href="#" label="Instagram" />
-          <QuickLink icon={ChevronRight} href="#" label="Portales ST" />
-          <QuickLink icon={MessageCircle} href="#" label="Chatbot (Próximamente)" />
-        </div>
-      </div>
-
-      <footer>
-        <img src="https://www.santotomas.cl/wp-content/themes/santotomas/assets/img/logo-st.png" alt="Santo Tomás" style={{ height: '35px', filter: 'brightness(1)', marginBottom: '2rem' }} />
-        <p>&copy; 2026 Instituto Profesional Santo Tomás. Todos los derechos reservados.</p>
-        <p style={{ marginTop: '0.8rem', fontSize: '0.85rem' }}>Dirección Nacional de Asuntos Estudiantiles</p>
-      </footer>
-    </div>
-  )
-}
-
-export default App
-*/

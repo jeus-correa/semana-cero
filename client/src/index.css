@@ -31,19 +31,26 @@
 }
 
 [data-theme='light'] {
-  /* Día — limpio, contraste profesional y fondo verde menta sutil */
+  /* Día — fondo blanco con acento verde; tarjetas = mismo verde que Misión/Visión */
   --primary: #00885e; /* Verde corporativo Santo Tomás */
   --primary-glow: rgba(0, 136, 94, 0.15);
   --primary-hover: #00aa76;
   --accent: #0284c7;
   --accent-warm: #ea580c;
-  --bg-dark: #f0f9f6; /* Verde menta muy suave */
-  --bg-darker: #e1f2ec;
+  --bg-dark: #fafdfc;
+  --bg-darker: #f3f8f6;
   --glass-bg: rgba(255, 255, 255, 0.9);
   --glass-border: rgba(0, 136, 94, 0.15);
   --glass-border-hover: rgba(0, 136, 94, 0.4);
   --text-primary: #0f172a;
   --text-secondary: #334155;
+  /* Misma cara que .n-mv-card en modo día (App.css) */
+  --st-card-green: linear-gradient(165deg, #e4f7ec 0%, #d4f0df 100%);
+  --st-card-green-hover: linear-gradient(165deg, #daf3e8 0%, #c8e9d5 100%);
+  --st-card-green-border: rgba(0, 153, 109, 0.25);
+  --st-card-green-shadow:
+    0 8px 24px rgba(0, 100, 75, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.65) inset;
   color-scheme: light;
 }
 

@@ -1,4 +1,5 @@
- .n-loader-screen {
+/* Pantalla de carga: mismo aspecto siempre (no sigue tema día/noche del sitio) */
+.n-loader-screen {
   min-height: 100vh;
   min-height: 100dvh;
   display: grid;
@@ -6,6 +7,8 @@
   position: relative;
   overflow: hidden;
   text-align: center;
+  color-scheme: dark;
+  isolation: isolate;
   color: #e8f0ec;
   background-color: #020403;
   background-image:
@@ -85,6 +88,12 @@
 .n-loader-screen h2 {
   margin: 0;
   font-size: 1.8rem;
+  font-weight: 700;
+  color: #e8f0ec;
+  -webkit-text-fill-color: #e8f0ec;
+  background: none;
+  background-clip: unset;
+  -webkit-background-clip: unset;
 }
 
 .n-loader-screen p {
@@ -295,38 +304,38 @@
 }
 
 [data-theme='light'] .n-dashboard-bg {
-  background: linear-gradient(135deg, #f0f9f6 0%, #e1f2ec 100%);
+  background: #fafdfc;
 }
 
 [data-theme='light'] .n-dashboard-mesh {
   background:
-    radial-gradient(ellipse 90% 55% at 12% 22%, rgba(0, 136, 94, 0.08) 0%, transparent 55%),
-    radial-gradient(ellipse 75% 50% at 88% 12%, rgba(52, 211, 153, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse 70% 55% at 52% 92%, rgba(14, 165, 233, 0.06) 0%, transparent 52%),
-    linear-gradient(152deg, #f8fafc 0%, #f0f9f6 38%, #e1f2ec 72%, #ecfdf5 100%);
+    radial-gradient(ellipse 95% 70% at 50% -5%, rgba(0, 153, 109, 0.07) 0%, transparent 58%),
+    radial-gradient(ellipse 65% 50% at 95% 75%, rgba(0, 184, 130, 0.06) 0%, transparent 52%),
+    radial-gradient(ellipse 55% 45% at 5% 55%, rgba(212, 240, 223, 0.45) 0%, transparent 55%),
+    linear-gradient(165deg, #ffffff 0%, #f7fbf9 38%, #f2f9f5 72%, #fafdfc 100%);
   background-size: 220% 220%;
   animation: nMeshFlowLight 22s ease-in-out infinite alternate;
 }
 
 [data-theme='light'] .n-dashboard-blob {
   mix-blend-mode: multiply;
-  opacity: 0.32;
+  opacity: 0.26;
 }
 
 [data-theme='light'] .n-dashboard-blob--a {
-  background: radial-gradient(circle, rgba(251, 191, 36, 0.38) 0%, transparent 72%);
+  background: radial-gradient(circle, rgba(0, 184, 130, 0.2) 0%, transparent 72%);
 }
 
 [data-theme='light'] .n-dashboard-blob--b {
-  background: radial-gradient(circle, rgba(14, 165, 233, 0.32) 0%, transparent 72%);
+  background: radial-gradient(circle, rgba(0, 153, 109, 0.16) 0%, transparent 72%);
 }
 
 [data-theme='light'] .n-dashboard-blob--c {
-  background: radial-gradient(circle, rgba(244, 114, 182, 0.22) 0%, transparent 72%);
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.14) 0%, transparent 72%);
 }
 
 [data-theme='light'] .n-dashboard-blob--d {
-  background: radial-gradient(circle, rgba(52, 211, 153, 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(167, 243, 208, 0.35) 0%, transparent 70%);
 }
 
 @keyframes nMeshFlowLight {
@@ -1439,11 +1448,9 @@
 
 [data-theme='light'] .n-mv-card,
 [data-theme='light'] .n-video-box {
-  background: linear-gradient(165deg, #e4f7ec 0%, #d4f0df 100%);
-  border-color: rgba(0, 153, 109, 0.25);
-  box-shadow:
-    0 8px 24px rgba(0, 100, 75, 0.08),
-    0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+  background: var(--st-card-green);
+  border-color: var(--st-card-green-border);
+  box-shadow: var(--st-card-green-shadow);
 }
 
 [data-theme='light'] .n-btn-main {

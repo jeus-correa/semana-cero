@@ -31,11 +31,23 @@ import './SemanaCeroPage.css'
 import { SemanaCeroFullSections } from './SemanaCeroSections'
 import { LINKS, type SemanaTabId } from './semanaCeroContent'
 
-let visitIncrementedThisLoad = false
 const FALLBACK_HERO_SLIDES = ['/santo-tomas-curico.jpg', '/biblioteca--0.jpg', '/estudiantes--a.png'] as const
 const VISITS_BASE = 2550
 const VISITS_NAMESPACE = 'st-curico-semana-cero-2026'
-const VISITS_KEY = 'visitas-unicas'
+const VISITS_KEY = 'visitas-total'
+const VISITS_LOCAL_KEY = 'st_visits_fallback'
+
+/** Una sola promesa por carga del documento: evita doble +1 en Strict Mode (misma promesa, un solo bump local). */
+let visitsOncePromise: Promise<number> | null = null
+
+function normalizeCountValue(raw: unknown): number | null {
+  if (typeof raw === 'number' && Number.isFinite(raw)) return raw
+  if (typeof raw === 'string') {
+    const n = Number(raw)
+    if (Number.isFinite(n)) return n
+  }
+  return null
+}
 
 function sanitizeExternalHref(href: string) {
   if (href.startsWith('#')) return href
@@ -83,33 +95,75 @@ function scrollToAnchorId(elementId: string) {
   document.getElementById(elementId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
-async function getPublicIp() {
-  const res = await fetch('https://api64.ipify.org?format=json')
-  if (!res.ok) throw new Error('No se pudo obtener IP publica')
-  const data = (await res.json()) as { ip?: string }
-  if (!data.ip) throw new Error('IP no disponible')
-  return data.ip
+async function getCountApiValue(key: string): Promise<number | null> {
+  try {
+    const res = await fetch(`https://api.countapi.xyz/get/${VISITS_NAMESPACE}/${key}`)
+    if (!res.ok) return null
+    const data = (await res.json()) as { value?: unknown }
+    return normalizeCountValue(data.value)
+  } catch {
+    return null
+  }
 }
 
-async function getCountApiValue(key: string) {
-  const res = await fetch(`https://api.countapi.xyz/get/${VISITS_NAMESPACE}/${key}`)
-  if (!res.ok) throw new Error('No se pudo consultar contador')
-  const data = (await res.json()) as { value?: number }
-  if (typeof data.value !== 'number') return null
-  return data.value
+async function setCountApiValue(key: string, value: number): Promise<boolean> {
+  try {
+    const res = await fetch(`https://api.countapi.xyz/set/${VISITS_NAMESPACE}/${key}?value=${value}`)
+    return res.ok
+  } catch {
+    return false
+  }
 }
 
-async function setCountApiValue(key: string, value: number) {
-  const res = await fetch(`https://api.countapi.xyz/set/${VISITS_NAMESPACE}/${key}?value=${value}`)
-  if (!res.ok) throw new Error('No se pudo fijar contador')
+/** +1 remoto; preferimos `hit` y si falla probamos `update`. */
+async function incrementCountApiRemote(key: string): Promise<number> {
+  const hitRes = await fetch(`https://api.countapi.xyz/hit/${VISITS_NAMESPACE}/${key}`)
+  if (hitRes.ok) {
+    const data = (await hitRes.json()) as { value?: unknown }
+    const v = normalizeCountValue(data.value)
+    if (v !== null) return v
+  }
+  const updRes = await fetch(`https://api.countapi.xyz/update/${VISITS_NAMESPACE}/${key}?amount=1`)
+  if (!updRes.ok) throw new Error('No se pudo incrementar contador remoto')
+  const data = (await updRes.json()) as { value?: unknown }
+  const v = normalizeCountValue(data.value)
+  if (v === null) throw new Error('Respuesta invalida de contador')
+  return v
 }
 
-async function updateCountApiValue(key: string, amount: number) {
-  const res = await fetch(`https://api.countapi.xyz/update/${VISITS_NAMESPACE}/${key}?amount=${amount}`)
-  if (!res.ok) throw new Error('No se pudo actualizar contador')
-  const data = (await res.json()) as { value?: number }
-  if (typeof data.value !== 'number') throw new Error('Respuesta invalida de contador')
-  return data.value
+/** +1 en localStorage; nunca debería tirar (modo privado → número razonable igual). */
+function bumpLocalVisitsSafe(): number {
+  try {
+    const raw = Number(localStorage.getItem(VISITS_LOCAL_KEY) ?? String(VISITS_BASE))
+    const safeRaw = Number.isFinite(raw) ? Math.max(raw, VISITS_BASE) : VISITS_BASE
+    const next = safeRaw + 1
+    localStorage.setItem(VISITS_LOCAL_KEY, String(next))
+    return next
+  } catch {
+    return VISITS_BASE + 1
+  }
+}
+
+/** Resuelve al toque con el valor ya incrementado (no espera red). Misma promesa = un solo +1 por recarga. */
+function getBumpedVisitCountOnce(): Promise<number> {
+  if (visitsOncePromise) return visitsOncePromise
+  visitsOncePromise = Promise.resolve(bumpLocalVisitsSafe())
+  return visitsOncePromise
+}
+
+/** Sincroniza CountAPI después del bump local; no bloquea la UI. */
+async function syncRemoteAfterLocalBump(localFloor: number): Promise<number | null> {
+  try {
+    let current = await getCountApiValue(VISITS_KEY)
+    if (current === null || current < VISITS_BASE) {
+      const ok = await setCountApiValue(VISITS_KEY, VISITS_BASE)
+      if (!ok) throw new Error('set base remoto falló')
+    }
+    const remoteAfterHit = await incrementCountApiRemote(VISITS_KEY)
+    return Math.max(remoteAfterHit, VISITS_BASE, localFloor)
+  } catch {
+    return null
+  }
 }
 
 function App() {
@@ -118,7 +172,7 @@ function App() {
   )
   const [loading, setLoading] = useState(true)
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [visits, setVisits] = useState(0)
+  const [visits, setVisits] = useState(VISITS_BASE)
   const [selloOpen, setSelloOpen] = useState(false)
   const [showChatHint, setShowChatHint] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
@@ -131,7 +185,12 @@ function App() {
   const [campusVideoActive, setCampusVideoActive] = useState(false)
   const campusVideoSectionRef = useRef<HTMLElement | null>(null)
   const [dockActive, setDockActive] = useState<string>('dock-inicio')
-  const [dockVisible, setDockVisible] = useState(true)
+  const dockTriggerRef = useRef<HTMLButtonElement>(null)
+  const dockNavRef = useRef<HTMLElement>(null)
+  const dockDismissedWhileHoveredRef = useRef(false)
+  const [dockVisible, setDockVisible] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
+  )
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme === 'dark' || savedTheme === 'light') return savedTheme
@@ -149,55 +208,23 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (visitIncrementedThisLoad) return
-    visitIncrementedThisLoad = true
-
     let cancelled = false
-
-    const loadVisits = async () => {
-      try {
-        const currentGlobal = await getCountApiValue(VISITS_KEY)
-        if (currentGlobal === null || currentGlobal < VISITS_BASE) {
-          await setCountApiValue(VISITS_KEY, VISITS_BASE)
+    void getBumpedVisitCountOnce().then((v) => {
+      if (!cancelled) setVisits(v)
+      void syncRemoteAfterLocalBump(v).then((merged) => {
+        if (merged == null || cancelled) return
+        if (merged > v) {
+          try {
+            localStorage.setItem(VISITS_LOCAL_KEY, String(merged))
+          } catch {
+            /* noop */
+          }
         }
-
-        const currentValue = await getCountApiValue(VISITS_KEY)
-        const safeCurrent = currentValue !== null ? Math.max(currentValue, VISITS_BASE) : VISITS_BASE
-        if (!cancelled) setVisits(safeCurrent)
-
-        const ip = await getPublicIp()
-        const ipKey = `ip-${ip.replace(/[^a-zA-Z0-9]/g, '-')}`
-        const seenIp = await getCountApiValue(ipKey)
-
-        if (seenIp === null) {
-          await setCountApiValue(ipKey, 1)
-          const nextValue = await updateCountApiValue(VISITS_KEY, 1)
-          if (!cancelled) setVisits(Math.max(nextValue, VISITS_BASE))
-        }
-      } catch {
-        // Fallback local: mantiene contador visible si falla API externa
-        const localKey = 'st_visits_fallback'
-        const raw = Number(localStorage.getItem(localKey) ?? '0')
-        const safeRaw = Number.isFinite(raw) ? Math.max(raw, VISITS_BASE) : VISITS_BASE
-        if (!cancelled) setVisits(safeRaw)
-        const next = safeRaw + 1
-        localStorage.setItem(localKey, String(next))
-        const t = window.setTimeout(() => {
-          if (!cancelled) setVisits(next)
-        }, 420)
-        return () => window.clearTimeout(t)
-      }
-      return undefined
-    }
-
-    let clearLocalTimer: (() => void) | undefined
-    void loadVisits().then((cleanup) => {
-      if (typeof cleanup === 'function') clearLocalTimer = cleanup
+        setVisits((prev) => Math.max(prev, merged))
+      })
     })
-
     return () => {
       cancelled = true
-      if (clearLocalTimer) clearLocalTimer()
     }
   }, [])
 
@@ -379,13 +406,37 @@ function App() {
   useEffect(() => {
     if (isMobileLayout) {
       setDockVisible(true)
+      dockDismissedWhileHoveredRef.current = false
       return
     }
-    const revealZone = 96
+
+    setDockVisible(false)
+    dockDismissedWhileHoveredRef.current = false
+
+    const pad = 14
+    const pointInRect = (x: number, y: number, r: DOMRect, p: number) =>
+      x >= r.left - p && x <= r.right + p && y >= r.top - p && y <= r.bottom + p
+
     const onMove = (e: MouseEvent) => {
-      const nearBottom = window.innerHeight - e.clientY <= revealZone
-      setDockVisible(nearBottom)
+      const tr = dockTriggerRef.current?.getBoundingClientRect()
+      const nr = dockNavRef.current?.getBoundingClientRect()
+      if (!tr || tr.width === 0) return
+
+      const onTrigger = pointInRect(e.clientX, e.clientY, tr, pad)
+
+      if (dockDismissedWhileHoveredRef.current) {
+        if (!onTrigger) dockDismissedWhileHoveredRef.current = false
+        else return
+      }
+
+      let onNav = false
+      if (nr && nr.width > 0 && nr.height > 0) {
+        onNav = pointInRect(e.clientX, e.clientY, nr, pad)
+      }
+
+      setDockVisible(onTrigger || onNav)
     }
+
     window.addEventListener('mousemove', onMove)
     return () => window.removeEventListener('mousemove', onMove)
   }, [isMobileLayout])
@@ -783,9 +834,16 @@ function App() {
       </main>
 
       <button
+        ref={dockTriggerRef}
         type="button"
         className={`n-bottom-dock-trigger ${dockVisible ? 'is-dock-open' : ''} ${isMobileLayout ? 'is-hidden' : ''}`}
-        onClick={() => setDockVisible(!dockVisible)}
+        onClick={() => {
+          if (isMobileLayout) return
+          setDockVisible((v) => {
+            if (v) dockDismissedWhileHoveredRef.current = true
+            return !v
+          })
+        }}
         aria-label={dockVisible ? 'Ocultar menú' : 'Mostrar menú'}
         style={{ zIndex: 1100 }}
       >
@@ -794,7 +852,11 @@ function App() {
         </span>
       </button>
 
-      <nav className={`n-bottom-dock ${dockVisible || isMobileLayout ? 'is-visible' : ''}`} aria-label="Navegación rápida inferior">
+      <nav
+        ref={dockNavRef}
+        className={`n-bottom-dock ${dockVisible || isMobileLayout ? 'is-visible' : ''}`}
+        aria-label="Navegación rápida inferior"
+      >
         {BOTTOM_DOCK_ITEMS.map(({ id, targetId, label, num, tone, Icon }) => (
           <motion.button
             key={id}

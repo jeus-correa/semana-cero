@@ -2623,11 +2623,11 @@ section {
   }
 }
 
+/* Nota: no usar `* { animation: none }` aquí — en macOS/Windows con "Reducir movimiento"
+   eso dejaba TODO el sitio estático (barra, menú, fondo, Framer Motion). */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation: none !important;
-    transition: none !important;
-    scroll-behavior: auto !important;
+  html {
+    scroll-behavior: auto;
   }
 
   .blob,
@@ -2636,7 +2636,7 @@ section {
     transform: none !important;
   }
 
-  /* Mantener animaciones clave del loader aunque el sistema reduzca movimiento */
+  /* Loader: animaciones esenciales de carga */
   .n-loader-bg-motion {
     animation: nLoaderDrift 10s ease-in-out infinite !important;
   }
@@ -2661,7 +2661,6 @@ section {
     animation: nDotPulse 1s ease-in-out infinite !important;
   }
 
-  /* Mantener transición del menú lateral */
   .n-dashboard {
     transition: padding-left 0.28s ease !important;
   }
@@ -2670,7 +2669,6 @@ section {
     transition: width 0.28s ease, box-shadow 0.28s ease !important;
   }
 
-  /* Mantener transición suave del carrusel */
   .n-hero-bg {
     transition: opacity 2.8s ease-in-out, transform 10s ease-out !important;
   }
@@ -3180,19 +3178,20 @@ footer {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   border-radius: 22px;
-  background: linear-gradient(165deg, rgba(15, 23, 42, 0.88) 0%, rgba(6, 78, 59, 0.82) 100%);
-  border: 1px solid rgba(46, 229, 157, 0.35);
+  background: linear-gradient(165deg, rgba(15, 23, 42, 0.52) 0%, rgba(6, 78, 59, 0.45) 100%);
+  border: 1px solid rgba(46, 229, 157, 0.22);
   box-shadow:
-    0 14px 40px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(34, 211, 238, 0.15) inset,
-    0 -2px 20px rgba(244, 114, 182, 0.12);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+    0 14px 40px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(34, 211, 238, 0.1) inset,
+    0 -2px 20px rgba(244, 114, 182, 0.08);
+  backdrop-filter: blur(22px) saturate(1.15);
+  -webkit-backdrop-filter: blur(22px) saturate(1.15);
   opacity: 0;
   pointer-events: none;
   transition:
-    transform 0.28s ease,
-    opacity 0.22s ease;
+    transform 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
 }
 
 .n-bottom-dock::-webkit-scrollbar {
@@ -3395,12 +3394,12 @@ footer {
 }
 
 [data-theme='light'] .n-bottom-dock {
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 252, 0.94) 100%);
-  border-color: rgba(15, 23, 42, 0.1);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.72) 0%, rgba(248, 250, 252, 0.62) 100%);
+  border-color: rgba(15, 23, 42, 0.08);
   box-shadow:
-    0 14px 36px rgba(15, 23, 42, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.9) inset,
-    0 -2px 20px rgba(4, 120, 87, 0.06);
+    0 14px 36px rgba(15, 23, 42, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.55) inset,
+    0 -2px 20px rgba(4, 120, 87, 0.04);
 }
 
 [data-theme='light'] .n-bottom-dock-item {
@@ -3510,19 +3509,17 @@ footer {
     0 6px 18px rgba(15, 23, 42, 0.12);
 }
 
+/* Con "Reducir movimiento" solo suavizamos el dock; fondo y mesh siguen animados */
 @media (prefers-reduced-motion: reduce) {
-  .n-dashboard-mesh,
-  .n-dashboard-blob,
-  .n-btn-main {
-    animation: none !important;
+  .n-bottom-dock {
+    transition-duration: 0.12s !important;
+    will-change: auto;
   }
 
-  .n-bottom-dock,
-  .n-bottom-dock.is-visible {
+  .n-bottom-dock.is-visible,
+  .n-bottom-dock:hover,
+  .n-bottom-dock:focus-within {
     animation: none !important;
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-    pointer-events: auto;
   }
 }
 

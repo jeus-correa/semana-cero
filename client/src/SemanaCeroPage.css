@@ -2195,42 +2195,6 @@
   opacity: 0.9;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .scp-block {
-    animation: none;
-  }
-
-  .scp-doc-hero,
-  .scp-doc-hero-glow,
-  .scp-docentes-head,
-  .scp-linklist-docentes .scp-linkrow {
-    animation: none;
-  }
-
-  .scp-nav-item {
-    animation: none;
-  }
-
-  .scp-nav-item:hover {
-    transform: none;
-  }
-
-  .scp-val-card:hover,
-  .scp-linkrow:hover,
-  .scp-scard:hover,
-  .scp-scard.is-open,
-  .scp-card-mv:hover,
-  .scp-lim-card:hover,
-  .scp-feature:hover,
-  .scp-comite-card:hover,
-  .scp-vid-card:hover,
-  .scp-btn-primary:hover,
-  .scp-apoyo-list .scp-apoyo-row:hover,
-  .scp-apoyo-list .scp-apoyo-row.is-open {
-    transform: none;
-  }
-}
-
 @media (max-width: 860px) {
   .scp-topbar-inner {
     gap: 0.55rem;

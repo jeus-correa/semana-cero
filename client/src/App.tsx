@@ -56,7 +56,6 @@ function canLoadImage(src: string) {
 }
 
 function scrollToSemanaTab(tab: SemanaTabId) {
-<<<<<<< HEAD
   // Disparamos evento para que el componente de pestañas (Tabs) cambie a la sección correcta
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('changeSemanaTab', { detail: tab }))
@@ -65,9 +64,6 @@ function scrollToSemanaTab(tab: SemanaTabId) {
   setTimeout(() => {
     document.getElementById('contenido-semana-cero')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }, 50)
-=======
-  document.getElementById(`semana-${tab}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
->>>>>>> 5ca07335dc7a1c600b70068dbbc020d793683a84
 }
 
 const BOTTOM_DOCK_ITEMS = [

@@ -423,8 +423,8 @@ function App() {
   const chatFaq = {
     inicio: [
       {
-        q: '¡Hola! Soy Tomasin 🤖',
-        a: 'Tu asistente virtual especializado en los servicios de Santo Tomás. ¡Tu Puedes! ¿En qué puedo ayudarte hoy?'
+        q: '¡Hola! Soy Tomasín 🤖',
+        a: 'Tu asistente virtual especializado en los servicios de Santo Tomás. ¡Tu Puedes! ¿En qué puedo ayudarte hoy? Si buscas algo muy específico, también puedes preguntarme directamente en la sección "Conoce a Tomasín" del menú lateral.'
       }
     ],
     academica: [
@@ -531,7 +531,7 @@ function App() {
           <div className="n-chat-panel" role="dialog" aria-label="Chatbot Semana Cero">
             <div className="n-chat-head">
               <div className="n-chat-head-info">
-                <strong>Tomasin Asistente</strong>
+                <strong>Tomasín Asistente</strong>
                 <span className="n-chat-slogan">#TuPuedes</span>
               </div>
               <button type="button" onClick={() => setChatOpen(false)} aria-label="Cerrar chatbot">
@@ -732,7 +732,16 @@ function App() {
         </div>
 
         <section className="n-campus-video" id="n-sede-video" ref={campusVideoSectionRef}>
-          <h2>Conoce tu sede</h2>
+          <motion.h2
+            className="n-hero-style-title"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+          >
+            <span>CONOCE</span>
+            <strong>TU SEDE</strong>
+          </motion.h2>
           <div className="n-video-box">
             <iframe
               width="100%"
@@ -751,7 +760,16 @@ function App() {
 
         <div className="scp-page scp-page--embed" id="contenido-semana-cero">
           <div className="scp-embed-intro">
-            <h2 className="scp-h2">Semana Cero — Información completa</h2>
+            <motion.h2
+              className="scp-h2 n-hero-style-title"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
+            >
+              <span>SEMANA CERO</span>
+              <strong>INFORMACIÓN COMPLETA</strong>
+            </motion.h2>
             <p className="scp-lead">
               Todo el material de inducción en esta misma página: deslizá o tocá las tarjetas de arriba para ir a cada
               bloque.

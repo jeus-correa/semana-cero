@@ -25,24 +25,28 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Suavizado de transición de tema */
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }
 
 [data-theme='light'] {
-  /* Día — limpio, contraste profesional y fondo no invasivo */
+  /* Día — limpio, contraste profesional y fondo verde menta sutil */
   --primary: #00885e; /* Verde corporativo Santo Tomás */
-  --primary-glow: rgba(0, 136, 94, 0.2);
+  --primary-glow: rgba(0, 136, 94, 0.15);
   --primary-hover: #00aa76;
   --accent: #0284c7;
   --accent-warm: #ea580c;
-  --bg-dark: #fafbfc; /* Fondo mucho más suave, casi blanco perlado */
-  --bg-darker: #f0f3f5;
-  --glass-bg: rgba(255, 255, 255, 0.98);
-  --glass-border: rgba(0, 136, 94, 0.12); /* Borde verdoso elegante */
+  --bg-dark: #f0f9f6; /* Verde menta muy suave */
+  --bg-darker: #e1f2ec;
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(0, 136, 94, 0.15);
   --glass-border-hover: rgba(0, 136, 94, 0.4);
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
   color-scheme: light;
 }
+
 
 [data-theme='light'] a:hover {
   text-shadow: none;

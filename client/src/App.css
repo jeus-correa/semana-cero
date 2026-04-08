@@ -162,7 +162,12 @@
   max-width: 100%;
   display: block;
   padding-left: 92px;
-  transition: padding-left 0.28s ease, color 0.35s ease;
+  transition:
+    padding-left 0.28s ease,
+    background-color 0.4s ease,
+    color 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
   color: #e8fff4;
   background-color: transparent;
   box-sizing: border-box;
@@ -290,15 +295,15 @@
 }
 
 [data-theme='light'] .n-dashboard-bg {
-  background: #f1f5f9;
+  background: linear-gradient(135deg, #f0f9f6 0%, #e1f2ec 100%);
 }
 
 [data-theme='light'] .n-dashboard-mesh {
   background:
-    radial-gradient(ellipse 90% 55% at 12% 22%, rgba(14, 165, 233, 0.14) 0%, transparent 55%),
-    radial-gradient(ellipse 75% 50% at 88% 12%, rgba(52, 211, 153, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse 70% 55% at 52% 92%, rgba(99, 102, 241, 0.1) 0%, transparent 52%),
-    linear-gradient(152deg, #f8fafc 0%, #f1f5f9 38%, #eef2ff 72%, #ecfdf5 100%);
+    radial-gradient(ellipse 90% 55% at 12% 22%, rgba(0, 136, 94, 0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 75% 50% at 88% 12%, rgba(52, 211, 153, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 55% at 52% 92%, rgba(14, 165, 233, 0.06) 0%, transparent 52%),
+    linear-gradient(152deg, #f8fafc 0%, #f0f9f6 38%, #e1f2ec 72%, #ecfdf5 100%);
   background-size: 220% 220%;
   animation: nMeshFlowLight 22s ease-in-out infinite alternate;
 }
@@ -359,17 +364,28 @@
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  line-height: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.8rem;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
+  font-family: inherit;
+  color: inherit;
+  transition: all 0.4s ease;
   border: 1px solid rgba(255, 255, 255, 0.28);
   background: rgba(6, 24, 18, 0.82);
   color: #fff;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
-  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.4s ease,
+    color 0.4s ease,
+    box-shadow 0.4s ease;
 }
 
 .n-quick-btn svg {
@@ -756,7 +772,12 @@
   box-sizing: border-box;
   min-width: 0;
   overflow: hidden;
-  transition: width 0.28s ease, box-shadow 0.28s ease, border-color 0.35s ease;
+  transition:
+    width 0.28s ease,
+    background-color 0.4s ease,
+    color 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.28s ease;
   box-shadow:
     6px 0 32px rgba(0, 0, 0, 0.35),
     inset 0 0 40px rgba(46, 229, 157, 0.06);
@@ -1146,6 +1167,7 @@
     0 8px 28px rgba(34, 211, 238, 0.35),
     0 0 24px rgba(46, 229, 157, 0.25);
   animation: nBtnPulseGlow 3.2s ease-in-out infinite;
+  transition: all 0.4s ease;
 }
 
 @keyframes nBtnPulseGlow {
@@ -1267,12 +1289,75 @@
   box-sizing: border-box;
 }
 
+.n-hero-style-title {
+  margin: 0 0 1.5rem;
+  line-height: 1.1;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  text-align: center;
+  align-items: baseline;
+  justify-content: center;
+}
+
+
+/* Título superior (Conoce tu sede) */
+.n-hero-style-title span,
+.n-hero-style-title strong {
+  display: block;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  font-size: clamp(2.2rem, 6vw, 3.8rem);
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -1.2px;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Título inferior (Semana Cero Información completa) */
+.scp-h2.n-hero-style-title {
+  flex-direction: column;
+  gap: 0.15rem;
+  align-items: center;
+  text-align: center;
+}
+
+.scp-h2.n-hero-style-title span {
+  font-size: clamp(2.2rem, 6vw, 3.8rem);
+}
+
+.scp-h2.n-hero-style-title strong {
+  color: #22da86;
+  -webkit-text-fill-color: #22da86;
+  font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+  letter-spacing: 4px;
+  font-weight: 800;
+}
+
+
+[data-theme='light'] .n-hero-style-title span,
+[data-theme='light'] .n-hero-style-title strong {
+  color: #063d2e;
+  -webkit-text-fill-color: #063d2e;
+  text-shadow: none;
+}
+
+[data-theme='light'] .scp-h2.n-hero-style-title strong {
+  color: #10241d;
+  -webkit-text-fill-color: #10241d;
+}
+
+
+
 .n-mv-section h2,
 .n-campus-video h2 {
   font-size: clamp(1.35rem, 2.5vw + 0.5rem, 2rem);
   margin: 0 0 1rem;
   text-align: center;
 }
+
 .n-mv-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
@@ -1371,17 +1456,28 @@
 }
 
 [data-theme='light'] .n-btn-secondary {
-  color: #0f172a;
+  background: rgba(11, 79, 61, 0.08);
+  border-color: rgba(11, 79, 61, 0.25);
+  color: #0b4f3d;
+}
+
+[data-theme='light'] .n-btn-secondary:hover {
+  background: rgba(11, 79, 61, 0.15);
+  border-color: #00885e;
+  color: #00885e;
 }
 
 [data-theme='light'] .n-landing .n-hero-panel {
-  border-color: rgba(15, 23, 42, 0.1);
-  box-shadow: 0 16px 44px rgba(15, 23, 42, 0.1);
+  border-color: rgba(0, 136, 94, 0.12);
+  box-shadow: 0 16px 44px rgba(0, 136, 94, 0.08);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(8px);
 }
 
 [data-theme='light'] .n-ingreso-progress-top {
-  color: #334155;
+  color: #fff;
 }
+
 
 [data-theme='light'] .n-ingreso-track {
   background: rgba(15, 23, 42, 0.06);
@@ -1391,6 +1487,25 @@
   color: #fff;
   -webkit-text-fill-color: #fff;
 }
+
+/* Mantener casillas vibrantes incluso en modo claro */
+[data-theme='light'] .n-service-card {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+[data-theme='light'] .n-service-card h3,
+[data-theme='light'] .n-service-copy p {
+  color: #fff;
+}
+
+[data-theme='light'] .n-service-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+
 
 .n-dashboard:not(.menu-open) .n-sidebar-toggle,
 .n-dashboard:not(.menu-open) .n-theme-switch {

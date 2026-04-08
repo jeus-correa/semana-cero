@@ -3108,6 +3108,61 @@ footer {
   display: block;
 }
 
+/* Manual Trigger for Bottom Dock — Centered with High Visibility */
+.n-bottom-dock-trigger {
+  position: fixed;
+  left: 50%;
+  bottom: 0px;
+  transform: translateX(-50%) translateY(0);
+  z-index: 1045;
+  width: 56px;
+  height: 32px;
+  background: #0f1a16;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 2px solid #22da86;
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  display: flex !important; /* Force display if hidden */
+  align-items: center;
+  justify-content: center;
+  color: #22da86;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 -4px 20px rgba(34, 218, 134, 0.25);
+}
+
+.n-bottom-dock-trigger:hover {
+  height: 40px;
+  background: #064e3b;
+  color: #fff;
+  border-color: #5fffb8;
+  box-shadow: 0 -6px 25px rgba(34, 218, 134, 0.4);
+}
+
+.n-bottom-dock-trigger.is-dock-open {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(20px);
+}
+
+.n-bottom-dock-trigger.is-hidden {
+  display: none !important;
+}
+
+[data-theme='light'] .n-bottom-dock-trigger {
+  background: #ffffff;
+  border-color: #047857;
+  color: #047857;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] .n-bottom-dock-trigger:hover {
+  background: #f0fdf4;
+  color: #22da86;
+  border-color: #22da86;
+}
+
 /* Menú inferior — navegación rápida con estilo */
 .n-bottom-dock {
   position: fixed;
@@ -3144,13 +3199,10 @@ footer {
   display: none;
 }
 
-.n-bottom-dock.is-visible,
-.n-bottom-dock:hover,
-.n-bottom-dock:focus-within {
+.n-bottom-dock.is-visible {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
   pointer-events: auto;
-  animation: nDockFloat 5s ease-in-out infinite;
 }
 
 @keyframes nDockFloat {

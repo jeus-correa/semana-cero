@@ -23,7 +23,8 @@ import {
   Star,
   Sun,
   User,
-  Video
+  Video,
+  ChevronUp
 } from 'lucide-react'
 import './App.css'
 import './SemanaCeroPage.css'
@@ -225,11 +226,11 @@ function App() {
   }, [])
 
   const [isMobileLayout, setIsMobileLayout] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
   )
 
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 1024px)')
+    const mq = window.matchMedia('(max-width: 768px)')
     const apply = () => setIsMobileLayout(mq.matches)
     apply()
     mq.addEventListener('change', apply)
@@ -780,6 +781,18 @@ function App() {
           </article>
         </div>
       </main>
+
+      <button
+        type="button"
+        className={`n-bottom-dock-trigger ${dockVisible ? 'is-dock-open' : ''} ${isMobileLayout ? 'is-hidden' : ''}`}
+        onClick={() => setDockVisible(!dockVisible)}
+        aria-label={dockVisible ? 'Ocultar menú' : 'Mostrar menú'}
+        style={{ zIndex: 1100 }}
+      >
+        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {dockVisible ? <ChevronDown size={22} strokeWidth={3} /> : <ChevronUp size={22} strokeWidth={3} />}
+        </span>
+      </button>
 
       <nav className={`n-bottom-dock ${dockVisible || isMobileLayout ? 'is-visible' : ''}`} aria-label="Navegación rápida inferior">
         {BOTTOM_DOCK_ITEMS.map(({ id, targetId, label, num, tone, Icon }) => (

@@ -4,6 +4,8 @@ import {
   ArrowUpRight,
   BookOpen,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ExternalLink,
   Flag,
   Globe,
@@ -16,14 +18,13 @@ import {
   Video,
   X,
   User,
-  Library
+  Library,
+  Boxes
 } from 'lucide-react'
 import {
-  ACADEMIC_CFT_BLOCKS,
   ACADEMIC_CFT_CARRERAS_PDFS,
   ACADEMIC_IP_CARRERAS,
   ACADEMIC_LIM,
-  ACADEMIC_PRACTICA_TITULOS,
   APOYO_PDFS,
   CFT_LINKS,
   COMITE_CURICO,
@@ -31,8 +32,7 @@ import {
   IP_LINKS,
   LINKS,
   MISSION_VISION,
-  VALORES,
-  type SemanaTabId
+  VALORES
 } from './semanaCeroContent'
 
 function LinkRow({ title, subtitle, href }: { title: string; subtitle?: string; href: string }) {
@@ -63,23 +63,61 @@ const childStagger = {
 
 const TABS = [
   { id: 'mision', label: 'Misión y Visión', icon: Target },
+  { id: 'apoyo', label: 'Apoyo', icon: GraduationCap },
+  { id: 'academica', label: 'Académica', icon: Library },
   { id: 'valores', label: 'Valores', icon: Heart },
   { id: 'reglamentos', label: 'Políticas', icon: BookOpen },
   { id: 'seguros', label: 'Seguros', icon: Shield },
   { id: 'evacuacion', label: 'Evacuación', icon: Video },
   { id: 'correo', label: 'Correo', icon: Mail },
-  { id: 'apoyo', label: 'Apoyo', icon: GraduationCap },
-  { id: 'academica', label: 'Académica', icon: Library },
   { id: 'vcm', label: 'Vinculación', icon: Globe },
   { id: 'innovacion', label: 'Innovación', icon: Sparkles },
   { id: 'comite', label: 'Comité', icon: User },
   { id: 'denuncias', label: 'Canal', icon: Flag }
 ]
 
+const APOYO_AREAS = [
+  { title: 'Admisión', subtitle: 'Orientación y acceso a tu proceso de ingreso', href: 'https://www.ipsantotomas.cl/admision/' },
+  {
+    title: 'Educación Continua',
+    subtitle: 'Cursos, diplomados y especialización',
+    href: 'https://www.santotomas.cl/educacion-continua/'
+  },
+  {
+    title: 'Innovación',
+    subtitle: 'Programas y ecosistema de innovación institucional',
+    href: 'https://www.santotomas.cl/?s=innovacion'
+  },
+  {
+    title: 'LIM',
+    subtitle: 'Lenguaje, Inglés y Matemática (apoyo transversal)',
+    href: LINKS.pdfLimTransversales
+  },
+  {
+    title: 'Prevención de Riesgo',
+    subtitle: 'Protocolos y apoyo en seguridad estudiantil',
+    href: LINKS.segurosDae
+  },
+  {
+    title: 'Rectoría',
+    subtitle: 'Autoridades y conducción institucional',
+    href: 'https://www.santotomas.cl/informacion-institucional/autoridades/'
+  },
+  { title: 'E-learning', subtitle: 'Plataforma académica y recursos digitales', href: LINKS.aulasVirtuales },
+  {
+    title: 'Vinculación',
+    subtitle: 'Relación con el medio y proyectos comunitarios',
+    href: 'https://www.santotomas.cl/vinculacion-con-el-medio/'
+  }
+] as const
+
 export function SemanaCeroFullSections() {
   const [cftPanelOpen, setCftPanelOpen] = useState(false)
   const [selectedMember, setSelectedMember] = useState<{ nombre: string; cargo: string; foto: string } | null>(null)
   const [activeTab, setActiveTab] = useState<string>('mision')
+  const [canScrollTabsLeft, setCanScrollTabsLeft] = useState(false)
+  const [canScrollTabsRight, setCanScrollTabsRight] = useState(false)
+  const [tabsContainer, setTabsContainer] = useState<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const handleTabChange = (e: any) => {
@@ -89,23 +127,65 @@ export function SemanaCeroFullSections() {
     return () => window.removeEventListener('changeSemanaTab', handleTabChange)
   }, [])
 
+  useEffect(() => {
+    if (!tabsContainer) return
+    const updateArrows = () => {
+      const maxScrollLeft = tabsContainer.scrollWidth - tabsContainer.clientWidth
+      setCanScrollTabsLeft(tabsContainer.scrollLeft > 6)
+      setCanScrollTabsRight(tabsContainer.scrollLeft < maxScrollLeft - 6)
+    }
+    updateArrows()
+    tabsContainer.addEventListener('scroll', updateArrows, { passive: true })
+    window.addEventListener('resize', updateArrows)
+    return () => {
+      tabsContainer.removeEventListener('scroll', updateArrows)
+      window.removeEventListener('resize', updateArrows)
+    }
+  }, [tabsContainer])
+
+  const scrollTabs = (dir: 'left' | 'right') => {
+    if (!tabsContainer) return
+    const amount = Math.max(220, Math.round(tabsContainer.clientWidth * 0.55))
+    tabsContainer.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' })
+  }
+
   return (
     <div className="scp-panel">
-      <div className="scp-tabs-container">
-        {TABS.map((t) => {
-          const Icon = t.icon
-          return (
-            <button
-              key={t.id}
-              type="button"
-              className={`scp-tab-btn ${activeTab === t.id ? 'active' : ''}`}
-              onClick={() => setActiveTab(t.id)}
-            >
-              <Icon size={16} />
-              <span>{t.label}</span>
-            </button>
-          )
-        })}
+      <div className="scp-tabs-wrap">
+        <button
+          type="button"
+          className="scp-tabs-arrow"
+          aria-label="Ver secciones anteriores"
+          onClick={() => scrollTabs('left')}
+          disabled={!canScrollTabsLeft}
+        >
+          <ChevronLeft size={34} strokeWidth={3} />
+        </button>
+        <div className="scp-tabs-container" ref={setTabsContainer}>
+          {TABS.map((t) => {
+            const Icon = t.icon
+            return (
+              <button
+                key={t.id}
+                type="button"
+                className={`scp-tab-btn ${activeTab === t.id ? 'active' : ''}`}
+                onClick={() => setActiveTab(t.id)}
+              >
+                <Icon size={16} />
+                <span>{t.label}</span>
+              </button>
+            )
+          })}
+        </div>
+        <button
+          type="button"
+          className="scp-tabs-arrow"
+          aria-label="Ver más secciones"
+          onClick={() => scrollTabs('right')}
+          disabled={!canScrollTabsRight}
+        >
+          <ChevronRight size={34} strokeWidth={3} />
+        </button>
       </div>
 
       <div className="scp-tab-content">
@@ -243,7 +323,7 @@ export function SemanaCeroFullSections() {
             </div>
 
             <div className="scp-apoyo-pdf-grid" role="list">
-              {APOYO_PDFS.map((item, index) => (
+              {[...APOYO_PDFS, ...APOYO_AREAS].map((item, index) => (
                 <motion.a
                   key={item.title} role="listitem" href={item.href} target="_blank" rel="noopener noreferrer"
                   className="scp-apoyo-pdf-card"
@@ -252,11 +332,14 @@ export function SemanaCeroFullSections() {
                   viewport={{ once: true }}
                 >
                   <span className="scp-nav-num">{String(index + 1).padStart(2, '0')}</span>
-                  <GraduationCap size={22} aria-hidden className="scp-apoyo-pdf-ic" />
+                  {index < APOYO_PDFS.length ? (
+                    <GraduationCap size={22} aria-hidden className="scp-apoyo-pdf-ic" />
+                  ) : (
+                    <Boxes size={22} aria-hidden className="scp-apoyo-pdf-ic" />
+                  )}
                   <div className="scp-apoyo-pdf-text">
                     <strong>{item.title}</strong><span>{item.subtitle}</span>
                   </div>
-                  <ExternalLink size={18} className="scp-apoyo-pdf-go" aria-hidden />
                 </motion.a>
               ))}
             </div>

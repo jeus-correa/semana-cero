@@ -32,6 +32,9 @@ import { LINKS, type SemanaTabId } from './semanaCeroContent'
 
 let visitIncrementedThisLoad = false
 const FALLBACK_HERO_SLIDES = ['/santo-tomas-curico.jpg', '/biblioteca--0.jpg', '/estudiantes--a.png'] as const
+const VISITS_BASE = 2550
+const VISITS_NAMESPACE = 'st-curico-semana-cero-2026'
+const VISITS_KEY = 'visitas-unicas'
 
 function sanitizeExternalHref(href: string) {
   if (href.startsWith('#')) return href
@@ -68,15 +71,44 @@ function scrollToSemanaTab(tab: SemanaTabId) {
 
 const BOTTOM_DOCK_ITEMS = [
   { id: 'dock-inicio', targetId: 'inicio-hero', label: 'Inicio', num: 1, tone: 'mint', Icon: Home },
-  { id: 'dock-explora', targetId: 'conoce-semana-cero', label: 'Explorá', num: 2, tone: 'sky', Icon: Sparkles },
+  { id: 'dock-explora', targetId: 'inicio-hero', label: 'Tomasín', num: 2, tone: 'sky', Icon: Sparkles },
   { id: 'dock-sede', targetId: 'n-sede-video', label: 'Sede', num: 3, tone: 'amber', Icon: Video },
   { id: 'dock-guia', targetId: 'contenido-semana-cero', label: 'Guía', num: 4, tone: 'jade', Icon: Layers },
-  { id: 'dock-apoyo', targetId: 'semana-apoyo', label: 'Apoyo', num: 5, tone: 'rose', Icon: LifeBuoy },
-  { id: 'dock-academica', targetId: 'semana-academica', label: 'Académica', num: 6, tone: 'violet', Icon: GraduationCap }
+  { id: 'dock-apoyo', targetId: 'contenido-semana-cero', label: 'Apoyo', num: 5, tone: 'rose', Icon: LifeBuoy },
+  { id: 'dock-academica', targetId: 'contenido-semana-cero', label: 'Académica', num: 6, tone: 'violet', Icon: GraduationCap }
 ] as const
 
 function scrollToAnchorId(elementId: string) {
   document.getElementById(elementId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+async function getPublicIp() {
+  const res = await fetch('https://api64.ipify.org?format=json')
+  if (!res.ok) throw new Error('No se pudo obtener IP publica')
+  const data = (await res.json()) as { ip?: string }
+  if (!data.ip) throw new Error('IP no disponible')
+  return data.ip
+}
+
+async function getCountApiValue(key: string) {
+  const res = await fetch(`https://api.countapi.xyz/get/${VISITS_NAMESPACE}/${key}`)
+  if (!res.ok) throw new Error('No se pudo consultar contador')
+  const data = (await res.json()) as { value?: number }
+  if (typeof data.value !== 'number') return null
+  return data.value
+}
+
+async function setCountApiValue(key: string, value: number) {
+  const res = await fetch(`https://api.countapi.xyz/set/${VISITS_NAMESPACE}/${key}?value=${value}`)
+  if (!res.ok) throw new Error('No se pudo fijar contador')
+}
+
+async function updateCountApiValue(key: string, amount: number) {
+  const res = await fetch(`https://api.countapi.xyz/update/${VISITS_NAMESPACE}/${key}?amount=${amount}`)
+  if (!res.ok) throw new Error('No se pudo actualizar contador')
+  const data = (await res.json()) as { value?: number }
+  if (typeof data.value !== 'number') throw new Error('Respuesta invalida de contador')
+  return data.value
 }
 
 function App() {
@@ -98,6 +130,7 @@ function App() {
   const [campusVideoActive, setCampusVideoActive] = useState(false)
   const campusVideoSectionRef = useRef<HTMLElement | null>(null)
   const [dockActive, setDockActive] = useState<string>('dock-inicio')
+  const [dockVisible, setDockVisible] = useState(true)
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme === 'dark' || savedTheme === 'light') return savedTheme
@@ -117,13 +150,54 @@ function App() {
   useEffect(() => {
     if (visitIncrementedThisLoad) return
     visitIncrementedThisLoad = true
-    const baseVisits = 2400
-    const historyVisits = Number(localStorage.getItem('st_visits') ?? '0')
-    const despues = historyVisits + 1
-    localStorage.setItem('st_visits', String(despues))
-    setVisits(baseVisits + historyVisits)
-    const t = window.setTimeout(() => setVisits(baseVisits + despues), 420)
-    return () => window.clearTimeout(t)
+
+    let cancelled = false
+
+    const loadVisits = async () => {
+      try {
+        const currentGlobal = await getCountApiValue(VISITS_KEY)
+        if (currentGlobal === null || currentGlobal < VISITS_BASE) {
+          await setCountApiValue(VISITS_KEY, VISITS_BASE)
+        }
+
+        const currentValue = await getCountApiValue(VISITS_KEY)
+        const safeCurrent = currentValue !== null ? Math.max(currentValue, VISITS_BASE) : VISITS_BASE
+        if (!cancelled) setVisits(safeCurrent)
+
+        const ip = await getPublicIp()
+        const ipKey = `ip-${ip.replace(/[^a-zA-Z0-9]/g, '-')}`
+        const seenIp = await getCountApiValue(ipKey)
+
+        if (seenIp === null) {
+          await setCountApiValue(ipKey, 1)
+          const nextValue = await updateCountApiValue(VISITS_KEY, 1)
+          if (!cancelled) setVisits(Math.max(nextValue, VISITS_BASE))
+        }
+      } catch {
+        // Fallback local: mantiene contador visible si falla API externa
+        const localKey = 'st_visits_fallback'
+        const raw = Number(localStorage.getItem(localKey) ?? '0')
+        const safeRaw = Number.isFinite(raw) ? Math.max(raw, VISITS_BASE) : VISITS_BASE
+        if (!cancelled) setVisits(safeRaw)
+        const next = safeRaw + 1
+        localStorage.setItem(localKey, String(next))
+        const t = window.setTimeout(() => {
+          if (!cancelled) setVisits(next)
+        }, 420)
+        return () => window.clearTimeout(t)
+      }
+      return undefined
+    }
+
+    let clearLocalTimer: (() => void) | undefined
+    void loadVisits().then((cleanup) => {
+      if (typeof cleanup === 'function') clearLocalTimer = cleanup
+    })
+
+    return () => {
+      cancelled = true
+      if (clearLocalTimer) clearLocalTimer()
+    }
   }, [])
 
   useEffect(() => {
@@ -300,6 +374,51 @@ function App() {
     })
     return () => obs.disconnect()
   }, [loading])
+
+  useEffect(() => {
+    if (isMobileLayout) {
+      setDockVisible(true)
+      return
+    }
+    const revealZone = 96
+    const onMove = (e: MouseEvent) => {
+      const nearBottom = window.innerHeight - e.clientY <= revealZone
+      setDockVisible(nearBottom)
+    }
+    window.addEventListener('mousemove', onMove)
+    return () => window.removeEventListener('mousemove', onMove)
+  }, [isMobileLayout])
+
+  const triggerSemanaTab = (tab: SemanaTabId) => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('changeSemanaTab', { detail: tab }))
+    }
+    window.setTimeout(() => {
+      document.getElementById('contenido-semana-cero')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 40)
+  }
+
+  const handleDockAction = (id: string, targetId: string) => {
+    setDockActive(id)
+    if (id === 'dock-explora') {
+      window.open(sanitizeExternalHref(LINKS.conoceTomasinGemini), '_blank', 'noopener,noreferrer')
+      return
+    }
+    if (id === 'dock-sede') {
+      setCampusVideoActive(true)
+      scrollToAnchorId('n-sede-video')
+      return
+    }
+    if (id === 'dock-apoyo') {
+      triggerSemanaTab('apoyo')
+      return
+    }
+    if (id === 'dock-academica') {
+      triggerSemanaTab('academica')
+      return
+    }
+    scrollToAnchorId(targetId)
+  }
 
   const chatFaq = {
     inicio: [
@@ -644,15 +763,14 @@ function App() {
         </div>
       </main>
 
-      <nav className="n-bottom-dock" aria-label="Navegación rápida inferior">
+      <nav className={`n-bottom-dock ${dockVisible || isMobileLayout ? 'is-visible' : ''}`} aria-label="Navegación rápida inferior">
         {BOTTOM_DOCK_ITEMS.map(({ id, targetId, label, num, tone, Icon }) => (
           <motion.button
             key={id}
             type="button"
             className={`n-bottom-dock-item n-bottom-dock-item--${tone} ${dockActive === id ? 'is-active' : ''}`}
             onClick={() => {
-              setDockActive(id)
-              scrollToAnchorId(targetId)
+              handleDockAction(id, targetId)
             }}
             whileHover={{ scale: 1.06, y: -2 }}
             whileTap={{ scale: 0.94 }}

@@ -856,6 +856,7 @@
   background: rgba(255, 255, 255, 0.09);
 }
 .n-sidebar-menu a.highlight { border-color: rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.07); }
+
 .n-theme-switch { margin-top: auto; }
 
 .n-content {
@@ -2990,7 +2991,7 @@ footer {
   position: fixed;
   left: 50%;
   bottom: max(0.45rem, env(safe-area-inset-bottom));
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(calc(100% + 1rem));
   z-index: 1040;
   display: flex;
   flex-wrap: nowrap;
@@ -3010,11 +3011,24 @@ footer {
     0 -2px 20px rgba(244, 114, 182, 0.12);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  animation: nDockFloat 5s ease-in-out infinite;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.28s ease,
+    opacity 0.22s ease;
 }
 
 .n-bottom-dock::-webkit-scrollbar {
   display: none;
+}
+
+.n-bottom-dock.is-visible,
+.n-bottom-dock:hover,
+.n-bottom-dock:focus-within {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+  animation: nDockFloat 5s ease-in-out infinite;
 }
 
 @keyframes nDockFloat {
@@ -3325,13 +3339,16 @@ footer {
 @media (prefers-reduced-motion: reduce) {
   .n-dashboard-mesh,
   .n-dashboard-blob,
-  .n-bottom-dock,
   .n-btn-main {
     animation: none !important;
   }
 
-  .n-bottom-dock {
-    transform: translateX(-50%);
+  .n-bottom-dock,
+  .n-bottom-dock.is-visible {
+    animation: none !important;
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 

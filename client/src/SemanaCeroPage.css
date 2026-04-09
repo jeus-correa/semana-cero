@@ -691,7 +691,7 @@
 
 .scp-page-title {
   margin: 0 0 0.5rem;
-  font-size: clamp(1.45rem, 2.8vw, 1.85rem);
+  font-size: clamp(1.25rem, 4vw, 1.85rem);
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -2914,11 +2914,16 @@
     margin-bottom: 1.5rem;
   }
 
+  .scp-tabs-arrow {
+    min-width: 2.8rem;
+    height: 3rem;
+    padding: 0.2rem;
+  }
+
   .scp-tab-btn {
-    min-width: calc(50% - 0.25rem);
-    flex: 1 1 auto;
-    padding: 0.58rem 0.55rem;
-    font-size: 0.8rem;
+    min-width: 7.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.78rem;
   }
 
   .scp-apoyo-interactive {
@@ -2927,21 +2932,25 @@
     width: 100%;
     box-sizing: border-box;
   }
+
   .scp-apoyo-search-bar {
     padding: 0.6rem 1rem;
     font-size: 0.9rem;
     width: 100%;
     box-sizing: border-box;
   }
+
   .scp-apoyo-search-bar input {
     font-size: 0.85rem;
     width: 100%;
     min-width: 0;
   }
+
   .scp-apoyo-filters {
     gap: 0.5rem;
     margin-bottom: 0.25rem;
   }
+
   .scp-apoyo-filter-btn {
     padding: 0.55rem 1rem;
     font-size: 0.8rem;
@@ -2949,15 +2958,43 @@
 }
 
 @media (max-width: 480px) {
+  .scp-page-title {
+    font-size: 1.25rem;
+  }
+
+  .scp-tabs-wrap {
+    gap: 0.25rem;
+    padding: 0 0.4rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .scp-tabs-arrow {
+    min-width: 2.25rem;
+    height: 2.6rem;
+    border-width: 1.5px;
+    z-index: 2;
+  }
+
   .scp-tabs-container {
+    mask-image: linear-gradient(to right, transparent, black 15px, black calc(100% - 15px), transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 15px, black calc(100% - 15px), transparent);
+    padding: 0.5rem 10px;
+    margin: 0 -5px;
     padding-bottom: 0.5rem;
   }
+
   .scp-tab-btn {
     min-width: calc(50% - 0.25rem);
     padding: 0.65rem 0.4rem;
     font-size: 0.75rem;
   }
+
+  .scp-article {
+    padding: 0.75rem 0.5rem;
+  }
 }
+
 
 
 .scp-apoyo-pdf-text {

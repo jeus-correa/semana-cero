@@ -1071,6 +1071,8 @@
 
 /* —— Formación docente (hero) —— */
 .scp-doc-hero {
+  --dx: 0.5;
+  --dy: 0.42;
   position: relative;
   margin-bottom: 1.25rem;
   border-radius: 18px;
@@ -1087,6 +1089,176 @@
     inset 0 1px 0 rgba(0, 230, 168, 0.12),
     0 0 0 1px rgba(0, 214, 154, 0.12);
   animation: scpDocHeroIn 0.75s var(--scp-ease) both;
+  isolation: isolate;
+  touch-action: pan-y;
+}
+
+/* Capas de fondo animadas (rápidas, GPU) */
+.scp-doc-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.scp-doc-hero-mesh {
+  position: absolute;
+  inset: -50%;
+  background: conic-gradient(
+    from calc(40deg + var(--dx) * 80deg),
+    rgba(0, 230, 168, 0.22) 0deg,
+    rgba(0, 120, 100, 0.12) 72deg,
+    rgba(0, 60, 80, 0.18) 144deg,
+    rgba(0, 200, 160, 0.15) 216deg,
+    rgba(40, 100, 120, 0.12) 288deg,
+    rgba(0, 230, 168, 0.18) 360deg
+  );
+  opacity: 0.85;
+  animation: scpDocMeshSpin 14s linear infinite;
+  will-change: transform;
+}
+
+.scp-doc-hero-aurora {
+  position: absolute;
+  inset: -30%;
+  background: radial-gradient(
+    ellipse 70% 55% at calc(38% + var(--dx) * 24%) calc(32% + var(--dy) * 20%),
+    rgba(0, 255, 200, 0.35) 0%,
+    rgba(0, 140, 120, 0.08) 42%,
+    transparent 68%
+  );
+  mix-blend-mode: screen;
+  animation: scpDocAuroraPulse 5s ease-in-out infinite alternate;
+}
+
+.scp-doc-hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(36px);
+  opacity: 0.55;
+  will-change: transform;
+  animation: scpDocOrbFloat 7s ease-in-out infinite;
+}
+
+.scp-doc-hero-orb--a {
+  width: min(55%, 280px);
+  height: min(55%, 280px);
+  left: calc(-8% + var(--dx) * 18%);
+  top: calc(-22% + var(--dy) * 12%);
+  background: radial-gradient(circle at 30% 30%, rgba(0, 255, 210, 0.55), rgba(0, 80, 70, 0.15) 70%);
+  animation-delay: 0s;
+}
+
+.scp-doc-hero-orb--b {
+  width: min(45%, 220px);
+  height: min(45%, 220px);
+  right: calc(-12% + (1 - var(--dx)) * 14%);
+  bottom: calc(-18% + (1 - var(--dy)) * 10%);
+  background: radial-gradient(circle at 60% 40%, rgba(100, 220, 255, 0.35), rgba(0, 60, 90, 0.2) 65%);
+  animation-delay: -2.2s;
+  animation-duration: 8.5s;
+}
+
+.scp-doc-hero-orb--c {
+  width: min(38%, 180px);
+  height: min(38%, 180px);
+  left: calc(28% + var(--dx) * 8%);
+  bottom: calc(-8% + var(--dy) * 6%);
+  background: radial-gradient(circle at 50% 50%, rgba(180, 255, 220, 0.25), rgba(0, 100, 85, 0.12) 70%);
+  animation-delay: -4s;
+  animation-duration: 6s;
+  opacity: 0.4;
+}
+
+.scp-doc-hero-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.06) 48%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 52%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: scpDocShimmer 3.2s ease-in-out infinite;
+  mix-blend-mode: overlay;
+}
+
+.scp-doc-hero-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.14;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 85% 75% at calc(45% + var(--dx) * 10%) 40%, black 20%, transparent 72%);
+  animation: scpDocGridDrift 20s linear infinite;
+}
+
+@keyframes scpDocMeshSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes scpDocAuroraPulse {
+  from {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes scpDocOrbFloat {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(3%, -2%) scale(1.03);
+  }
+  66% {
+    transform: translate(-2%, 3%) scale(0.98);
+  }
+}
+
+@keyframes scpDocShimmer {
+  0% {
+    background-position: 120% 0;
+  }
+  100% {
+    background-position: -120% 0;
+  }
+}
+
+@keyframes scpDocGridDrift {
+  to {
+    background-position: 22px 22px, 22px 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scp-doc-hero-mesh,
+  .scp-doc-hero-aurora,
+  .scp-doc-hero-orb,
+  .scp-doc-hero-shimmer,
+  .scp-doc-hero-grid {
+    animation: none !important;
+  }
+
+  .scp-doc-hero-mesh {
+    transform: rotate(18deg);
+  }
 }
 
 @keyframes scpDocHeroIn {
@@ -1126,7 +1298,7 @@
   gap: 1rem;
   align-items: flex-start;
   padding: 1.25rem 1.35rem 1.35rem;
-  z-index: 1;
+  z-index: 2;
 }
 
 .scp-doc-hero-icon {
@@ -1223,8 +1395,70 @@
   );
 }
 
+[data-theme='light'] .scp-doc-hero-mesh {
+  opacity: 0.55;
+  background: conic-gradient(
+    from calc(35deg + var(--dx) * 70deg),
+    rgba(0, 184, 130, 0.2) 0deg,
+    rgba(180, 230, 210, 0.18) 120deg,
+    rgba(200, 240, 230, 0.15) 240deg,
+    rgba(0, 184, 130, 0.18) 360deg
+  );
+}
+
+[data-theme='light'] .scp-doc-hero-aurora {
+  background: radial-gradient(
+    ellipse 75% 60% at calc(40% + var(--dx) * 20%) calc(28% + var(--dy) * 18%),
+    rgba(0, 200, 140, 0.28) 0%,
+    rgba(255, 255, 255, 0.35) 45%,
+    transparent 70%
+  );
+  mix-blend-mode: multiply;
+}
+
+[data-theme='light'] .scp-doc-hero-orb--a {
+  background: radial-gradient(circle at 30% 30%, rgba(0, 200, 150, 0.45), rgba(255, 255, 255, 0.1) 70%);
+  opacity: 0.5;
+}
+
+[data-theme='light'] .scp-doc-hero-orb--b {
+  background: radial-gradient(circle at 50% 50%, rgba(120, 200, 230, 0.35), rgba(255, 255, 255, 0.08) 70%);
+  opacity: 0.45;
+}
+
+[data-theme='light'] .scp-doc-hero-orb--c {
+  background: radial-gradient(circle at 50% 50%, rgba(180, 235, 210, 0.4), rgba(255, 255, 255, 0.06) 70%);
+  opacity: 0.35;
+}
+
+[data-theme='light'] .scp-doc-hero-shimmer {
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    transparent 42%,
+    rgba(255, 255, 255, 0.45) 49%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(255, 255, 255, 0.4) 51%,
+    transparent 58%,
+    transparent 100%
+  );
+  mix-blend-mode: soft-light;
+  opacity: 0.65;
+}
+
+[data-theme='light'] .scp-doc-hero-grid {
+  opacity: 0.1;
+  background-image:
+    linear-gradient(rgba(0, 100, 75, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 100, 75, 0.06) 1px, transparent 1px);
+}
+
 [data-theme='light'] .scp-doc-hero-glow {
-  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0, 184, 130, 0.2), transparent 65%);
+  background: radial-gradient(
+    ellipse 80% 60% at calc(50% + (var(--dx) - 0.5) * 16%) calc(0% + var(--dy) * 6%),
+    rgba(0, 184, 130, 0.22),
+    transparent 65%
+  );
 }
 
 [data-theme='light'] .scp-doc-hero-icon {

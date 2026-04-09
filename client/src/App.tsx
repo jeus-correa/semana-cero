@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   BookOpen,
@@ -6,10 +7,7 @@ import {
   ChevronDown,
   Globe,
   GraduationCap,
-  Heart,
-  Home,
   Laptop,
-  Layers,
   Library,
   LifeBuoy,
   MailCheck,
@@ -21,10 +19,7 @@ import {
   Shield,
   Sparkles,
   Star,
-  Sun,
-  User,
-  Video,
-  ChevronUp
+  Sun
 } from 'lucide-react'
 import './App.css'
 import './SemanaCeroPage.css'
@@ -82,14 +77,29 @@ function scrollToSemanaTab(tab: SemanaTabId) {
   }, 50)
 }
 
-const BOTTOM_DOCK_ITEMS = [
-  { id: 'dock-inicio', targetId: 'inicio-hero', label: 'Inicio', num: 1, tone: 'mint', Icon: Home },
-  { id: 'dock-explora', targetId: 'inicio-hero', label: 'Tomasín', num: 2, tone: 'sky', Icon: Sparkles },
-  { id: 'dock-sede', targetId: 'n-sede-video', label: 'Sede', num: 3, tone: 'amber', Icon: Video },
-  { id: 'dock-guia', targetId: 'contenido-semana-cero', label: 'Guía', num: 4, tone: 'jade', Icon: Layers },
-  { id: 'dock-apoyo', targetId: 'contenido-semana-cero', label: 'Apoyo', num: 5, tone: 'rose', Icon: LifeBuoy },
-  { id: 'dock-academica', targetId: 'contenido-semana-cero', label: 'Académica', num: 6, tone: 'violet', Icon: GraduationCap }
-] as const
+type NavSectionItem = {
+  id: string
+  targetId: string
+  label: string
+  Icon: typeof LifeBuoy
+  semanaTab?: SemanaTabId
+}
+
+/** Secciones en el menú lateral (Semana Cero). */
+const NAV_SECTION_ITEMS: NavSectionItem[] = [
+  { id: 'nav-apoyo', targetId: 'contenido-semana-cero', label: 'Apoyo', Icon: LifeBuoy, semanaTab: 'apoyo' },
+  { id: 'nav-academica', targetId: 'contenido-semana-cero', label: 'Académica', Icon: GraduationCap, semanaTab: 'academica' }
+]
+
+type SidebarExternalLink = { icon: typeof Laptop; label: string; href: string }
+
+const SIDEBAR_EXTERNAL_LINKS: SidebarExternalLink[] = [
+  { icon: Laptop, label: 'Aulas Virtuales', href: LINKS.aulasVirtuales },
+  { icon: MapPin, label: 'Ubicación', href: LINKS.ubicacion },
+  { icon: BookOpen, label: 'Libro Tú Puedes', href: LINKS.libroTuPuedes },
+  { icon: Library, label: 'Biblioteca Virtual', href: LINKS.bibliotecaVirtual },
+  { icon: Globe, label: 'Sede en 360', href: LINKS.sede360 }
+]
 
 function scrollToAnchorId(elementId: string) {
   document.getElementById(elementId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -167,6 +177,7 @@ async function syncRemoteAfterLocalBump(localFloor: number): Promise<number | nu
 }
 
 function App() {
+  const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(() =>
     typeof window !== 'undefined' ? !window.matchMedia('(max-width: 1024px)').matches : true
   )
@@ -184,13 +195,8 @@ function App() {
   const [heroSlides, setHeroSlides] = useState<string[]>([...FALLBACK_HERO_SLIDES])
   const [campusVideoActive, setCampusVideoActive] = useState(false)
   const campusVideoSectionRef = useRef<HTMLElement | null>(null)
-  const [dockActive, setDockActive] = useState<string>('dock-inicio')
-  const dockTriggerRef = useRef<HTMLButtonElement>(null)
-  const dockNavRef = useRef<HTMLElement>(null)
-  const dockDismissedWhileHoveredRef = useRef(false)
-  const [dockVisible, setDockVisible] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
-  )
+  const [navActiveId, setNavActiveId] = useState('')
+  const lastContenidoNavRef = useRef('nav-academica')
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const savedTheme = localStorage.getItem('theme')
     if (savedTheme === 'dark' || savedTheme === 'light') return savedTheme
@@ -282,32 +288,18 @@ function App() {
     }
   }, [isMobileLayout, isMenuOpen])
 
-  type MenuRow =
-    | { kind: 'link'; icon: any; label: string; href: string; external?: boolean; highlight?: boolean }
-    | { kind: 'sello'; icon: any; label: string; highlight?: boolean }
-
-  const menuItems: MenuRow[] = [
-    { kind: 'link', icon: Laptop, label: 'Aulas Virtuales', href: LINKS.aulasVirtuales, external: true },
-    { kind: 'link', icon: MapPin, label: 'Ubicación', href: LINKS.ubicacion, external: true },
-    { kind: 'link', icon: BookOpen, label: 'Libro Tú Puedes', href: LINKS.libroTuPuedes, external: true },
-    { kind: 'link', icon: Library, label: 'Biblioteca Virtual', href: LINKS.bibliotecaVirtual, external: true },
-    { kind: 'sello', icon: Star, label: 'Personaje Sello 2026', highlight: true },
-    { kind: 'link', icon: Globe, label: 'Sede en 360', href: LINKS.sede360, external: true },
-    { kind: 'link', icon: Sparkles, label: 'Conoce a Tomasín', href: LINKS.conoceTomasinGemini, external: true },
-    { kind: 'link', icon: User, label: 'Unidades de apoyo', href: '#semana-apoyo', external: false }
-  ]
-
   const serviceCards: {
-    icon: any
+    icon: typeof Sparkles
     title: string
     desc: string
-    tab: SemanaTabId
+    tab?: SemanaTabId
+    externalHref?: string
   }[] = [
     {
-      icon: Heart,
-      title: 'Valores institucionales',
-      desc: 'Identidad, principios y valor del año 2026.',
-      tab: 'valores'
+      icon: Sparkles,
+      title: 'Tomasín',
+      desc: 'Asistente con IA (Google Gemini): preguntá por la sede y los servicios.',
+      externalHref: LINKS.conoceTomasinGemini
     },
     {
       icon: Shield,
@@ -382,64 +374,26 @@ function App() {
 
   useEffect(() => {
     if (loading) return
-    const idToDock = new Map<string, string>(BOTTOM_DOCK_ITEMS.map((d) => [d.targetId, d.id]))
     const obs = new IntersectionObserver(
       (entries) => {
         const visible = entries
           .filter((e) => e.isIntersecting && e.intersectionRatio > 0.08)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)
         const top = visible[0]
-        if (top?.target?.id) {
-          const next = idToDock.get(top.target.id)
-          if (next) setDockActive(next)
-        }
+        const tid = top?.target?.id
+        if (!tid) return
+        if (tid === 'inicio-hero') setNavActiveId('')
+        else if (tid === 'n-sede-video') setNavActiveId('')
+        else if (tid === 'contenido-semana-cero') setNavActiveId(lastContenidoNavRef.current)
       },
       { threshold: [0.08, 0.15, 0.28, 0.45], rootMargin: '-6% 0px -48% 0px' }
     )
-    BOTTOM_DOCK_ITEMS.forEach(({ targetId }) => {
-      const el = document.getElementById(targetId)
+    ;['inicio-hero', 'n-sede-video', 'contenido-semana-cero'].forEach((id) => {
+      const el = document.getElementById(id)
       if (el) obs.observe(el)
     })
     return () => obs.disconnect()
   }, [loading])
-
-  useEffect(() => {
-    if (isMobileLayout) {
-      setDockVisible(true)
-      dockDismissedWhileHoveredRef.current = false
-      return
-    }
-
-    setDockVisible(false)
-    dockDismissedWhileHoveredRef.current = false
-
-    const pad = 14
-    const pointInRect = (x: number, y: number, r: DOMRect, p: number) =>
-      x >= r.left - p && x <= r.right + p && y >= r.top - p && y <= r.bottom + p
-
-    const onMove = (e: MouseEvent) => {
-      const tr = dockTriggerRef.current?.getBoundingClientRect()
-      const nr = dockNavRef.current?.getBoundingClientRect()
-      if (!tr || tr.width === 0) return
-
-      const onTrigger = pointInRect(e.clientX, e.clientY, tr, pad)
-
-      if (dockDismissedWhileHoveredRef.current) {
-        if (!onTrigger) dockDismissedWhileHoveredRef.current = false
-        else return
-      }
-
-      let onNav = false
-      if (nr && nr.width > 0 && nr.height > 0) {
-        onNav = pointInRect(e.clientX, e.clientY, nr, pad)
-      }
-
-      setDockVisible(onTrigger || onNav)
-    }
-
-    window.addEventListener('mousemove', onMove)
-    return () => window.removeEventListener('mousemove', onMove)
-  }, [isMobileLayout])
 
   const triggerSemanaTab = (tab: SemanaTabId) => {
     if (typeof window !== 'undefined') {
@@ -450,33 +404,34 @@ function App() {
     }, 40)
   }
 
-  const handleDockAction = (id: string, targetId: string) => {
-    setDockActive(id)
-    if (id === 'dock-explora') {
-      window.open(sanitizeExternalHref(LINKS.conoceTomasinGemini), '_blank', 'noopener,noreferrer')
+  const handleNavSection = (item: NavSectionItem) => {
+    setNavActiveId(item.id)
+    if (item.targetId === 'contenido-semana-cero' && item.semanaTab) {
+      lastContenidoNavRef.current = item.id
+      triggerSemanaTab(item.semanaTab)
+      if (isMobileLayout) setIsMenuOpen(false)
       return
     }
-    if (id === 'dock-sede') {
-      setCampusVideoActive(true)
-      scrollToAnchorId('n-sede-video')
-      return
-    }
-    if (id === 'dock-apoyo') {
-      triggerSemanaTab('apoyo')
-      return
-    }
-    if (id === 'dock-academica') {
-      triggerSemanaTab('academica')
-      return
-    }
-    scrollToAnchorId(targetId)
+    scrollToAnchorId(item.targetId)
+    if (isMobileLayout) setIsMenuOpen(false)
+  }
+
+  const goHome = () => {
+    navigate('/', { replace: true })
+    lastContenidoNavRef.current = 'nav-academica'
+    window.dispatchEvent(new CustomEvent('changeSemanaTab', { detail: 'mision' }))
+    setNavActiveId('')
+    if (isMobileLayout) setIsMenuOpen(false)
+    window.requestAnimationFrame(() => {
+      document.getElementById('inicio-hero')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
   }
 
   const chatFaq = {
     inicio: [
       {
         q: '¡Hola! Soy Tomasín 🤖',
-        a: 'Tu asistente virtual especializado en los servicios de Santo Tomás. ¡Tu Puedes! ¿En qué puedo ayudarte hoy? Si buscas algo muy específico, también puedes preguntarme directamente en la sección "Conoce a Tomasín" del menú lateral.'
+        a: 'Tu asistente virtual especializado en los servicios de Santo Tomás. ¡Tú puedes! ¿En qué puedo ayudarte hoy? Revisá el menú lateral para ir al inicio, valores, sede, guía o enlaces útiles.'
       }
     ],
     academica: [
@@ -626,10 +581,10 @@ function App() {
       </div>
 
       <aside className="n-sidebar">
-        <div className="n-sidebar-brand">
+        <button type="button" className="n-sidebar-brand n-sidebar-brand-btn" onClick={goHome} aria-label="Volver al inicio">
           <img src="/logo-st.svg" alt="Santo Tomás" />
           {isMenuOpen && <span>SANTO TOMÁS</span>}
-        </div>
+        </button>
 
         <button
           className="n-sidebar-toggle"
@@ -641,35 +596,36 @@ function App() {
           {isMenuOpen && <span>MENÚ</span>}
         </button>
 
-        <nav className="n-sidebar-menu">
-          {menuItems.map((item) => {
-            const Icon = item.icon
-            if (item.kind === 'sello') {
-              return (
-                <button
-                  key={item.label}
-                  type="button"
-                  className={item.highlight ? 'highlight' : ''}
-                  onClick={() => setSelloOpen(true)}
-                >
-                  <Icon size={16} />
-                  {isMenuOpen && <span>{item.label}</span>}
-                </button>
-              )
-            }
+        <nav className="n-sidebar-menu" aria-label="Navegación principal">
+          {isMenuOpen && <div className="n-sidebar-group-label">En esta página</div>}
+          {NAV_SECTION_ITEMS.map((item) => {
+            const Icon = item.Icon
             return (
-              <a
-                key={item.label}
-                href={sanitizeExternalHref(item.href)}
-                className={item.highlight ? 'highlight' : ''}
-                target={item.external ? '_blank' : undefined}
-                rel={item.external ? 'noopener noreferrer' : undefined}
+              <button
+                key={item.id}
+                type="button"
+                className={`n-sidebar-nav-btn ${navActiveId === item.id ? 'is-active' : ''}`}
+                onClick={() => handleNavSection(item)}
               >
-                <Icon size={16} />
+                <Icon size={16} aria-hidden />
                 {isMenuOpen && <span>{item.label}</span>}
+              </button>
+            )
+          })}
+          {isMenuOpen && <div className="n-sidebar-group-label">Enlaces</div>}
+          {SIDEBAR_EXTERNAL_LINKS.map((link) => {
+            const Icon = link.icon
+            return (
+              <a key={link.label} href={sanitizeExternalHref(link.href)} target="_blank" rel="noopener noreferrer">
+                <Icon size={16} aria-hidden />
+                {isMenuOpen && <span>{link.label}</span>}
               </a>
             )
           })}
+          <button type="button" className="highlight" onClick={() => setSelloOpen(true)}>
+            <Star size={16} aria-hidden />
+            {isMenuOpen && <span>Personaje Sello 2026</span>}
+          </button>
         </nav>
 
         <button className="n-theme-switch" onClick={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}>
@@ -760,12 +716,18 @@ function App() {
         </section>
 
         <section className="n-services" id="conoce-semana-cero">
-          {serviceCards.map(({ icon: Icon, title, desc, tab }, idx) => (
+          {serviceCards.map(({ icon: Icon, title, desc, tab, externalHref }, idx) => (
             <motion.button
               key={title}
               type="button"
               className={`n-service-card n-service-card-btn n-service-${idx + 1}`}
-              onClick={() => scrollToSemanaTab(tab)}
+              onClick={() => {
+                if (externalHref) {
+                  window.open(sanitizeExternalHref(externalHref), '_blank', 'noopener,noreferrer')
+                } else if (tab) {
+                  scrollToSemanaTab(tab)
+                }
+              }}
               whileHover={{ y: -3 }}
               whileTap={{ scale: 0.98 }}
               transition={{ type: 'spring', stiffness: 400, damping: 24 }}
@@ -832,56 +794,6 @@ function App() {
           </article>
         </div>
       </main>
-
-      <button
-        ref={dockTriggerRef}
-        type="button"
-        className={`n-bottom-dock-trigger ${dockVisible ? 'is-dock-open' : ''} ${isMobileLayout ? 'is-hidden' : ''}`}
-        onClick={() => {
-          if (isMobileLayout) return
-          setDockVisible((v) => {
-            if (v) dockDismissedWhileHoveredRef.current = true
-            return !v
-          })
-        }}
-        aria-label={dockVisible ? 'Ocultar menú' : 'Mostrar menú'}
-        style={{ zIndex: 1100 }}
-      >
-        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {dockVisible ? <ChevronDown size={22} strokeWidth={3} /> : <ChevronUp size={22} strokeWidth={3} />}
-        </span>
-      </button>
-
-      <nav
-        ref={dockNavRef}
-        className={`n-bottom-dock ${dockVisible || isMobileLayout ? 'is-visible' : ''}`}
-        aria-label="Navegación rápida inferior"
-      >
-        {BOTTOM_DOCK_ITEMS.map(({ id, targetId, label, num, tone, Icon }) => (
-          <motion.button
-            key={id}
-            type="button"
-            className={`n-bottom-dock-item n-bottom-dock-item--${tone} ${dockActive === id ? 'is-active' : ''}`}
-            onClick={() => {
-              handleDockAction(id, targetId)
-            }}
-            whileHover={{ scale: 1.06, y: -2 }}
-            whileTap={{ scale: 0.94 }}
-            transition={{ type: 'spring', stiffness: 420, damping: 22 }}
-          >
-            <span className="n-bottom-dock-glow" aria-hidden />
-            <span className="n-bottom-dock-item-head">
-              <span className="n-bottom-dock-index" aria-hidden>
-                {num}
-              </span>
-              <span className={`n-bottom-dock-chip n-bottom-dock-chip--${tone}`}>
-                <Icon size={20} strokeWidth={2.1} aria-hidden />
-              </span>
-            </span>
-            <span className="n-bottom-dock-label">{label}</span>
-          </motion.button>
-        ))}
-      </nav>
 
       {selloOpen && (
         <div className="n-sello-overlay" role="presentation" onClick={() => setSelloOpen(false)}>

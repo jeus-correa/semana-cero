@@ -1,0 +1,79 @@
+/**
+ * Capa responsiva global: usa variables de viewportSync (--st-vh, --st-vw, data-bp).
+ * Importar después de index.css en main.tsx.
+ */
+
+/* Fallback hasta que corra el script (1vh ≈ ok; luego pisa con --st-vh en px) */
+html {
+  --st-vh: 1vh;
+  --st-vw: 1vw;
+}
+
+#root,
+body {
+  min-height: 100dvh;
+  min-height: calc(var(--st-vh, 1vh) * 100);
+}
+
+/* Dashboard: altura estable en móvil / navegador embebido */
+.n-dashboard {
+  min-height: 100dvh;
+  min-height: calc(var(--st-vh, 1vh) * 100);
+}
+
+/* .n-landing: min-height con --st-vh está en App.css (carga después) */
+
+/* Tablet: un poco más de aire lateral en contenido principal */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .n-content {
+    padding-left: max(0.65rem, env(safe-area-inset-left));
+    padding-right: max(0.65rem, env(safe-area-inset-right));
+  }
+}
+
+/* Escritorio ancho y TV: contenido no se estira infinito (legibilidad + uso a distancia) */
+@media (min-width: 1600px) {
+  .n-dashboard .n-content {
+    max-width: min(100%, 1680px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (min-width: 2200px) {
+  .n-dashboard .n-content {
+    max-width: min(100%, 1920px);
+  }
+
+  :root {
+    font-size: clamp(16px, 0.35vw + 14px, 19px);
+  }
+}
+
+/* TV / ultrawide muy ancho */
+html[data-bp='tv'] .n-dashboard .n-content {
+  max-width: min(100%, 2000px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Pantallas bajas (landscape móvil): hero no fuerza scroll excesivo */
+@media (max-height: 480px) and (orientation: landscape) {
+  .n-landing {
+    min-height: auto;
+    grid-template-rows: auto auto;
+  }
+
+  .n-hero-panel {
+    padding: clamp(0.65rem, 2.5vw, 1.25rem);
+  }
+}
+
+/* Puntero grueso: áreas táctiles mínimas recomendadas */
+@media (pointer: coarse) {
+  .n-sidebar-toggle,
+  .n-theme-switch,
+  .n-bottom-dock-item {
+    min-height: 44px;
+  }
+}

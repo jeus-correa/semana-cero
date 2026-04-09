@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback, type ReactNode, type TouchEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowUpRight,
@@ -59,6 +59,82 @@ const childStagger = {
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
   transition: { duration: 0.4 }
+}
+
+/** Fondo animado + parallax suave para el hero de docencia (Apoyo). */
+function DocHeroShell({
+  children,
+  className,
+  'aria-labelledby': ariaLabelledBy
+}: {
+  children: ReactNode
+  className?: string
+  'aria-labelledby'?: string
+}) {
+  const rootRef = useRef<HTMLDivElement>(null)
+  const rafRef = useRef<number>(0)
+
+  const applyPointer = useCallback((clientX: number, clientY: number) => {
+    const el = rootRef.current
+    if (!el) return
+    const r = el.getBoundingClientRect()
+    if (r.width < 1 || r.height < 1) return
+    const x = (clientX - r.left) / r.width
+    const y = (clientY - r.top) / r.height
+    el.style.setProperty('--dx', x.toFixed(4))
+    el.style.setProperty('--dy', y.toFixed(4))
+  }, [])
+
+  const onMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      rafRef.current = requestAnimationFrame(() => applyPointer(e.clientX, e.clientY))
+    },
+    [applyPointer]
+  )
+
+  const onLeave = useCallback(() => {
+    const el = rootRef.current
+    if (!el) return
+    el.style.setProperty('--dx', '0.5')
+    el.style.setProperty('--dy', '0.42')
+  }, [])
+
+  const onTouch = useCallback(
+    (e: TouchEvent<HTMLDivElement>) => {
+      const t = e.touches[0]
+      if (t) applyPointer(t.clientX, t.clientY)
+    },
+    [applyPointer]
+  )
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    }
+  }, [])
+
+  return (
+    <div
+      ref={rootRef}
+      className={className}
+      aria-labelledby={ariaLabelledBy}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      onTouchMove={onTouch}
+    >
+      <div className="scp-doc-hero-bg" aria-hidden>
+        <div className="scp-doc-hero-mesh" />
+        <div className="scp-doc-hero-aurora" />
+        <div className="scp-doc-hero-orb scp-doc-hero-orb--a" />
+        <div className="scp-doc-hero-orb scp-doc-hero-orb--b" />
+        <div className="scp-doc-hero-orb scp-doc-hero-orb--c" />
+        <div className="scp-doc-hero-shimmer" />
+        <div className="scp-doc-hero-grid" />
+      </div>
+      {children}
+    </div>
+  )
 }
 
 const TABS = [
@@ -305,7 +381,7 @@ export function SemanaCeroFullSections() {
             <h2 id="sec-ap" className="scp-h2">Unidades de apoyo</h2>
             <p className="scp-lead">Inducción pedagógica y recursos transversales.</p>
             
-            <div className="scp-doc-hero" aria-labelledby="doc-hero-title">
+            <DocHeroShell className="scp-doc-hero" aria-labelledby="doc-hero-title">
               <div className="scp-doc-hero-glow" aria-hidden />
               <div className="scp-doc-hero-inner">
                 <div className="scp-doc-hero-icon" aria-hidden><Sparkles size={26} strokeWidth={1.75} /></div>
@@ -320,7 +396,7 @@ export function SemanaCeroFullSections() {
                   </div>
                 </div>
               </div>
-            </div>
+            </DocHeroShell>
 
             <div className="scp-apoyo-pdf-grid" role="list">
               {[...APOYO_PDFS, ...APOYO_AREAS].map((item, index) => (

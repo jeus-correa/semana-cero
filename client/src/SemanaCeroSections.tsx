@@ -4,8 +4,6 @@ import {
   ArrowUpRight,
   BookOpen,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   ExternalLink,
   Flag,
   Globe,
@@ -19,7 +17,8 @@ import {
   X,
   User,
   Library,
-  Boxes
+  Boxes,
+  Search
 } from 'lucide-react'
 import {
   ACADEMIC_CFT_CARRERAS_PDFS,
@@ -191,10 +190,48 @@ export function SemanaCeroFullSections() {
   const [cftPanelOpen, setCftPanelOpen] = useState(false)
   const [selectedMember, setSelectedMember] = useState<{ nombre: string; cargo: string; foto: string } | null>(null)
   const [activeTab, setActiveTab] = useState<string>('mision')
-  const [canScrollTabsLeft, setCanScrollTabsLeft] = useState(false)
-  const [canScrollTabsRight, setCanScrollTabsRight] = useState(false)
-  const [tabsContainer, setTabsContainer] = useState<HTMLDivElement | null>(null)
+  const [apoyoCategory, setApoyoCategory] = useState<string>('Todas')
+  const [apoyoSearch, setApoyoSearch] = useState('')
 
+  const getApoyoCategory = (title: string) => {
+    switch(title) {
+      case 'Centro de Aprendizaje':
+      case 'Biblioteca':
+      case 'Formación':
+      case 'Educación Continua':
+      case 'LIM':
+        return 'Académico';
+      case 'Registro Curricular':
+      case 'DAO':
+      case 'Admisión':
+        return 'Administrativo';
+      case 'DAE':
+      case 'Prevención de Riesgo':
+        return 'Vida Estudiantil';
+      case 'Innovación':
+      case 'Rectoría':
+      case 'Vinculación':
+        return 'Institucional';
+      case 'Soporte de Informática':
+      case 'Cómo imprimir':
+      case 'E-learning':
+        return 'Soporte y Tech';
+      default:
+        return 'Institucional';
+    }
+  }
+
+  const apoyoItems = [
+    ...APOYO_PDFS.map(p => ({ ...p, type: 'pdfs' as const, category: getApoyoCategory(p.title) })),
+    ...APOYO_AREAS.map(a => ({ ...a, type: 'areas' as const, category: getApoyoCategory(a.title) }))
+  ]
+  const listCat = ['Todas', 'Académico', 'Administrativo', 'Vida Estudiantil', 'Institucional', 'Soporte y Tech']
+  
+  const filteredApoyo = apoyoItems.filter(item => {
+    const matchCat = apoyoCategory === 'Todas' || item.category === apoyoCategory;
+    const matchStr = item.title.toLowerCase().includes(apoyoSearch.toLowerCase()) || item.subtitle.toLowerCase().includes(apoyoSearch.toLowerCase());
+    return matchCat && matchStr;
+  });
   useEffect(() => {
     const handleTabChange = (e: any) => {
       if (e.detail) setActiveTab(e.detail)
@@ -203,41 +240,10 @@ export function SemanaCeroFullSections() {
     return () => window.removeEventListener('changeSemanaTab', handleTabChange)
   }, [])
 
-  useEffect(() => {
-    if (!tabsContainer) return
-    const updateArrows = () => {
-      const maxScrollLeft = tabsContainer.scrollWidth - tabsContainer.clientWidth
-      setCanScrollTabsLeft(tabsContainer.scrollLeft > 6)
-      setCanScrollTabsRight(tabsContainer.scrollLeft < maxScrollLeft - 6)
-    }
-    updateArrows()
-    tabsContainer.addEventListener('scroll', updateArrows, { passive: true })
-    window.addEventListener('resize', updateArrows)
-    return () => {
-      tabsContainer.removeEventListener('scroll', updateArrows)
-      window.removeEventListener('resize', updateArrows)
-    }
-  }, [tabsContainer])
-
-  const scrollTabs = (dir: 'left' | 'right') => {
-    if (!tabsContainer) return
-    const amount = Math.max(220, Math.round(tabsContainer.clientWidth * 0.55))
-    tabsContainer.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' })
-  }
-
   return (
     <div className="scp-panel">
       <div className="scp-tabs-wrap">
-        <button
-          type="button"
-          className="scp-tabs-arrow"
-          aria-label="Ver secciones anteriores"
-          onClick={() => scrollTabs('left')}
-          disabled={!canScrollTabsLeft}
-        >
-          <ChevronLeft size={34} strokeWidth={3} />
-        </button>
-        <div className="scp-tabs-container" ref={setTabsContainer}>
+        <div className="scp-tabs-container">
           {TABS.map((t) => {
             const Icon = t.icon
             return (
@@ -253,15 +259,6 @@ export function SemanaCeroFullSections() {
             )
           })}
         </div>
-        <button
-          type="button"
-          className="scp-tabs-arrow"
-          aria-label="Ver más secciones"
-          onClick={() => scrollTabs('right')}
-          disabled={!canScrollTabsRight}
-        >
-          <ChevronRight size={34} strokeWidth={3} />
-        </button>
       </div>
 
       <div className="scp-tab-content">
@@ -398,26 +395,56 @@ export function SemanaCeroFullSections() {
               </div>
             </DocHeroShell>
 
+            <div className="scp-apoyo-interactive">
+              <div className="scp-apoyo-search-bar">
+                <Search className="scp-apoyo-search-ic" size={18} />
+                <input 
+                  type="text" 
+                  placeholder="Buscar área, servicio o documento..." 
+                  value={apoyoSearch}
+                  onChange={(e) => setApoyoSearch(e.target.value)}
+                />
+              </div>
+
+              <div className="scp-apoyo-filters" role="group" aria-label="Filtro de unidades de apoyo">
+                {listCat.map(cat => (
+                  <button 
+                    key={cat}
+                    type="button"
+                    className={`scp-apoyo-filter-btn ${apoyoCategory === cat ? 'active' : ''}`}
+                    onClick={() => setApoyoCategory(cat)}
+                  >{cat}</button>
+                ))}
+              </div>
+            </div>
+
             <div className="scp-apoyo-pdf-grid" role="list">
-              {[...APOYO_PDFS, ...APOYO_AREAS].map((item, index) => (
-                <motion.a
-                  key={item.title} role="listitem" href={item.href} target="_blank" rel="noopener noreferrer"
-                  className="scp-apoyo-pdf-card"
-                  initial={{ opacity: 0, scale: 0.96 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                >
-                  <span className="scp-nav-num">{String(index + 1).padStart(2, '0')}</span>
-                  {index < APOYO_PDFS.length ? (
-                    <GraduationCap size={22} aria-hidden className="scp-apoyo-pdf-ic" />
-                  ) : (
-                    <Boxes size={22} aria-hidden className="scp-apoyo-pdf-ic" />
-                  )}
-                  <div className="scp-apoyo-pdf-text">
-                    <strong>{item.title}</strong><span>{item.subtitle}</span>
-                  </div>
-                </motion.a>
-              ))}
+              {filteredApoyo.length === 0 ? (
+                <div className="scp-apoyo-empty">
+                  No se encontraron áreas asociadas a tu búsqueda.
+                </div>
+              ) : (
+                filteredApoyo.map((item, index) => (
+                  <motion.a
+                    key={item.title} role="listitem" href={item.href} target="_blank" rel="noopener noreferrer"
+                    className="scp-apoyo-pdf-card"
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    layout
+                  >
+                    <span className="scp-nav-num">{String(index + 1).padStart(2, '0')}</span>
+                    {item.type === 'pdfs' ? (
+                      <GraduationCap size={22} aria-hidden className="scp-apoyo-pdf-ic" />
+                    ) : (
+                      <Boxes size={22} aria-hidden className="scp-apoyo-pdf-ic" />
+                    )}
+                    <div className="scp-apoyo-pdf-text">
+                      <strong>{item.title}</strong><span>{item.subtitle}</span>
+                    </div>
+                  </motion.a>
+                ))
+              )}
             </div>
           </motion.section>
         )}

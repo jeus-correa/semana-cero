@@ -5,6 +5,7 @@ import {
   BookOpen,
   ChevronRight,
   ChevronDown,
+  Eye,
   Globe,
   GraduationCap,
   Laptop,
@@ -259,11 +260,11 @@ function App() {
   }, [])
 
   const [isMobileLayout, setIsMobileLayout] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 1024px)').matches
   )
 
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 768px)')
+    const mq = window.matchMedia('(max-width: 1024px)')
     const apply = () => setIsMobileLayout(mq.matches)
     apply()
     mq.addEventListener('change', apply)
@@ -647,11 +648,16 @@ function App() {
             ))}
           </div>
           <div className="n-hero-shade" />
-          <div className="n-views-chip">Vistas: {visits.toLocaleString('es-CL')}</div>
 
           <div className="n-hero-text">
-            <div className="n-hero-pill">
-              <span>BIENVENIDO TOMACIN@S</span>
+            <div className="n-hero-top-badges">
+              <div className="n-hero-pill">
+                <span>BIENVENIDO TOMACIN@S</span>
+              </div>
+              <div className="n-views-chip">
+                <Eye size={16} strokeWidth={2.5} aria-hidden="true" />
+                <span>{visits.toLocaleString('es-CL')} visitas</span>
+              </div>
             </div>
 
             <h1>

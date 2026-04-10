@@ -993,6 +993,13 @@
   gap: 1.5rem;
 }
 
+.scp-reg-accordion-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+}
+
 .scp-reg-col {
   min-width: 0;
 }
@@ -1113,6 +1120,47 @@
 }
 
 /* —— Formación docente (hero) —— */
+.scp-doc-hero-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.scp-doc-hero-stack .scp-doc-hero {
+  margin-bottom: 0;
+}
+
+.scp-doc-hero--formation {
+  border-color: rgba(167, 139, 250, 0.42);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(196, 181, 253, 0.14),
+    0 0 0 1px rgba(139, 92, 246, 0.14);
+}
+
+.scp-doc-hero--formation .scp-doc-hero-mesh {
+  filter: hue-rotate(248deg) saturate(1.05);
+  opacity: 0.82;
+}
+
+.scp-doc-hero--formation .scp-doc-hero-aurora {
+  opacity: 0.88;
+}
+
+[data-theme='light'] .scp-doc-hero--formation {
+  border-color: rgba(124, 58, 237, 0.32);
+  box-shadow:
+    0 16px 40px rgba(88, 28, 135, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 0 0 1px rgba(167, 139, 250, 0.2);
+}
+
+[data-theme='light'] .scp-doc-hero--formation .scp-doc-hero-mesh {
+  filter: hue-rotate(248deg) saturate(0.9);
+  opacity: 0.55;
+}
+
 .scp-doc-hero {
   --dx: 0.5;
   --dy: 0.42;
@@ -1887,6 +1935,17 @@
   gap: 0.5rem;
 }
 
+.scp-cft-search-center {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.scp-cft-search-bar-centered {
+  width: 100%;
+  max-width: min(100%, 26rem);
+}
+
 .scp-cft-interactive {
   display: flex;
   flex-direction: column;
@@ -2114,6 +2173,134 @@
 
 [data-theme='light'] .scp-footnote {
   color: rgba(16, 36, 29, 0.72);
+}
+
+/* Evacuación — planos críticos (alto contraste rojo) */
+.scp-evac-emergency {
+  margin: 1.2rem 0 1.45rem;
+  padding: 1.05rem 1.15rem 1.15rem;
+  border-radius: 16px;
+  border: 2px solid rgba(248, 113, 113, 0.55);
+  background: linear-gradient(152deg, rgba(91, 15, 18, 0.92) 0%, rgba(45, 8, 12, 0.96) 100%);
+  box-shadow:
+    0 14px 44px rgba(220, 38, 38, 0.22),
+    inset 0 1px 0 rgba(254, 202, 202, 0.12);
+}
+
+.scp-evac-emergency-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin: 0;
+  font-size: clamp(0.88rem, 2.4vw, 0.98rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  color: #fecaca;
+}
+
+.scp-evac-emergency-title svg {
+  flex-shrink: 0;
+  margin-top: 0.12rem;
+  color: #fca5a5;
+}
+
+.scp-evac-emergency-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+.scp-evac-emergency-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.28rem;
+  padding: 1rem 1.15rem 1.05rem;
+  border-radius: 14px;
+  text-decoration: none;
+  color: #fff;
+  background: linear-gradient(165deg, #c41e1e 0%, #8b1414 42%, #5c0a0a 100%);
+  border: 2px solid rgba(254, 202, 202, 0.38);
+  box-shadow:
+    0 10px 32px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition:
+    transform 0.28s var(--scp-ease),
+    box-shadow 0.28s var(--scp-ease),
+    border-color 0.28s var(--scp-ease);
+}
+
+.scp-evac-emergency-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(254, 226, 226, 0.55);
+  box-shadow:
+    0 16px 40px rgba(220, 38, 38, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.scp-evac-emergency-card-kicker {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.scp-evac-emergency-card strong {
+  font-size: 1.02rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.scp-evac-emergency-card > span:not(.scp-evac-emergency-card-kicker):not(.scp-evac-emergency-card-cta) {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.scp-evac-emergency-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fecaca;
+}
+
+[data-theme='light'] .scp-evac-emergency {
+  background: linear-gradient(168deg, #fff1f2 0%, #ffe4e6 48%, #fecdd3 100%);
+  border-color: rgba(220, 38, 38, 0.42);
+  box-shadow:
+    0 12px 36px rgba(220, 38, 38, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+[data-theme='light'] .scp-evac-emergency-title {
+  color: #7f1d1d;
+}
+
+[data-theme='light'] .scp-evac-emergency-title svg {
+  color: #dc2626;
+}
+
+[data-theme='light'] .scp-evac-emergency-card {
+  color: #fff;
+  background: linear-gradient(165deg, #dc2626 0%, #991b1b 45%, #7f1d1d 100%);
+  border-color: rgba(254, 202, 202, 0.45);
+  box-shadow:
+    0 10px 28px rgba(153, 27, 27, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+[data-theme='light'] .scp-evac-emergency-card:hover {
+  box-shadow:
+    0 14px 36px rgba(185, 28, 28, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .scp-video-grid {
@@ -3157,10 +3344,6 @@
   }
 
   .scp-tabs-container {
-    mask-image: linear-gradient(to right, transparent, black 15px, black calc(100% - 15px), transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 15px, black calc(100% - 15px), transparent);
-    padding: 0.5rem 10px;
-    margin: 0 -5px;
     padding-bottom: 0.55rem;
   }
 

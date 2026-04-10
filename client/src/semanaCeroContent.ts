@@ -41,7 +41,10 @@ export const LINKS = {
   ipPortalReglamentos:
     'https://www.ipsantotomas.cl/informacion-institucional/politicas-y-reglamentos/politicas-reglamentos-y-documentos/',
   cftPortalReglamentos:
-    'https://www.cftsantotomas.cl/informacion-institucional/politicas-y-reglamentos/politicas-reglamentos-y-documentos/'
+    'https://www.cftsantotomas.cl/informacion-institucional/politicas-y-reglamentos/politicas-reglamentos-y-documentos/',
+  /** Planos simbología emergencia — Sede Curicó */
+  pdfEvacPlanta3Emergencia: 'https://drive.google.com/file/d/11gInreHeFsxtcb5UyjG3o2wI7k5WZfAq/view',
+  pdfEvacPlanta4Emergencia: 'https://drive.google.com/file/d/148OnzJSSBaqWAo4x5SDTf2xiRtkSUFrI/view'
 } as const
 
 export type ApoyoPdfItem = {
@@ -62,6 +65,54 @@ export const APOYO_PDFS: ApoyoPdfItem[] = [
   { title: 'Formación', subtitle: 'Material de apoyo institucional', href: LINKS.pdfFormacion },
   { title: 'Cómo imprimir', subtitle: 'Guía rápida de impresión', href: LINKS.pdfComoImprimir }
 ]
+
+/** Sede Curicó: correo + carpeta Google Drive por unidad (clave = título como en APOYO_PDFS / APOYO_AREAS). */
+export const APOYO_CURICO_CONTACT: Partial<Record<string, { email: string; driveFolderUrl: string }>> = {
+  Biblioteca: {
+    email: 'st.curico.biblioteca@gmail.com',
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1T20vDlu4s2n5xSLksnA1rhIyvYFYOnH5?usp=sharing'
+  },
+  DAE: {
+    email: 'st.curico.dae@gmail.com',
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1KKlT-37nmlR-ptOvG3H0VfCZwog-htdW?usp=sharing'
+  },
+  Admisión: {
+    email: 'st.curico.admision@gmail.com',
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1n6LAlfUK7OTd9ZKSPWkqeP_qXM3f9q7y?usp=sharing'
+  },
+  'Educación Continua': {
+    email: 'st.curico.educacion.continua@gmail.com',
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1DdCsJZJaFO7vd1WKzu100qRAZmDkOeG3?usp=sharing'
+  },
+  Rectoría: {
+    email: 'st.curico.rectoria@gmail.com',
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1d5-YhvOURLr-re_G2cskh6p0mmwzg4JN?usp=sharing'
+  },
+  'Soporte de Informática': {
+    email: 'st.curico.informatica@gmail.com',
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1brR95j8U4qjTYHniL_pIK-am-CS4PuJt?usp=sharing'
+  },
+  DAO: {
+    email: 'st.curico.dao@gmail.com',
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1LfYYsJVcc4tigWmjyU09XqdVOwZHUKow?usp=sharing'
+  },
+  'Registro Curricular': {
+    email: 'st.curico.curricular@gmail.com',
+    driveFolderUrl: 'https://drive.google.com/drive/folders/143G1H6s3xQR5r0lpI2k3D0Mbs_Pvd7B_?usp=sharing'
+  },
+  'Centro de Aprendizaje': {
+    email: 'st.curico.centro.aprendizaje@gmail.com',
+    driveFolderUrl: 'https://drive.google.com/drive/folders/191CFIrAdI_cfXTJR-I-MjZ-UF2CBhEUF?usp=sharing'
+  },
+  Innovación: {
+    email: 'st.curico.innovacion@gmail.com',
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1g6c8diwCMoLc6tIeoWhP4_HiQoVus1DG?usp=sharing'
+  },
+  'Prevención de Riesgo': {
+    email: 'st.curico.prevencion.riesgos@gmail.com',
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1X9IZZfu1BA3PBIbUKzDsBoTvoWq8igCp?usp=sharing'
+  }
+}
 
 /** Carreras IP — enlaces oficiales (referencia web institucional). */
 export const ACADEMIC_IP_CARRERAS: { title: string; subtitle: string; href: string }[] = [

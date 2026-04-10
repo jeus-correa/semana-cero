@@ -1,6 +1,7 @@
 import { memo, useState, useEffect, useRef, useCallback, type ReactNode, type TouchEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
+  AlertTriangle,
   ArrowUpRight,
   BookOpen,
   ChevronDown,
@@ -17,7 +18,6 @@ import {
   X,
   User,
   Library,
-  Boxes,
   Search
 } from 'lucide-react'
 import {
@@ -26,6 +26,7 @@ import {
   ACADEMIC_IP_CARRERAS,
   ACADEMIC_LIM,
   APOYO_PDFS,
+  APOYO_CURICO_CONTACT,
   CFT_LINKS,
   COMITE_CURICO,
   EVACUATION_VIDEOS,
@@ -191,7 +192,6 @@ const APOYO_AREAS = [
     subtitle: 'Autoridades y conducción institucional',
     href: 'https://www.santotomas.cl/informacion-institucional/autoridades/'
   },
-  { title: 'E-learning', subtitle: 'Plataforma académica y recursos digitales', href: LINKS.aulasVirtuales },
   {
     title: 'Vinculación',
     subtitle: 'Relación con el medio y proyectos comunitarios',
@@ -207,6 +207,8 @@ function SemanaCeroFullSectionsInner() {
   const [activeTab, setActiveTab] = useState<string>('mision')
   const [apoyoCategory, setApoyoCategory] = useState<string>('Todas')
   const [apoyoSearch, setApoyoSearch] = useState('')
+  const [regIpOpen, setRegIpOpen] = useState(false)
+  const [regCftOpen, setRegCftOpen] = useState(false)
 
   const getApoyoCategory = (title: string) => {
     switch(title) {
@@ -229,7 +231,6 @@ function SemanaCeroFullSectionsInner() {
         return 'Institucional';
       case 'Soporte de Informática':
       case 'Cómo imprimir':
-      case 'E-learning':
         return 'Soporte y Tech';
       default:
         return 'Institucional';
@@ -237,8 +238,18 @@ function SemanaCeroFullSectionsInner() {
   }
 
   const apoyoItems = [
-    ...APOYO_PDFS.map(p => ({ ...p, type: 'pdfs' as const, category: getApoyoCategory(p.title) })),
-    ...APOYO_AREAS.map(a => ({ ...a, type: 'areas' as const, category: getApoyoCategory(a.title) }))
+    ...APOYO_PDFS.map((p) => ({
+      ...p,
+      type: 'pdfs' as const,
+      category: getApoyoCategory(p.title),
+      curico: APOYO_CURICO_CONTACT[p.title]
+    })),
+    ...APOYO_AREAS.map((a) => ({
+      ...a,
+      type: 'areas' as const,
+      category: getApoyoCategory(a.title),
+      curico: APOYO_CURICO_CONTACT[a.title]
+    }))
   ]
   const listCat = ['Todas', 'Académico', 'Administrativo', 'Vida Estudiantil', 'Institucional', 'Soporte y Tech']
   
@@ -329,19 +340,57 @@ function SemanaCeroFullSectionsInner() {
           <motion.section key="reglamentos" className="scp-block" id="semana-reglamentos" aria-labelledby="sec-reg" {...secMotion}>
             <h2 id="sec-reg" className="scp-h2">Políticas y reglamentos</h2>
             <p className="scp-lead">Normativa oficial del Instituto Profesional y del Centro de Formación Técnica.</p>
-            <div className="scp-reg-grid">
-              <div className="scp-reg-col">
-                <h3 className="scp-h3"><GraduationCap size={18} aria-hidden /> Instituto Profesional (IP)</h3>
-                <div className="scp-linklist">
-                  {IP_LINKS.map((l) => <LinkRow key={l.href + l.title} {...l} />)}
-                </div>
-              </div>
-              <div className="scp-reg-col">
-                <h3 className="scp-h3"><BookOpen size={18} aria-hidden /> Centro de Formación Técnica (CFT)</h3>
-                <div className="scp-linklist">
-                  {CFT_LINKS.map((l) => <LinkRow key={l.href + l.title} {...l} />)}
-                </div>
-              </div>
+            <div className="scp-reg-accordion-stack">
+              <article className={`scp-scard scp-scard-expand scp-cft-panel ${regIpOpen ? 'is-open' : ''}`}>
+                <button
+                  type="button"
+                  className="scp-scard-head"
+                  id="reg-ip-toggle"
+                  aria-expanded={regIpOpen}
+                  onClick={() => setRegIpOpen((v) => !v)}
+                >
+                  <GraduationCap size={22} aria-hidden />
+                  <div>
+                    <strong>Instituto Profesional (IP)</strong>
+                    <span>Políticas, reglamentos y documentos oficiales</span>
+                  </div>
+                  <ChevronDown size={16} className="scp-scard-chevron" aria-hidden />
+                </button>
+                {regIpOpen && (
+                  <div className="scp-scard-body scp-cft-panel-body" role="region" aria-labelledby="reg-ip-toggle">
+                    <div className="scp-linklist">
+                      {IP_LINKS.map((l) => (
+                        <LinkRow key={l.href + l.title} {...l} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </article>
+              <article className={`scp-scard scp-scard-expand scp-cft-panel ${regCftOpen ? 'is-open' : ''}`}>
+                <button
+                  type="button"
+                  className="scp-scard-head"
+                  id="reg-cft-toggle"
+                  aria-expanded={regCftOpen}
+                  onClick={() => setRegCftOpen((v) => !v)}
+                >
+                  <BookOpen size={22} aria-hidden />
+                  <div>
+                    <strong>Centro de Formación Técnica (CFT)</strong>
+                    <span>Políticas, reglamentos y documentos oficiales</span>
+                  </div>
+                  <ChevronDown size={16} className="scp-scard-chevron" aria-hidden />
+                </button>
+                {regCftOpen && (
+                  <div className="scp-scard-body scp-cft-panel-body" role="region" aria-labelledby="reg-cft-toggle">
+                    <div className="scp-linklist">
+                      {CFT_LINKS.map((l) => (
+                        <LinkRow key={l.href + l.title} {...l} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </article>
             </div>
           </motion.section>
         )}
@@ -370,6 +419,40 @@ function SemanaCeroFullSectionsInner() {
           <motion.section key="evacuacion" className="scp-block" id="semana-evacuacion" aria-labelledby="sec-ev" {...secMotion}>
             <h2 id="sec-ev" className="scp-h2">Vías de evacuación</h2>
             <p className="scp-lead">Videos instructivos y referencias de seguridad (Sede Curicó).</p>
+            <div className="scp-evac-emergency" role="region" aria-label="Planos prioritarios de emergencia">
+              <p className="scp-evac-emergency-title">
+                <AlertTriangle size={20} strokeWidth={2.25} aria-hidden />
+                Prioritario: conocé la simbología de emergencia por piso
+              </p>
+              <div className="scp-evac-emergency-grid">
+                <a
+                  className="scp-evac-emergency-card"
+                  href={LINKS.pdfEvacPlanta3Emergencia}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className="scp-evac-emergency-card-kicker">Plano PDF</span>
+                  <strong>Planta 3° piso</strong>
+                  <span>Simbología de emergencia</span>
+                  <span className="scp-evac-emergency-card-cta">
+                    Abrir en Drive <ExternalLink size={16} aria-hidden />
+                  </span>
+                </a>
+                <a
+                  className="scp-evac-emergency-card"
+                  href={LINKS.pdfEvacPlanta4Emergencia}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className="scp-evac-emergency-card-kicker">Plano PDF</span>
+                  <strong>Planta 4° piso</strong>
+                  <span>Simbología de emergencia y zona segura (sismos)</span>
+                  <span className="scp-evac-emergency-card-cta">
+                    Abrir en Drive <ExternalLink size={16} aria-hidden />
+                  </span>
+                </a>
+              </div>
+            </div>
             <h3 className="scp-h3-inline"><Video size={16} aria-hidden /> Videos en YouTube</h3>
             <div className="scp-video-grid">
               {EVACUATION_VIDEOS.map((v) => (
@@ -405,22 +488,40 @@ function SemanaCeroFullSectionsInner() {
             <h2 id="sec-ap" className="scp-h2">Unidades de apoyo</h2>
             <p className="scp-lead">Inducción pedagógica y recursos transversales.</p>
             
-            <DocHeroShell className="scp-doc-hero" aria-labelledby="doc-hero-title">
-              <div className="scp-doc-hero-glow" aria-hidden />
-              <div className="scp-doc-hero-inner">
-                <div className="scp-doc-hero-icon" aria-hidden><Sparkles size={26} strokeWidth={1.75} /></div>
-                <div className="scp-doc-hero-copy">
-                  <p className="scp-doc-hero-kicker">Semana Cero · Docencia</p>
-                  <h3 id="doc-hero-title" className="scp-doc-hero-title">Tu formación y desarrollo docente</h3>
-                  <p className="scp-doc-hero-desc">Inducción pedagógica, lineamientos y recursos para fortalecer tu práctica en el aula.</p>
-                  <div className="scp-doc-hero-actions">
-                    <a className="scp-doc-hero-btn scp-doc-hero-btn-primary" href={LINKS.pdfFormacionDocente} target="_blank" rel="noopener noreferrer">
-                      Información <ExternalLink size={16} />
-                    </a>
+            <div className="scp-doc-hero-stack">
+              <DocHeroShell className="scp-doc-hero" aria-labelledby="doc-hero-title">
+                <div className="scp-doc-hero-glow" aria-hidden />
+                <div className="scp-doc-hero-inner">
+                  <div className="scp-doc-hero-icon" aria-hidden><Sparkles size={26} strokeWidth={1.75} /></div>
+                  <div className="scp-doc-hero-copy">
+                    <p className="scp-doc-hero-kicker">Semana Cero · Docencia</p>
+                    <h3 id="doc-hero-title" className="scp-doc-hero-title">Tu formación y desarrollo docente</h3>
+                    <p className="scp-doc-hero-desc">Inducción pedagógica, lineamientos y recursos para fortalecer tu práctica en el aula.</p>
+                    <div className="scp-doc-hero-actions">
+                      <a className="scp-doc-hero-btn scp-doc-hero-btn-primary" href={LINKS.pdfFormacionDocente} target="_blank" rel="noopener noreferrer">
+                        Información <ExternalLink size={16} />
+                      </a>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </DocHeroShell>
+              </DocHeroShell>
+              <DocHeroShell className="scp-doc-hero scp-doc-hero--formation" aria-labelledby="doc-hero-formacion-id">
+                <div className="scp-doc-hero-glow" aria-hidden />
+                <div className="scp-doc-hero-inner">
+                  <div className="scp-doc-hero-icon" aria-hidden><Heart size={26} strokeWidth={1.75} /></div>
+                  <div className="scp-doc-hero-copy">
+                    <p className="scp-doc-hero-kicker">Semana Cero · Identidad</p>
+                    <h3 id="doc-hero-formacion-id" className="scp-doc-hero-title">Formación e identidad</h3>
+                    <p className="scp-doc-hero-desc">Material institucional sobre cultura, valores y pertenencia a la comunidad Santo Tomás.</p>
+                    <div className="scp-doc-hero-actions">
+                      <a className="scp-doc-hero-btn scp-doc-hero-btn-primary" href={LINKS.pdfFormacion} target="_blank" rel="noopener noreferrer">
+                        Abrir material <ExternalLink size={16} />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </DocHeroShell>
+            </div>
 
             <div className="scp-apoyo-interactive">
               <div className="scp-apoyo-search-bar">
@@ -451,25 +552,29 @@ function SemanaCeroFullSectionsInner() {
                   No se encontraron áreas asociadas a tu búsqueda.
                 </div>
               ) : (
-                filteredApoyo.map((item, index) => (
-                  <motion.a
-                    key={item.title} role="listitem" href={item.href} target="_blank" rel="noopener noreferrer"
-                    className="scp-apoyo-pdf-card"
-                    initial={{ opacity: 0, scale: 0.96 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                  >
-                    <span className="scp-nav-num">{String(index + 1).padStart(2, '0')}</span>
-                    {item.type === 'pdfs' ? (
+                filteredApoyo.map((item, index) => {
+                  const href = item.curico?.driveFolderUrl ?? item.href
+                  return (
+                    <motion.a
+                      key={item.title}
+                      role="listitem"
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="scp-apoyo-pdf-card"
+                      initial={{ opacity: 0, scale: 0.96 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                    >
+                      <span className="scp-nav-num">{String(index + 1).padStart(2, '0')}</span>
                       <GraduationCap size={22} aria-hidden className="scp-apoyo-pdf-ic" />
-                    ) : (
-                      <Boxes size={22} aria-hidden className="scp-apoyo-pdf-ic" />
-                    )}
-                    <div className="scp-apoyo-pdf-text">
-                      <strong>{item.title}</strong><span>{item.subtitle}</span>
-                    </div>
-                  </motion.a>
-                ))
+                      <div className="scp-apoyo-pdf-text">
+                        <strong>{item.title}</strong>
+                        <span>{item.subtitle}</span>
+                      </div>
+                    </motion.a>
+                  )
+                })
               )}
             </div>
           </motion.section>
@@ -494,15 +599,17 @@ function SemanaCeroFullSectionsInner() {
                   <div className="scp-scard-body scp-cft-panel-body" role="region" aria-labelledby="cft-panel-toggle">
                     <div className="scp-cft-interactive">
                       <p className="scp-cft-filter-hint">Encontrá tu carrera por nombre o por área formativa.</p>
-                      <div className="scp-apoyo-search-bar">
-                        <Search className="scp-apoyo-search-ic" size={18} aria-hidden />
-                        <input
-                          type="search"
-                          value={cftSearch}
-                          onChange={(e) => setCftSearch(e.target.value)}
-                          placeholder="Buscar carrera… (ej. enfermería, parvularia)"
-                          aria-label="Buscar carrera CFT"
-                        />
+                      <div className="scp-cft-search-center">
+                        <div className="scp-apoyo-search-bar scp-cft-search-bar-centered">
+                          <Search className="scp-apoyo-search-ic" size={18} aria-hidden />
+                          <input
+                            type="search"
+                            value={cftSearch}
+                            onChange={(e) => setCftSearch(e.target.value)}
+                            placeholder="Buscar carrera… (ej. enfermería, parvularia)"
+                            aria-label="Buscar carrera CFT"
+                          />
+                        </div>
                       </div>
                       <div className="scp-apoyo-filters" role="group" aria-label="Filtrar por área CFT">
                         {cftAreaFilters.map((area) => (

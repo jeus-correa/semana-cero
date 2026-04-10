@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, type ReactNode, type TouchEvent } from 'react'
+import { memo, useState, useEffect, useRef, useCallback, type ReactNode, type TouchEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowUpRight,
@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 import {
   ACADEMIC_CFT_CARRERAS_PDFS,
+  CFT_CARRERA_AREAS,
   ACADEMIC_IP_CARRERAS,
   ACADEMIC_LIM,
   APOYO_PDFS,
@@ -34,10 +35,22 @@ import {
   VALORES
 } from './semanaCeroContent'
 
-function LinkRow({ title, subtitle, href }: { title: string; subtitle?: string; href: string }) {
+function LinkRow({
+  title,
+  subtitle,
+  href,
+  areaLabel
+}: {
+  title: string
+  subtitle?: string
+  href: string
+  /** Etiqueta breve (ej. área CFT) sobre el título */
+  areaLabel?: string
+}) {
   return (
     <a className="scp-linkrow" href={href} target="_blank" rel="noopener noreferrer">
       <div className="scp-linkrow-body">
+        {areaLabel && <span className="scp-linkrow-area">{areaLabel}</span>}
         <strong>{title}</strong>
         {subtitle && <span>{subtitle}</span>}
       </div>
@@ -186,8 +199,10 @@ const APOYO_AREAS = [
   }
 ] as const
 
-export function SemanaCeroFullSections() {
+function SemanaCeroFullSectionsInner() {
   const [cftPanelOpen, setCftPanelOpen] = useState(false)
+  const [cftSearch, setCftSearch] = useState('')
+  const [cftArea, setCftArea] = useState<string>('Todas')
   const [selectedMember, setSelectedMember] = useState<{ nombre: string; cargo: string; foto: string } | null>(null)
   const [activeTab, setActiveTab] = useState<string>('mision')
   const [apoyoCategory, setApoyoCategory] = useState<string>('Todas')
@@ -232,6 +247,18 @@ export function SemanaCeroFullSections() {
     const matchStr = item.title.toLowerCase().includes(apoyoSearch.toLowerCase()) || item.subtitle.toLowerCase().includes(apoyoSearch.toLowerCase());
     return matchCat && matchStr;
   });
+
+  const cftAreaFilters = ['Todas', ...CFT_CARRERA_AREAS] as const
+  const filteredCftCarreras = ACADEMIC_CFT_CARRERAS_PDFS.filter((item) => {
+    const matchArea = cftArea === 'Todas' || item.area === cftArea
+    const q = cftSearch.trim().toLowerCase()
+    const matchStr =
+      !q ||
+      item.title.toLowerCase().includes(q) ||
+      item.subtitle.toLowerCase().includes(q) ||
+      item.area.toLowerCase().includes(q)
+    return matchArea && matchStr
+  })
   useEffect(() => {
     const handleTabChange = (e: any) => {
       if (e.detail) setActiveTab(e.detail)
@@ -431,7 +458,6 @@ export function SemanaCeroFullSections() {
                     initial={{ opacity: 0, scale: 0.96 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    layout
                   >
                     <span className="scp-nav-num">{String(index + 1).padStart(2, '0')}</span>
                     {item.type === 'pdfs' ? (
@@ -460,14 +486,50 @@ export function SemanaCeroFullSections() {
                   <BookOpen size={22} />
                   <div>
                     <strong>Centro de Formación Técnica (CFT)</strong>
-                    <span>Carreras Semana Cero — toca para desplegar u ocultar</span>
+                    <span>PDF Semana Cero por carrera — abrí, buscá o filtrá por área</span>
                   </div>
                   <ChevronDown size={16} className="scp-scard-chevron" />
                 </button>
                 {cftPanelOpen && (
-                  <div className="scp-scard-body scp-cft-panel-body" role="region">
-                    <div className="scp-linklist">
-                      {ACADEMIC_CFT_CARRERAS_PDFS.map((l) => <LinkRow key={l.href + l.title} {...l} />)}
+                  <div className="scp-scard-body scp-cft-panel-body" role="region" aria-labelledby="cft-panel-toggle">
+                    <div className="scp-cft-interactive">
+                      <p className="scp-cft-filter-hint">Encontrá tu carrera por nombre o por área formativa.</p>
+                      <div className="scp-apoyo-search-bar">
+                        <Search className="scp-apoyo-search-ic" size={18} aria-hidden />
+                        <input
+                          type="search"
+                          value={cftSearch}
+                          onChange={(e) => setCftSearch(e.target.value)}
+                          placeholder="Buscar carrera… (ej. enfermería, parvularia)"
+                          aria-label="Buscar carrera CFT"
+                        />
+                      </div>
+                      <div className="scp-apoyo-filters" role="group" aria-label="Filtrar por área CFT">
+                        {cftAreaFilters.map((area) => (
+                          <button
+                            key={area}
+                            type="button"
+                            className={`scp-apoyo-filter-btn ${cftArea === area ? 'active' : ''}`}
+                            onClick={() => setCftArea(area)}
+                          >
+                            {area}
+                          </button>
+                        ))}
+                      </div>
+                      <p className="scp-cft-results-meta" aria-live="polite">
+                        {filteredCftCarreras.length === ACADEMIC_CFT_CARRERAS_PDFS.length
+                          ? `${ACADEMIC_CFT_CARRERAS_PDFS.length} carreras`
+                          : `${filteredCftCarreras.length} de ${ACADEMIC_CFT_CARRERAS_PDFS.length} carreras`}
+                      </p>
+                    </div>
+                    <div className="scp-linklist scp-cft-linklist">
+                      {filteredCftCarreras.length === 0 ? (
+                        <div className="scp-apoyo-empty">No hay carreras con ese criterio. Probá otra búsqueda o elegí &quot;Todas&quot;.</div>
+                      ) : (
+                        filteredCftCarreras.map((l) => (
+                          <LinkRow key={l.href + l.title} title={l.title} subtitle={l.subtitle} href={l.href} areaLabel={l.area} />
+                        ))
+                      )}
                     </div>
                   </div>
                 )}
@@ -587,3 +649,5 @@ export function SemanaCeroFullSections() {
     </div>
   )
 }
+
+export const SemanaCeroFullSections = memo(SemanaCeroFullSectionsInner)

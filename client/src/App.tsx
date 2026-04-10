@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -102,6 +102,133 @@ const SIDEBAR_EXTERNAL_LINKS: SidebarExternalLink[] = [
   { icon: Globe, label: 'Sede en 360', href: LINKS.sede360 }
 ]
 
+type ChatSectionId = 'inicio' | 'academica' | 'seguridad' | 'digital' | 'institucional'
+
+const CHAT_SECTION_TABS: { id: ChatSectionId; label: string }[] = [
+  { id: 'inicio', label: 'Inicio' },
+  { id: 'academica', label: 'Académica' },
+  { id: 'seguridad', label: 'Seguridad' },
+  { id: 'digital', label: 'Digital' },
+  { id: 'institucional', label: 'Institucional' }
+]
+
+const SERVICE_CARDS: {
+  icon: typeof Sparkles
+  title: string
+  desc: string
+  tab?: SemanaTabId
+  externalHref?: string
+}[] = [
+  {
+    icon: Sparkles,
+    title: 'Tomasín',
+    desc: 'Asistente con IA (Google Gemini): preguntá por la sede y los servicios.',
+    externalHref: LINKS.conoceTomasinGemini
+  },
+  {
+    icon: Shield,
+    title: 'Seguro académico',
+    desc: 'Coberturas y canal oficial DAE Santo Tomás.',
+    tab: 'seguros'
+  },
+  {
+    icon: Route,
+    title: 'Vías de evacuación',
+    desc: 'Videos y rutas de emergencia de la sede.',
+    tab: 'evacuacion'
+  },
+  {
+    icon: MailCheck,
+    title: 'Activación de correo',
+    desc: 'Recupera o actualiza tu clave institucional.',
+    tab: 'correo'
+  }
+]
+
+const CHAT_FAQ = {
+  inicio: [
+    {
+      q: '¡Hola! Soy Tomasín 🤖',
+      a: 'Tu asistente virtual especializado en los servicios de Santo Tomás. ¡Tú puedes! ¿En qué puedo ayudarte hoy? Revisá el menú lateral para ir al inicio, valores, sede, guía o enlaces útiles.'
+    }
+  ],
+  academica: [
+    { q: '¿Dónde entro a Aulas Virtuales?', a: 'Tu acceso está aquí.', ctaLabel: 'Abrir Aulas Virtuales', href: LINKS.aulasVirtuales },
+    { q: '¿Dónde veo Libro Tú Puedes?', a: 'Puedes revisarlo en este portal.', ctaLabel: 'Abrir Libro Tú Puedes', href: LINKS.libroTuPuedes },
+    { q: '¿Dónde busco en Biblioteca Virtual?', a: 'Ingresa aquí al buscador institucional.', ctaLabel: 'Abrir Biblioteca Virtual', href: LINKS.bibliotecaVirtual }
+  ],
+  seguridad: [
+    { q: 'Vías de evacuación', a: 'Revisa la sección "Vías de evacuación" en Semana Cero para videos por piso y salida.' },
+    { q: '¿Cómo denuncio una situación?', a: 'Puedes usar el canal oficial confidencial.', ctaLabel: 'Ir a canal de denuncias', href: LINKS.canalDenuncias },
+    { q: '¿Dónde veo seguros estudiantiles?', a: 'La información está en DAE.', ctaLabel: 'Ver seguros DAE', href: LINKS.segurosDae },
+    { q: 'Números de emergencia', a: 'Salud responsable: *7100 · Carabineros: 133 · SAMU: 131.' }
+  ],
+  digital: [
+    { q: '¿Tu clave se puede cambiar?', a: 'Sí, se puede cambiar aquí.', ctaLabel: 'Cambiar clave', href: LINKS.actualizaClave },
+    { q: '¿Olvidaste tu clave?', a: 'Recupérala en este acceso.', ctaLabel: 'Recuperar clave', href: LINKS.recuperaClave },
+    { q: '¿Dónde está la sede en 360?', a: 'Puedes entrar aquí al recorrido.', ctaLabel: 'Abrir sede 360', href: LINKS.sede360 }
+  ],
+  institucional: [
+    { q: '¿Cuál es el Instagram de la sede?', a: 'Este es el perfil oficial de Curicó.', ctaLabel: 'Abrir Instagram', href: LINKS.instagramCurico },
+    { q: '¿Dónde veo el portal IP?', a: 'Puedes entrar desde este botón.', ctaLabel: 'Abrir portal IP', href: LINKS.ip },
+    { q: '¿Dónde veo el portal CFT?', a: 'Puedes entrar desde este botón.', ctaLabel: 'Abrir portal CFT', href: LINKS.cft }
+  ]
+} as const
+
+/** Barra de ingreso: relleno animado por CSS (GPU); % vía ref sin re-renders; confetti al terminar. */
+function IngresoProgressBar() {
+  const [showConfetti, setShowConfetti] = useState(false)
+  const pctElRef = useRef<HTMLSpanElement>(null)
+
+  const onBarAnimationEnd = useCallback(() => {
+    const el = pctElRef.current
+    if (el) el.textContent = '100%'
+    setShowConfetti(true)
+    window.setTimeout(() => setShowConfetti(false), 2600)
+  }, [])
+
+  useEffect(() => {
+    const reduced =
+      typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const durationMs = reduced ? 80 : 9000
+    const start = performance.now()
+    let raf = 0
+    const pctEl = pctElRef.current
+
+    const tick = (now: number) => {
+      const pct = Math.min(((now - start) / durationMs) * 100, 100)
+      if (pctEl) pctEl.textContent = `${Math.round(pct)}%`
+      if (pct < 100) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [])
+
+  return (
+    <div className="n-ingreso-progress" aria-label="Barra de avance desde ingreso">
+      <div className="n-ingreso-progress-top">
+        <span>Ingreso estudiantes: 09/03/26</span>
+        <span ref={pctElRef} className="n-ingreso-progress-pct">
+          0%
+        </span>
+      </div>
+      <div className="n-ingreso-track">
+        <span className="n-ingreso-track-fill" onAnimationEnd={onBarAnimationEnd} />
+      </div>
+      {showConfetti && (
+        <div className="n-fireworks-wrap" aria-hidden="true">
+          {Array.from({ length: 4 }).map((_, idx) => (
+            <span key={`burst-${idx}`} className={`n-firework-burst n-firework-${idx + 1}`} />
+          ))}
+          {Array.from({ length: 18 }).map((_, idx) => (
+            <span key={`spark-${idx}`} className="n-firework-spark" />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function scrollToAnchorId(elementId: string) {
   document.getElementById(elementId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
@@ -188,11 +315,7 @@ function App() {
   const [selloOpen, setSelloOpen] = useState(false)
   const [showChatHint, setShowChatHint] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
-  const [chatSection, setChatSection] = useState<'inicio' | 'academica' | 'seguridad' | 'digital' | 'institucional'>(
-    'inicio'
-  )
-  const [progressFill, setProgressFill] = useState(0)
-  const [showConfetti, setShowConfetti] = useState(false)
+  const [chatSection, setChatSection] = useState<ChatSectionId>('inicio')
   const [heroSlides, setHeroSlides] = useState<string[]>([...FALLBACK_HERO_SLIDES])
   const [campusVideoActive, setCampusVideoActive] = useState(false)
   const campusVideoSectionRef = useRef<HTMLElement | null>(null)
@@ -289,39 +412,6 @@ function App() {
     }
   }, [isMobileLayout, isMenuOpen])
 
-  const serviceCards: {
-    icon: typeof Sparkles
-    title: string
-    desc: string
-    tab?: SemanaTabId
-    externalHref?: string
-  }[] = [
-    {
-      icon: Sparkles,
-      title: 'Tomasín',
-      desc: 'Asistente con IA (Google Gemini): preguntá por la sede y los servicios.',
-      externalHref: LINKS.conoceTomasinGemini
-    },
-    {
-      icon: Shield,
-      title: 'Seguro académico',
-      desc: 'Coberturas y canal oficial DAE Santo Tomás.',
-      tab: 'seguros'
-    },
-    {
-      icon: Route,
-      title: 'Vías de evacuación',
-      desc: 'Videos y rutas de emergencia de la sede.',
-      tab: 'evacuacion'
-    },
-    {
-      icon: MailCheck,
-      title: 'Activación de correo',
-      desc: 'Recupera o actualiza tu clave institucional.',
-      tab: 'correo'
-    }
-  ]
-
   useEffect(() => {
     let isMounted = true
     const requestedSlides = ['/santo-tomas-curico.jpg', '/biblioteca--0.jpg', '/estudiantes--a.png']
@@ -354,26 +444,6 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const durationMs = 9000
-    const start = performance.now()
-    let raf = 0
-
-    const tick = (now: number) => {
-      const pct = Math.min(((now - start) / durationMs) * 100, 100)
-      setProgressFill(pct)
-      if (pct < 100) {
-        raf = requestAnimationFrame(tick)
-      } else {
-        setShowConfetti(true)
-        window.setTimeout(() => setShowConfetti(false), 2600)
-      }
-    }
-
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [])
-
-  useEffect(() => {
     if (loading) return
     const obs = new IntersectionObserver(
       (entries) => {
@@ -396,28 +466,31 @@ function App() {
     return () => obs.disconnect()
   }, [loading])
 
-  const triggerSemanaTab = (tab: SemanaTabId) => {
+  const triggerSemanaTab = useCallback((tab: SemanaTabId) => {
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('changeSemanaTab', { detail: tab }))
     }
     window.setTimeout(() => {
       document.getElementById('contenido-semana-cero')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, 40)
-  }
+  }, [])
 
-  const handleNavSection = (item: NavSectionItem) => {
-    setNavActiveId(item.id)
-    if (item.targetId === 'contenido-semana-cero' && item.semanaTab) {
-      lastContenidoNavRef.current = item.id
-      triggerSemanaTab(item.semanaTab)
+  const handleNavSection = useCallback(
+    (item: NavSectionItem) => {
+      setNavActiveId(item.id)
+      if (item.targetId === 'contenido-semana-cero' && item.semanaTab) {
+        lastContenidoNavRef.current = item.id
+        triggerSemanaTab(item.semanaTab)
+        if (isMobileLayout) setIsMenuOpen(false)
+        return
+      }
+      scrollToAnchorId(item.targetId)
       if (isMobileLayout) setIsMenuOpen(false)
-      return
-    }
-    scrollToAnchorId(item.targetId)
-    if (isMobileLayout) setIsMenuOpen(false)
-  }
+    },
+    [isMobileLayout, triggerSemanaTab]
+  )
 
-  const goHome = () => {
+  const goHome = useCallback(() => {
     navigate('/', { replace: true })
     lastContenidoNavRef.current = 'nav-academica'
     window.dispatchEvent(new CustomEvent('changeSemanaTab', { detail: 'mision' }))
@@ -426,37 +499,7 @@ function App() {
     window.requestAnimationFrame(() => {
       document.getElementById('inicio-hero')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     })
-  }
-
-  const chatFaq = {
-    inicio: [
-      {
-        q: '¡Hola! Soy Tomasín 🤖',
-        a: 'Tu asistente virtual especializado en los servicios de Santo Tomás. ¡Tú puedes! ¿En qué puedo ayudarte hoy? Revisá el menú lateral para ir al inicio, valores, sede, guía o enlaces útiles.'
-      }
-    ],
-    academica: [
-      { q: '¿Dónde entro a Aulas Virtuales?', a: 'Tu acceso está aquí.', ctaLabel: 'Abrir Aulas Virtuales', href: LINKS.aulasVirtuales },
-      { q: '¿Dónde veo Libro Tú Puedes?', a: 'Puedes revisarlo en este portal.', ctaLabel: 'Abrir Libro Tú Puedes', href: LINKS.libroTuPuedes },
-      { q: '¿Dónde busco en Biblioteca Virtual?', a: 'Ingresa aquí al buscador institucional.', ctaLabel: 'Abrir Biblioteca Virtual', href: LINKS.bibliotecaVirtual }
-    ],
-    seguridad: [
-      { q: 'Vías de evacuación', a: 'Revisa la sección "Vías de evacuación" en Semana Cero para videos por piso y salida.' },
-      { q: '¿Cómo denuncio una situación?', a: 'Puedes usar el canal oficial confidencial.', ctaLabel: 'Ir a canal de denuncias', href: LINKS.canalDenuncias },
-      { q: '¿Dónde veo seguros estudiantiles?', a: 'La información está en DAE.', ctaLabel: 'Ver seguros DAE', href: LINKS.segurosDae },
-      { q: 'Números de emergencia', a: 'Salud responsable: *7100 · Carabineros: 133 · SAMU: 131.' }
-    ],
-    digital: [
-      { q: '¿Tu clave se puede cambiar?', a: 'Sí, se puede cambiar aquí.', ctaLabel: 'Cambiar clave', href: LINKS.actualizaClave },
-      { q: '¿Olvidaste tu clave?', a: 'Recupérala en este acceso.', ctaLabel: 'Recuperar clave', href: LINKS.recuperaClave },
-      { q: '¿Dónde está la sede en 360?', a: 'Puedes entrar aquí al recorrido.', ctaLabel: 'Abrir sede 360', href: LINKS.sede360 }
-    ],
-    institucional: [
-      { q: '¿Cuál es el Instagram de la sede?', a: 'Este es el perfil oficial de Curicó.', ctaLabel: 'Abrir Instagram', href: LINKS.instagramCurico },
-      { q: '¿Dónde veo el portal IP?', a: 'Puedes entrar desde este botón.', ctaLabel: 'Abrir portal IP', href: LINKS.ip },
-      { q: '¿Dónde veo el portal CFT?', a: 'Puedes entrar desde este botón.', ctaLabel: 'Abrir portal CFT', href: LINKS.cft }
-    ]
-  } as const
+  }, [navigate, isMobileLayout])
 
   if (loading) {
     return (
@@ -547,25 +590,19 @@ function App() {
               </button>
             </div>
             <div className="n-chat-sections">
-              {[
-                { id: 'inicio', label: 'Inicio' },
-                { id: 'academica', label: 'Académica' },
-                { id: 'seguridad', label: 'Seguridad' },
-                { id: 'digital', label: 'Digital' },
-                { id: 'institucional', label: 'Institucional' }
-              ].map((section) => (
+              {CHAT_SECTION_TABS.map((section) => (
                 <button
                   key={section.id}
                   type="button"
                   className={chatSection === section.id ? 'active' : ''}
-                  onClick={() => setChatSection(section.id as typeof chatSection)}
+                  onClick={() => setChatSection(section.id)}
                 >
                   {section.label}
                 </button>
               ))}
             </div>
             <div className="n-chat-body">
-              {chatFaq[chatSection].map((item) => (
+              {CHAT_FAQ[chatSection].map((item) => (
                 <div key={item.q} className="n-chat-item">
                   <p className="n-chat-q">{item.q}</p>
                   <p className="n-chat-a">{item.a}</p>
@@ -670,25 +707,7 @@ function App() {
               Explora, conéctate y descubre todo lo que tenemos para ti.
             </p>
 
-            <div className="n-ingreso-progress" aria-label="Barra de avance desde ingreso">
-              <div className="n-ingreso-progress-top">
-                <span>Ingreso estudiantes: 09/03/26</span>
-                <span>{Math.round(progressFill)}%</span>
-              </div>
-              <div className="n-ingreso-track">
-                <span style={{ width: `${progressFill}%` }} />
-              </div>
-              {showConfetti && (
-                <div className="n-fireworks-wrap" aria-hidden="true">
-                  {Array.from({ length: 4 }).map((_, idx) => (
-                    <span key={`burst-${idx}`} className={`n-firework-burst n-firework-${idx + 1}`} />
-                  ))}
-                  {Array.from({ length: 18 }).map((_, idx) => (
-                    <span key={`spark-${idx}`} className="n-firework-spark" />
-                  ))}
-                </div>
-              )}
-            </div>
+            <IngresoProgressBar />
 
             <div className="n-hero-actions">
               <button type="button" className="n-btn-main" onClick={() => scrollToSemanaTab('mision')}>
@@ -722,7 +741,7 @@ function App() {
         </section>
 
         <section className="n-services" id="conoce-semana-cero">
-          {serviceCards.map(({ icon: Icon, title, desc, tab, externalHref }, idx) => (
+          {SERVICE_CARDS.map(({ icon: Icon, title, desc, tab, externalHref }, idx) => (
             <motion.button
               key={title}
               type="button"

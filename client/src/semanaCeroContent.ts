@@ -144,47 +144,59 @@ export const ACADEMIC_CFT_BLOCKS: { title: string; subtitle: string; href: strin
   }
 ]
 
+/** Áreas para filtrar la lista CFT en Área académica. */
+export const CFT_CARRERA_AREAS = ['Salud y deporte', 'Educación', 'Gastronomía y agro'] as const
+export type CftCarreraArea = (typeof CFT_CARRERA_AREAS)[number]
+
 /** CFT Semana Cero — PDF por carrera (Sede / material institucional). */
-export const ACADEMIC_CFT_CARRERAS_PDFS: { title: string; subtitle: string; href: string }[] = [
+export const ACADEMIC_CFT_CARRERAS_PDFS: { title: string; subtitle: string; href: string; area: CftCarreraArea }[] = [
   {
     title: 'Preparador físico',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/file/d/1SECb79MaX-Xjlmy4RgUruS0nw1GGBD-i/view?usp=sharing'
+    href: 'https://drive.google.com/file/d/1SECb79MaX-Xjlmy4RgUruS0nw1GGBD-i/view?usp=sharing',
+    area: 'Salud y deporte'
   },
   {
     title: 'Técnico en Podología Clínica',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/file/d/1y5S9peQcOfvYDxpWDvgDX1tueEilrQxu/view?usp=sharing'
+    href: 'https://drive.google.com/file/d/1y5S9peQcOfvYDxpWDvgDX1tueEilrQxu/view?usp=sharing',
+    area: 'Salud y deporte'
   },
   {
     title: 'Técnico en Odontología, mención Higienista Dental',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/file/d/1m3bepcwrs6IFPA6GgS3Abyf5YUiXMB65/view?usp=sharing'
+    href: 'https://drive.google.com/file/d/1m3bepcwrs6IFPA6GgS3Abyf5YUiXMB65/view?usp=sharing',
+    area: 'Salud y deporte'
   },
   {
     title: 'Técnico en Enfermería',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/file/d/18NlC3zvpjvjw1-QWAoOHwuCh_Unlk1HP/view?usp=sharing'
+    href: 'https://drive.google.com/file/d/18NlC3zvpjvjw1-QWAoOHwuCh_Unlk1HP/view?usp=sharing',
+    area: 'Salud y deporte'
   },
   {
     title: 'Gastronomía Internacional y Tradicional Chilena',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/file/d/1cywsZUmj-XcuA_AHiwB__RC7ocuM4vkG/view?usp=sharing'
+    href: 'https://drive.google.com/file/d/1cywsZUmj-XcuA_AHiwB__RC7ocuM4vkG/view?usp=sharing',
+    area: 'Gastronomía y agro'
   },
   {
     title: 'Técnico en Educación Especial',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/file/d/19gBrx__LVvRtrGdzqFwVjLHyxIOX1tPV/view?usp=sharing'
+    href: 'https://drive.google.com/file/d/19gBrx__LVvRtrGdzqFwVjLHyxIOX1tPV/view?usp=sharing',
+    area: 'Educación'
   },
   {
     title: 'Técnico en Educación Parvularia y 1.º y 2.º básico',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/file/d/19sYmOLki0DjfP5Zxa_QNgIfrUFDU0nrX/view?usp=sharing'
+    href: 'https://drive.google.com/file/d/19sYmOLki0DjfP5Zxa_QNgIfrUFDU0nrX/view?usp=sharing',
+    area: 'Educación'
   },
   {
     title: 'Técnico Agrícola',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/file/d/1e0MyqewKhcO9iU0HE0zoGoBeg26j-NcM/view?usp=sharing'
+    href: 'https://drive.google.com/file/d/1e0MyqewKhcO9iU0HE0zoGoBeg26j-NcM/view?usp=sharing',
+    area: 'Gastronomía y agro'
   }
 ]
 

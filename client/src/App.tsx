@@ -542,6 +542,18 @@ function App() {
           onClick={() => setIsMenuOpen(false)}
         />
       )}
+      {isMobileLayout && !isMenuOpen && (
+        <button
+          type="button"
+          className="n-mobile-menu-fab"
+          aria-label="Abrir menú principal"
+          onClick={() => setIsMenuOpen(true)}
+        >
+          <img src="/logo-st.svg" alt="" aria-hidden="true" className="n-mobile-menu-fab-logo" />
+          <span className="n-mobile-menu-fab-sep" aria-hidden="true" />
+          <Menu size={18} className="n-mobile-menu-fab-icon" />
+        </button>
+      )}
       <div className="n-quick-rail" aria-label="Accesos rápidos">
         <a
           className="n-quick-btn"

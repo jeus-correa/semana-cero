@@ -958,7 +958,9 @@
 }
 
 .scp-val-heart {
-  color: #ffb8c9;
+  color: #e11d48;
+  fill: currentColor;
+  stroke: currentColor;
   margin-bottom: 0.35rem;
 }
 
@@ -1042,6 +1044,20 @@
   background: var(--scp-surface-hover);
   border-color: var(--scp-accent-mid);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 0 1px var(--scp-accent-soft);
+}
+
+.scp-linkrow-dual {
+  padding-right: 3.15rem;
+  overflow: visible;
+}
+
+.scp-linkrow-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: inherit;
+  text-decoration: none;
 }
 
 [data-theme='light'] .scp-linkrow:hover {
@@ -1931,6 +1947,47 @@
   overflow: visible;
 }
 
+/* Acordeón de Políticas: transición liviana y sin alto costo */
+.scp-reg-panel-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    grid-template-rows 0.24s ease,
+    opacity 0.2s ease;
+}
+
+.scp-reg-panel-collapse-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.scp-reg-panel-collapse.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.scp-reg-panel-body {
+  margin-top: 0.5rem;
+  transform: translateY(-4px);
+  transition: transform 0.24s ease;
+}
+
+.scp-reg-panel-collapse.is-open .scp-reg-panel-body {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scp-reg-panel-collapse,
+  .scp-reg-panel-body {
+    transition: none !important;
+  }
+}
+
 .scp-cft-panel-body .scp-linklist {
   gap: 0.5rem;
 }
@@ -2713,6 +2770,13 @@
   margin-top: 1rem;
 }
 
+@media (max-width: 720px) {
+  .scp-apoyo-pdf-grid {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+}
+
 .scp-apoyo-pdf-card {
   display: flex;
   align-items: center;
@@ -2727,6 +2791,173 @@
   position: relative;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Apoyo: un ojo arriba-derecha = material (PDF/PPT); tarjeta = carpeta Drive Curicó */
+.scp-apoyo-pdf-card.scp-apoyo-pdf-card--dual {
+  display: block;
+  align-items: stretch;
+  padding: 0.95rem 3.15rem 1rem 1.1rem;
+  overflow: visible;
+}
+
+.scp-apoyo-pdf-card--dual .scp-apoyo-pdf-main {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.scp-apoyo-pdf-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.15rem 0.25rem 0.1rem 0;
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.scp-apoyo-pdf-main:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme='light'] .scp-apoyo-pdf-main:hover {
+  background: rgba(0, 100, 75, 0.08);
+}
+
+/* Anula estilos globales de `button` en index.css (padding 1.5em aplastaba el ícono en 38×38). */
+.scp-apoyo-pdf-eye {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  margin: 0;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 214, 148, 0.45);
+  background-color: rgba(6, 24, 18, 0.55);
+  /* Sin blur global del button: en algunos navegadores dejaba “cuadrado negro”. */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  letter-spacing: normal;
+  font-size: 0;
+  line-height: 0;
+  font-weight: 600;
+  color: #a7f3d0;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  /* Respaldo visual: ojo pintado por CSS aunque falle el SVG interno */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath stroke='%23a7f3d0' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round' d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/%3E%3Ccircle cx='12' cy='12' r='3' stroke='%23a7f3d0' stroke-width='2.25'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 18px 18px;
+}
+
+.scp-apoyo-pdf-eye--corner {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  z-index: 5;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 11px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  background-size: 17px 17px;
+}
+
+.scp-apoyo-pdf-eye:hover {
+  background-color: rgba(0, 214, 148, 0.22);
+  border-color: var(--scp-accent-bright, #00ffb3);
+  color: #ecfdf5;
+  transform: scale(1.04);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  /* Mismo ojo en hover (stroke más claro) */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath stroke='%23ecfdf5' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round' d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/%3E%3Ccircle cx='12' cy='12' r='3' stroke='%23ecfdf5' stroke-width='2.25'/%3E%3C/svg%3E");
+}
+
+.scp-apoyo-pdf-eye:focus-visible {
+  outline: 2px solid var(--scp-accent);
+  outline-offset: 2px;
+}
+
+[data-theme='light'] .scp-apoyo-pdf-eye {
+  background-color: rgba(255, 255, 255, 0.92);
+  border-color: rgba(0, 153, 109, 0.4);
+  color: #047857;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath stroke='%23047857' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round' d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/%3E%3Ccircle cx='12' cy='12' r='3' stroke='%23047857' stroke-width='2.25'/%3E%3C/svg%3E");
+}
+
+[data-theme='light'] .scp-apoyo-pdf-eye:hover {
+  background-color: rgba(209, 250, 229, 0.95);
+  border-color: rgba(0, 153, 109, 0.5);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath stroke='%23059669' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round' d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z'/%3E%3Ccircle cx='12' cy='12' r='3' stroke='%23059669' stroke-width='2.25'/%3E%3C/svg%3E");
+}
+
+@media (max-width: 480px) {
+  .scp-apoyo-pdf-card {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.95rem 1rem;
+  }
+
+  .scp-apoyo-pdf-card--dual {
+    padding: 0.85rem 2.85rem 0.9rem 0.85rem;
+  }
+
+  .scp-apoyo-pdf-eye--corner {
+    top: 0.45rem;
+    right: 0.45rem;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+    border-radius: 10px;
+    background-size: 15px 15px;
+  }
+
+  .scp-apoyo-pdf-main {
+    gap: 0.6rem;
+    align-items: flex-start;
+  }
+
+  .scp-apoyo-pdf-text strong {
+    font-size: 0.88rem;
+    line-height: 1.3;
+  }
+
+  .scp-apoyo-pdf-text span {
+    font-size: 0.74rem;
+    line-height: 1.35;
+  }
+}
+
+@media (max-width: 380px) {
+  .scp-apoyo-pdf-card--dual {
+    padding-right: 2.65rem;
+  }
+
+  .scp-apoyo-pdf-card--dual .scp-apoyo-pdf-main {
+    flex-wrap: wrap;
+  }
+
+  .scp-apoyo-pdf-card--dual .scp-apoyo-pdf-text {
+    flex: 1 1 100%;
+    min-width: 0;
+    padding-top: 0.15rem;
+  }
 }
 
 .scp-apoyo-pdf-card:hover {

@@ -166,16 +166,20 @@ const TABS = [
 ]
 
 const APOYO_AREAS = [
-  { title: 'Admisión', subtitle: 'Orientación y acceso a tu proceso de ingreso', href: 'https://www.ipsantotomas.cl/admision/' },
+  {
+    title: 'Admisión',
+    subtitle: 'Orientación y acceso a tu proceso de ingreso',
+    href: 'https://drive.google.com/drive/folders/17ZKHbK8gVCrmTURl6WXKYG7hbImgRNfw?usp=drive_link'
+  },
   {
     title: 'Educación Continua',
     subtitle: 'Cursos, diplomados y especialización',
-    href: 'https://www.santotomas.cl/educacion-continua/'
+    href: 'https://drive.google.com/drive/folders/1kjFQCzTwKxpPvURV9O72hI_VntQSYWpe?usp=drive_link'
   },
   {
     title: 'Innovación',
     subtitle: 'Programas y ecosistema de innovación institucional',
-    href: 'https://www.santotomas.cl/?s=innovacion'
+    href: 'https://drive.google.com/drive/folders/1D_o_X77YzUgcbR8hNrmEPZ1zFkwQZ_UY?usp=drive_link'
   },
   {
     title: 'LIM',
@@ -185,17 +189,17 @@ const APOYO_AREAS = [
   {
     title: 'Prevención de Riesgo',
     subtitle: 'Protocolos y apoyo en seguridad estudiantil',
-    href: LINKS.segurosDae
+    href: 'https://drive.google.com/drive/folders/1TZVwmI99huyHOAH0ekTY3sOgui6MBEVz?usp=drive_link'
   },
   {
     title: 'Rectoría',
     subtitle: 'Autoridades y conducción institucional',
-    href: 'https://www.santotomas.cl/informacion-institucional/autoridades/'
+    href: 'https://drive.google.com/drive/folders/1VskJPiu3hEoieIQ2aJT-rbNF6010JSEf?usp=drive_link'
   },
   {
     title: 'Vinculación',
     subtitle: 'Relación con el medio y proyectos comunitarios',
-    href: 'https://www.santotomas.cl/vinculacion-con-el-medio/'
+    href: 'https://drive.google.com/drive/folders/1vD4hDhmlpp9IlHjLGKO2l7l1t5zcsiEp?usp=sharing'
   }
 ] as const
 
@@ -230,6 +234,7 @@ function SemanaCeroFullSectionsInner() {
       case 'Vinculación':
         return 'Institucional';
       case 'Soporte de Informática':
+      case 'E-learning':
       case 'Cómo imprimir':
         return 'Soporte y Tech';
       default:
@@ -356,15 +361,22 @@ function SemanaCeroFullSectionsInner() {
                   </div>
                   <ChevronDown size={16} className="scp-scard-chevron" aria-hidden />
                 </button>
-                {regIpOpen && (
-                  <div className="scp-scard-body scp-cft-panel-body" role="region" aria-labelledby="reg-ip-toggle">
-                    <div className="scp-linklist">
-                      {IP_LINKS.map((l) => (
-                        <LinkRow key={l.href + l.title} {...l} />
-                      ))}
+                <div
+                  className={`scp-reg-panel-collapse ${regIpOpen ? 'is-open' : ''}`}
+                  role="region"
+                  aria-labelledby="reg-ip-toggle"
+                  aria-hidden={!regIpOpen}
+                >
+                  <div className="scp-reg-panel-collapse-inner">
+                    <div className="scp-scard-body scp-cft-panel-body scp-reg-panel-body">
+                      <div className="scp-linklist">
+                        {IP_LINKS.map((l) => (
+                          <LinkRow key={l.href + l.title} {...l} />
+                        ))}
+                      </div>
                     </div>
                   </div>
-                )}
+                </div>
               </article>
               <article className={`scp-scard scp-scard-expand scp-cft-panel ${regCftOpen ? 'is-open' : ''}`}>
                 <button
@@ -381,15 +393,22 @@ function SemanaCeroFullSectionsInner() {
                   </div>
                   <ChevronDown size={16} className="scp-scard-chevron" aria-hidden />
                 </button>
-                {regCftOpen && (
-                  <div className="scp-scard-body scp-cft-panel-body" role="region" aria-labelledby="reg-cft-toggle">
-                    <div className="scp-linklist">
-                      {CFT_LINKS.map((l) => (
-                        <LinkRow key={l.href + l.title} {...l} />
-                      ))}
+                <div
+                  className={`scp-reg-panel-collapse ${regCftOpen ? 'is-open' : ''}`}
+                  role="region"
+                  aria-labelledby="reg-cft-toggle"
+                  aria-hidden={!regCftOpen}
+                >
+                  <div className="scp-reg-panel-collapse-inner">
+                    <div className="scp-scard-body scp-cft-panel-body scp-reg-panel-body">
+                      <div className="scp-linklist">
+                        {CFT_LINKS.map((l) => (
+                          <LinkRow key={l.href + l.title} {...l} />
+                        ))}
+                      </div>
                     </div>
                   </div>
-                )}
+                </div>
               </article>
             </div>
           </motion.section>
@@ -553,7 +572,59 @@ function SemanaCeroFullSectionsInner() {
                 </div>
               ) : (
                 filteredApoyo.map((item, index) => {
-                  const href = item.curico?.driveFolderUrl ?? item.href
+                  const driveUrl = item.curico?.driveFolderUrl
+                  const materialHref = item.href
+                  const hasDualDestino = Boolean(driveUrl && materialHref !== driveUrl)
+                  const cardMotion = {
+                    initial: { opacity: 0, scale: 0.96 },
+                    whileInView: { opacity: 1, scale: 1 },
+                    viewport: { once: true }
+                  } as const
+
+                  const openMaterial = () => {
+                    window.open(materialHref, '_blank', 'noopener,noreferrer')
+                  }
+
+                  const eyeLabel = `Ver material Semana Cero — ${item.title}`
+
+                  if (hasDualDestino) {
+                    return (
+                      <motion.div
+                        key={item.title}
+                        role="listitem"
+                        className="scp-apoyo-pdf-card scp-apoyo-pdf-card--dual"
+                        {...cardMotion}
+                      >
+                        <a
+                          className="scp-apoyo-pdf-main"
+                          href={driveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Carpeta Google Drive — Sede Curicó"
+                        >
+                          <span className="scp-nav-num">{String(index + 1).padStart(2, '0')}</span>
+                          <GraduationCap size={22} aria-hidden className="scp-apoyo-pdf-ic" />
+                          <div className="scp-apoyo-pdf-text">
+                            <strong>{item.title}</strong>
+                            <span>{item.subtitle}</span>
+                          </div>
+                        </a>
+                        <button
+                          type="button"
+                          className="scp-apoyo-pdf-eye scp-apoyo-pdf-eye--corner"
+                          aria-label={eyeLabel}
+                          title="tu afiche digital"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            openMaterial()
+                          }}
+                        />
+                      </motion.div>
+                    )
+                  }
+
+                  const href = driveUrl ?? materialHref
                   return (
                     <motion.a
                       key={item.title}
@@ -562,9 +633,7 @@ function SemanaCeroFullSectionsInner() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="scp-apoyo-pdf-card"
-                      initial={{ opacity: 0, scale: 0.96 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
+                      {...cardMotion}
                     >
                       <span className="scp-nav-num">{String(index + 1).padStart(2, '0')}</span>
                       <GraduationCap size={22} aria-hidden className="scp-apoyo-pdf-ic" />
@@ -633,9 +702,38 @@ function SemanaCeroFullSectionsInner() {
                       {filteredCftCarreras.length === 0 ? (
                         <div className="scp-apoyo-empty">No hay carreras con ese criterio. Probá otra búsqueda o elegí &quot;Todas&quot;.</div>
                       ) : (
-                        filteredCftCarreras.map((l) => (
-                          <LinkRow key={l.href + l.title} title={l.title} subtitle={l.subtitle} href={l.href} areaLabel={l.area} />
-                        ))
+                        filteredCftCarreras.map((l) => {
+                          const infoHref = l.infoHref ?? l.href
+                          const hasDualDestino = infoHref !== l.href
+
+                          if (!hasDualDestino) {
+                            return (
+                              <LinkRow key={l.href + l.title} title={l.title} subtitle={l.subtitle} href={infoHref} areaLabel={l.area} />
+                            )
+                          }
+
+                          return (
+                            <div key={l.href + l.title} className="scp-linkrow scp-linkrow-dual">
+                              <a className="scp-linkrow-main" href={infoHref} target="_blank" rel="noopener noreferrer">
+                                <div className="scp-linkrow-body">
+                                  <span className="scp-linkrow-area">{l.area}</span>
+                                  <strong>{l.title}</strong>
+                                  <span>{l.subtitle}</span>
+                                </div>
+                                <ArrowUpRight size={18} aria-hidden />
+                              </a>
+                              <button
+                                type="button"
+                                className="scp-apoyo-pdf-eye scp-apoyo-pdf-eye--corner"
+                                aria-label={`Ver ficha virtual — ${l.title}`}
+                                title="afiche digital de tu carrera"
+                                onClick={() => {
+                                  window.open(l.href, '_blank', 'noopener,noreferrer')
+                                }}
+                              />
+                            </div>
+                          )
+                        })
                       )}
                     </div>
                   </div>
@@ -651,7 +749,35 @@ function SemanaCeroFullSectionsInner() {
 
             <h3 className="scp-h3"><GraduationCap size={18} aria-hidden /> Instituto Profesional (IP)</h3>
             <div className="scp-linklist">
-              {ACADEMIC_IP_CARRERAS.map((l) => <LinkRow key={l.href + l.title} {...l} />)}
+              {ACADEMIC_IP_CARRERAS.map((l) => {
+                const infoHref = l.infoHref ?? l.href
+                const hasDualDestino = infoHref !== l.href
+
+                if (!hasDualDestino) {
+                  return <LinkRow key={l.href + l.title} title={l.title} subtitle={l.subtitle} href={infoHref} />
+                }
+
+                return (
+                  <div key={l.href + l.title} className="scp-linkrow scp-linkrow-dual">
+                    <a className="scp-linkrow-main" href={infoHref} target="_blank" rel="noopener noreferrer">
+                      <div className="scp-linkrow-body">
+                        <strong>{l.title}</strong>
+                        <span>{l.subtitle}</span>
+                      </div>
+                      <ArrowUpRight size={18} aria-hidden />
+                    </a>
+                    <button
+                      type="button"
+                      className="scp-apoyo-pdf-eye scp-apoyo-pdf-eye--corner"
+                      aria-label={`Ver ficha virtual — ${l.title}`}
+                      title="afiche digital de tu carrera"
+                      onClick={() => {
+                        window.open(l.href, '_blank', 'noopener,noreferrer')
+                      }}
+                    />
+                  </div>
+                )
+              })}
             </div>
 
             <h3 className="scp-h3"><Sparkles size={18} aria-hidden /> Unidades transversales — LIM</h3>

@@ -18,13 +18,13 @@ export const LINKS = {
   canalDenuncias: 'https://www.ust.cl/genero-e-inclusion/canal-de-denuncias',
   formacionDocenteDrive:
     'https://drive.google.com/drive/folders/1lSfa_dTOaIZMrs_u5fIFR5vvyNqmFrdn?usp=sharing',
-  pdfCentroAprendizaje: 'https://drive.google.com/file/d/1aQECKNIjJwFH7Irjd0guVIMQ3jnYSrvL/view?usp=sharing',
-  pdfBiblioteca: 'https://drive.google.com/file/d/1RbFh7y2l8-oOIIiNHdvWU0BUmtGArN6I/view?usp=sharing',
-  pdfDae: 'https://drive.google.com/file/d/1vkwNpxBK4WIteDfFmQaGiIQ1eUZVQaSb/view?usp=sharing',
-  pdfRegistro: 'https://drive.google.com/file/d/11QETpuKU-rtpPuVTtBNQubrXZK5ZB1vc/view?usp=sharing',
-  pdfDao: 'https://drive.google.com/file/d/1sd_iANRlTyB7zqPuOj5RLeduUemJpYEO/view?usp=sharing',
-  pdfSoporte: 'https://drive.google.com/file/d/1MVLkEoC7CXg6EspmUJW0wqBZgiK0V0b2/view?usp=sharing',
-  pdfFormacion: 'https://drive.google.com/file/d/1Haw21v8bRlhtuZow8DB1qsNINZwqvYXJ/view?usp=sharing',
+  pdfCentroAprendizaje: 'https://drive.google.com/drive/folders/1xGz_EeAqA7uQO_EWr88D2K3CCjTh_npc?usp=drive_link',
+  pdfBiblioteca: 'https://drive.google.com/drive/folders/1brjHSFt5JXCeHC3eHDDzbYHli4csdF5e?usp=drive_link',
+  pdfDae: 'https://drive.google.com/drive/folders/1I1Wa58o-2GX4zQNUbGPFiYcnGoxwD4gV?usp=drive_link',
+  pdfRegistro: 'https://drive.google.com/drive/folders/1amjkSBTKf1hh-cDzcmvekL-fqye-Tzcx?usp=drive_link',
+  pdfDao: 'https://drive.google.com/drive/folders/17HAUU78r85YvOOz3b7dVObLW590DREZJ?usp=drive_link',
+  pdfSoporte: 'https://drive.google.com/drive/folders/1QmaZT2EZQzyyrJSNzrk8d4D_5g-nZI7N?usp=drive_link',
+  pdfFormacion: 'https://drive.google.com/drive/folders/1fnMPtt33Yy0BUOBHtJCjrqn3OnhEFwUA?usp=drive_link',
   pdfFormacionDocente: 'https://drive.google.com/file/d/1GAO-aa4Wp4fSEGtHAJU6FHDjliGYGJJ5/view?usp=sharing',
   pdfComoImprimir: 'https://drive.google.com/file/d/1aucpW3M-2wfvujAPWkT4hOKYsdlhbqdU/view?usp=sharing',
   /** PDF Semana Cero — Servicio Social (IP) */
@@ -36,7 +36,7 @@ export const LINKS = {
   pdfPracticaTituloSemanaCero:
     'https://drive.google.com/file/d/1-nV2wbtuNTT87KKu76rX8n9KY_PGlr1h/view?usp=sharing',
   /** LIM: lenguaje, inglés y matemática (coordinaciones) */
-  pdfLimTransversales: 'https://drive.google.com/file/d/1RQ0YdRn1n4PnAWZyUyNxJVIvLD06ScKk/view?usp=sharing',
+  pdfLimTransversales: 'https://drive.google.com/drive/folders/1BiQaDAP2QBA_ipox-EKENtFYHyx10N8P?usp=drive_link',
   pdfPlataformasELearning: 'https://drive.google.com/file/d/1bzZnUaIbXyiyFPlM3B4dwNUuejxaZ_Lu/view?usp=sharing',
   ipPortalReglamentos:
     'https://www.ipsantotomas.cl/informacion-institucional/politicas-y-reglamentos/politicas-reglamentos-y-documentos/',
@@ -63,78 +63,93 @@ export const APOYO_PDFS: ApoyoPdfItem[] = [
   { title: 'DAO', subtitle: 'Aranceles y convenios de pago', href: LINKS.pdfDao },
   { title: 'Soporte de Informática', subtitle: 'Plataformas y accesos', href: LINKS.pdfSoporte },
   { title: 'Formación', subtitle: 'Material de apoyo institucional', href: LINKS.pdfFormacion },
-  { title: 'Cómo imprimir', subtitle: 'Guía rápida de impresión', href: LINKS.pdfComoImprimir }
+  { title: 'Cómo imprimir', subtitle: 'Guía rápida de impresión', href: LINKS.pdfComoImprimir },
+  { title: 'E-learning', subtitle: 'Aulas virtuales y soporte de plataforma', href: 'https://drive.google.com/drive/folders/1ZQtpnBym6be-lOKQ2quo2cB_-vVUQapX?usp=sharing' }
 ]
 
 /** Sede Curicó: correo + carpeta Google Drive por unidad (clave = título como en APOYO_PDFS / APOYO_AREAS). */
 export const APOYO_CURICO_CONTACT: Partial<Record<string, { email: string; driveFolderUrl: string }>> = {
   Biblioteca: {
     email: 'st.curico.biblioteca@gmail.com',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1T20vDlu4s2n5xSLksnA1rhIyvYFYOnH5?usp=sharing'
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1gaZ6skUKjgvMlpXqSf-6EBGhP7_F_Tby?usp=drive_link'
   },
   DAE: {
     email: 'st.curico.dae@gmail.com',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1KKlT-37nmlR-ptOvG3H0VfCZwog-htdW?usp=sharing'
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1ECklHIHIBnIS3itbKOoAPMPjGikH81So?usp=drive_link'
   },
   Admisión: {
     email: 'st.curico.admision@gmail.com',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1n6LAlfUK7OTd9ZKSPWkqeP_qXM3f9q7y?usp=sharing'
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1n6LAlfUK7OTd9ZKSPWkqeP_qXM3f9q7y?usp=drive_link'
   },
   'Educación Continua': {
     email: 'st.curico.educacion.continua@gmail.com',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1DdCsJZJaFO7vd1WKzu100qRAZmDkOeG3?usp=sharing'
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1QWf6cIPSBtOMN6DWJ4B1f2srTUA8VPXP?usp=drive_link'
   },
   Rectoría: {
     email: 'st.curico.rectoria@gmail.com',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1d5-YhvOURLr-re_G2cskh6p0mmwzg4JN?usp=sharing'
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1xMUxjvMFh8_sr7djwTygF0sxQfq7xNbt?usp=drive_link'
   },
   'Soporte de Informática': {
     email: 'st.curico.informatica@gmail.com',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1brR95j8U4qjTYHniL_pIK-am-CS4PuJt?usp=sharing'
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1svTBEulj_SdTq1zxDYo2Lqlv6oeRppIj?usp=drive_link'
   },
   DAO: {
     email: 'st.curico.dao@gmail.com',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1LfYYsJVcc4tigWmjyU09XqdVOwZHUKow?usp=sharing'
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1xCDohH5EkTit7zIENUbVKvBcw3CIwzVK?usp=drive_link'
   },
   'Registro Curricular': {
     email: 'st.curico.curricular@gmail.com',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/143G1H6s3xQR5r0lpI2k3D0Mbs_Pvd7B_?usp=sharing'
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1D9EpqxMffEYsUcZQRqTuC9x1Cjd6gooX?usp=drive_link'
   },
   'Centro de Aprendizaje': {
     email: 'st.curico.centro.aprendizaje@gmail.com',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/191CFIrAdI_cfXTJR-I-MjZ-UF2CBhEUF?usp=sharing'
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1IDCaNb500ZT2ZNwjv1GUzZwkr3p-L6kX?usp=drive_link'
   },
   Innovación: {
     email: 'st.curico.innovacion@gmail.com',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1g6c8diwCMoLc6tIeoWhP4_HiQoVus1DG?usp=sharing'
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1jZnE7yMpLsJEUu1IPqXPbX48ujkQuuZ3?usp=drive_link'
   },
   'Prevención de Riesgo': {
     email: 'st.curico.prevencion.riesgos@gmail.com',
-    driveFolderUrl: 'https://drive.google.com/drive/folders/1X9IZZfu1BA3PBIbUKzDsBoTvoWq8igCp?usp=sharing'
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1wPPJyCvFZOZwMK8gkSk7lc25XDmBMJV5?usp=drive_link'
+  },
+  Formación: {
+    email: 'st.curico.formacion@gmail.com',
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1VRN6aGYVgxRbjESbzBjg3z2ZEoYZRoB4?usp=drive_link'
+  },
+  LIM: {
+    email: 'st.curico.lim@gmail.com',
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1sST5f6AW1rrT1R6uyIib-b8zlJM9Uj8j?usp=drive_link'
+  },
+  Vinculación: {
+    email: 'st.curico.vinculacion@gmail.com',
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1uCcB8eIR9e1BRYxtCj7vqXL0Ga2-d3Oi?usp=drive_link'
+  },
+  'E-learning': {
+    email: 'st.curico.elearning@gmail.com',
+    driveFolderUrl: 'https://drive.google.com/drive/folders/1r0ZOlr3PXLwDsHXi3mgxqvngz56ymkjL?usp=sharing'
   }
 }
 
-/** Carreras IP — enlaces oficiales (referencia web institucional). */
-export const ACADEMIC_IP_CARRERAS: { title: string; subtitle: string; href: string }[] = [
+/** Carreras IP — ficha virtual (ojo) + carpeta información (click principal). */
+export const ACADEMIC_IP_CARRERAS: { title: string; subtitle: string; href: string; infoHref?: string }[] = [
   {
     title: 'Servicio Social',
     subtitle: 'PDF de inducción — Técnico en Trabajo Social (IP)',
-    href: LINKS.pdfServicioSocial
-  },
-  {
-    title: 'Ingeniería y carreras afines',
-    subtitle: 'Oferta académica institucional (busca tu sede y carrera)',
-    href: 'https://www.ipsantotomas.cl/informacion-institucional/proyecto-educativo/oferta-academica/'
+    href: 'https://drive.google.com/drive/folders/1QBhEtXo9npWEc5mCxJzWaBwELVkzLTqf?usp=drive_link',
+    infoHref: 'https://drive.google.com/drive/folders/18ktksL3SMOfmx9MbYqYrUV0wycSZjYcw?usp=drive_link'
   },
   {
     title: 'Ingeniería en Administración de Empresas',
     subtitle: 'PDF de inducción Semana Cero',
-    href: LINKS.pdfIngAdministracionEmpresas
+    href: 'https://drive.google.com/drive/folders/1t_Q7vbSKYKJ46dLssgjMAgXU3NCrSo7h?usp=drive_link',
+    infoHref: 'https://drive.google.com/drive/folders/1ns5V3NAA0X1EHbylcrwGaX9CsG2bWgRq?usp=drive_link'
   },
   {
     title: 'Ingeniería Agrícola',
     subtitle: 'PDF de inducción Semana Cero',
-    href: LINKS.pdfIngAgricola
+    href: 'https://drive.google.com/drive/folders/1QemvBKaPnTwM_EoSkABoFeMACrvSlCyD?usp=drive_link',
+    infoHref: 'https://drive.google.com/drive/folders/1L7v3N_s99dvGGEWbwS3Oji9mebPDgqzp?usp=drive_link'
   }
 ]
 
@@ -199,54 +214,68 @@ export const ACADEMIC_CFT_BLOCKS: { title: string; subtitle: string; href: strin
 export const CFT_CARRERA_AREAS = ['Salud y deporte', 'Educación', 'Gastronomía y agro'] as const
 export type CftCarreraArea = (typeof CFT_CARRERA_AREAS)[number]
 
-/** CFT Semana Cero — PDF por carrera (Sede / material institucional). */
-export const ACADEMIC_CFT_CARRERAS_PDFS: { title: string; subtitle: string; href: string; area: CftCarreraArea }[] = [
+/** CFT Semana Cero — carrera con ficha virtual + carpeta informativa. */
+export const ACADEMIC_CFT_CARRERAS_PDFS: {
+  title: string
+  subtitle: string
+  href: string
+  infoHref?: string
+  area: CftCarreraArea
+}[] = [
   {
     title: 'Preparador físico',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/file/d/1SECb79MaX-Xjlmy4RgUruS0nw1GGBD-i/view?usp=sharing',
+    href: 'https://drive.google.com/drive/folders/1S5d603_V-aYcgDhxb4-kkS18nnCHUgZc?usp=drive_link',
+    infoHref: 'https://drive.google.com/drive/folders/1_WjWq9jACk_dfGeajdnaxiiIyoG1pt99?usp=drive_link',
     area: 'Salud y deporte'
   },
   {
     title: 'Técnico en Podología Clínica',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/file/d/1y5S9peQcOfvYDxpWDvgDX1tueEilrQxu/view?usp=sharing',
+    href: 'https://drive.google.com/drive/folders/1BOPVlGHS_el8MKePQP37ML9PIr3rYMWX?usp=drive_link',
+    infoHref: 'https://drive.google.com/drive/folders/1GOUDjh9D4VwafkMwHgLPag6DIx7O4FB_?usp=drive_link',
     area: 'Salud y deporte'
   },
   {
     title: 'Técnico en Odontología, mención Higienista Dental',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/file/d/1m3bepcwrs6IFPA6GgS3Abyf5YUiXMB65/view?usp=sharing',
+    href: 'https://drive.google.com/drive/folders/1utt9zKjvox5aQjBXKb8A01hw_A-0U71g?usp=drive_link',
+    infoHref: 'https://drive.google.com/drive/folders/1FAh63KA3ovzslU-KBUKF5FE5w7dDX-Fs?usp=sharing',
     area: 'Salud y deporte'
   },
   {
     title: 'Técnico en Enfermería',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/file/d/18NlC3zvpjvjw1-QWAoOHwuCh_Unlk1HP/view?usp=sharing',
+    href: 'https://drive.google.com/drive/folders/1xsy63T-EkQYc6qkrbpiXGnxjvoyFHD-0?usp=drive_link',
+    infoHref: 'https://drive.google.com/drive/folders/15eDtwnW7lNZFNOrDLQ09hQqJ7IF6VKZ_?usp=drive_link',
     area: 'Salud y deporte'
   },
   {
     title: 'Gastronomía Internacional y Tradicional Chilena',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/file/d/1cywsZUmj-XcuA_AHiwB__RC7ocuM4vkG/view?usp=sharing',
+    href: 'https://drive.google.com/drive/folders/1qVMjYFSBCHx_zYOvOmHZQqmoYHZqEb8z?usp=drive_link',
+    infoHref: 'https://drive.google.com/drive/folders/1DGFL55h6SAY-R40rn9EForiex_f3rr9b?usp=drive_link',
     area: 'Gastronomía y agro'
   },
   {
     title: 'Técnico en Educación Especial',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/file/d/19gBrx__LVvRtrGdzqFwVjLHyxIOX1tPV/view?usp=sharing',
+    href: 'https://drive.google.com/drive/folders/1VExRfJqfoecJla6KHN0pmdUmQ1AHBTqR?usp=drive_link',
+    infoHref: 'https://drive.google.com/drive/folders/1rZ6jSm-7HZw3UMwgDBwjeYI9sP4RjWd1?usp=drive_link',
     area: 'Educación'
   },
   {
     title: 'Técnico en Educación Parvularia y 1.º y 2.º básico',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/file/d/19sYmOLki0DjfP5Zxa_QNgIfrUFDU0nrX/view?usp=sharing',
+    href: 'https://drive.google.com/drive/folders/1zx7coZi0KyxiKIyZ8DRVZvyLuMg9IU6T?usp=drive_link',
+    infoHref: 'https://drive.google.com/drive/folders/1VFv27Zaiku5-gZS-HV1ET5dz0-O5JF_Y?usp=drive_link',
     area: 'Educación'
   },
   {
     title: 'Técnico Agrícola',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/file/d/1e0MyqewKhcO9iU0HE0zoGoBeg26j-NcM/view?usp=sharing',
+    href: 'https://drive.google.com/drive/folders/1tKR2d7ZUJLxK1IrUGSRy6eQBZbIHy-9V?usp=drive_link',
+    infoHref: 'https://drive.google.com/drive/folders/13djnaMP1_SVVsWdo8Dhpll8AzWO9kuo8?usp=drive_link',
     area: 'Gastronomía y agro'
   }
 ]

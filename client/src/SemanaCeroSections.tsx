@@ -1,22 +1,52 @@
-import { memo, useState, useEffect, useRef, useCallback, type ReactNode, type TouchEvent } from 'react'
+import {
+  memo,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  type ComponentType,
+  type ReactNode,
+  type TouchEvent
+} from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   AlertTriangle,
   ArrowUpRight,
+  BadgeCheck,
+  BookMarked,
   BookOpen,
+  Calendar,
   ChevronDown,
+  ClipboardList,
+  Copyright,
   ExternalLink,
+  FileBadge,
   FileImage,
-  Newspaper,
+  FileText,
   Flag,
+  FolderOpen,
+  Gavel,
   Globe,
   GraduationCap,
+  Handshake,
+  HardHat,
   Heart,
+  Leaf,
+  Lightbulb,
   Mail,
+  Monitor,
+  Newspaper,
+  Percent,
+  Plane,
+  Scale,
+  ScrollText,
   Shield,
   Sparkles,
   Target,
+  UserCheck,
+  Users,
   Video,
+  Wallet,
   X,
   User,
   Library,
@@ -29,36 +59,85 @@ import {
   ACADEMIC_LIM,
   APOYO_PDFS,
   APOYO_CURICO_CONTACT,
-  CFT_LINKS,
+  CFT_DOCUMENTACION_FUNDAMENTAL,
+  CFT_POLITICAS_INSTITUCIONALES,
+  CFT_REGLAMENTOS,
   COMITE_CURICO,
   EVACUATION_VIDEOS,
+  IP_POLITICAS_INSTITUCIONALES,
+  IP_REGLAMENTOS,
   IP_DOCUMENTOS_INSTITUCIONALES,
-  IP_LINKS,
   LINKS,
   MISSION_VISION,
-  VALORES
+  VALORES,
+  type ScpLinkRowIcon
 } from './semanaCeroContent'
+
+type ScpLeadSvgIcon = ComponentType<{ className?: string; size?: number; 'aria-hidden'?: boolean }>
+
+const SCP_LINK_LEAD_ICONS: Record<ScpLinkRowIcon, ScpLeadSvgIcon> = {
+  folderOpen: FolderOpen,
+  scale: Scale,
+  users: Users,
+  fileBadge: FileBadge,
+  lightbulb: Lightbulb,
+  handshake: Handshake,
+  leaf: Leaf,
+  userCheck: UserCheck,
+  badgeCheck: BadgeCheck,
+  bookOpen: BookOpen,
+  monitor: Monitor,
+  hardHat: HardHat,
+  gavel: Gavel,
+  heart: Heart,
+  plane: Plane,
+  flag: Flag,
+  wallet: Wallet,
+  percent: Percent,
+  sparkles: Sparkles,
+  bookMarked: BookMarked,
+  shield: Shield,
+  copyright: Copyright,
+  fileText: FileText,
+  calendar: Calendar,
+  clipboardList: ClipboardList,
+  scrollText: ScrollText
+}
 
 function LinkRow({
   title,
   subtitle,
   href,
-  areaLabel
+  areaLabel,
+  icon
 }: {
   title: string
   subtitle?: string
   href: string
   /** Etiqueta breve (ej. área CFT) sobre el título */
   areaLabel?: string
+  /** Ícono a la izquierda (Políticas/Reglamentos); si no va, solo título + flecha */
+  icon?: ScpLinkRowIcon
 }) {
+  const LeadIcon = icon ? SCP_LINK_LEAD_ICONS[icon] : null
+  const body = (
+    <div className="scp-linkrow-body">
+      {areaLabel && <span className="scp-linkrow-area">{areaLabel}</span>}
+      <strong>{title}</strong>
+      {subtitle && <span>{subtitle}</span>}
+    </div>
+  )
   return (
     <a className="scp-linkrow" href={href} target="_blank" rel="noopener noreferrer">
-      <div className="scp-linkrow-body">
-        {areaLabel && <span className="scp-linkrow-area">{areaLabel}</span>}
-        <strong>{title}</strong>
-        {subtitle && <span>{subtitle}</span>}
-      </div>
-      <ArrowUpRight size={18} aria-hidden />
+      {LeadIcon ? (
+        <div className="scp-linkrow-main">
+          <LeadIcon className="scp-linkrow-lead" size={20} aria-hidden />
+          {body}
+        </div>
+      ) : (
+        body
+      )}
+      <ArrowUpRight className="scp-linkrow-external" size={18} aria-hidden />
     </a>
   )
 }
@@ -441,8 +520,15 @@ function SemanaCeroFullSectionsInner() {
                 >
                   <div className="scp-reg-panel-collapse-inner">
                     <div className="scp-scard-body scp-cft-panel-body scp-reg-panel-body">
+                      <h3 className="scp-h3-inline">Políticas institucionales — IP</h3>
                       <div className="scp-linklist">
-                        {IP_LINKS.map((l) => (
+                        {IP_POLITICAS_INSTITUCIONALES.map((l) => (
+                          <LinkRow key={l.href + l.title} {...l} />
+                        ))}
+                      </div>
+                      <h3 className="scp-h3-inline" style={{ marginTop: '0.9rem' }}>Reglamentos — IP</h3>
+                      <div className="scp-linklist">
+                        {IP_REGLAMENTOS.map((l) => (
                           <LinkRow key={l.href + l.title} {...l} />
                         ))}
                       </div>
@@ -479,8 +565,21 @@ function SemanaCeroFullSectionsInner() {
                 >
                   <div className="scp-reg-panel-collapse-inner">
                     <div className="scp-scard-body scp-cft-panel-body scp-reg-panel-body">
+                      <h3 className="scp-h3-inline">Políticas institucionales — CFT</h3>
                       <div className="scp-linklist">
-                        {CFT_LINKS.map((l) => (
+                        {CFT_POLITICAS_INSTITUCIONALES.map((l) => (
+                          <LinkRow key={l.href + l.title} {...l} />
+                        ))}
+                      </div>
+                      <h3 className="scp-h3-inline" style={{ marginTop: '0.9rem' }}>Reglamentos — CFT</h3>
+                      <div className="scp-linklist">
+                        {CFT_REGLAMENTOS.map((l) => (
+                          <LinkRow key={l.href + l.title} {...l} />
+                        ))}
+                      </div>
+                      <h3 className="scp-h3-inline" style={{ marginTop: '0.9rem' }}>Documentación fundamental — CFT</h3>
+                      <div className="scp-linklist">
+                        {CFT_DOCUMENTACION_FUNDAMENTAL.map((l) => (
                           <LinkRow key={l.href + l.title} {...l} />
                         ))}
                       </div>
@@ -505,6 +604,16 @@ function SemanaCeroFullSectionsInner() {
               <a className="scp-scard" href={LINKS.segurosDae} target="_blank" rel="noopener noreferrer">
                 <Shield size={22} />
                 <div><strong>Seguro de accidentes personales</strong><span>Información y requisitos en portal DAE</span></div>
+                <ExternalLink size={16} />
+              </a>
+              <a className="scp-scard" href={LINKS.pdfAficheSeguroEscolar} target="_blank" rel="noopener noreferrer">
+                <Shield size={22} />
+                <div><strong>Afiche escolar seguro de accidente</strong><span>Material visual oficial (PDF)</span></div>
+                <ExternalLink size={16} />
+              </a>
+              <a className="scp-scard" href={LINKS.pdfVolanteSeguroEscolar} target="_blank" rel="noopener noreferrer">
+                <Shield size={22} />
+                <div><strong>Volante digital</strong><span>Resumen informativo seguro escolar (PDF)</span></div>
                 <ExternalLink size={16} />
               </a>
             </div>

@@ -1023,6 +1023,14 @@
   scroll-margin-top: 1rem;
 }
 
+#contenido-semana-cero {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-x: clip;
+}
+
 .n-hero-panel {
   min-height: 0;
   border-radius: 14px;

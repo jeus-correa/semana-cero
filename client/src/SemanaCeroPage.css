@@ -714,6 +714,10 @@
 }
 
 .scp-article {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   background: linear-gradient(165deg, rgba(10, 42, 36, 0.72) 0%, rgba(4, 14, 12, 0.88) 100%);
   border: 1px solid var(--scp-border-ui);
   border-radius: 18px;
@@ -736,6 +740,10 @@
 
 .scp-panel {
   min-height: 200px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .scp-block {
@@ -802,6 +810,7 @@
 
 .scp-lead {
   margin: 0 0 1.25rem;
+  max-width: 100%;
   font-size: 0.9rem;
   line-height: 1.55;
   color: rgba(255, 255, 255, 0.7);
@@ -1012,6 +1021,35 @@
   gap: 0.45rem;
 }
 
+.scp-linkrow-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.scp-linkrow-lead {
+  flex-shrink: 0;
+  margin-top: 0.06em;
+  opacity: 0.9;
+  color: rgba(127, 255, 212, 0.92);
+}
+
+[data-theme='light'] .scp-linkrow-lead {
+  color: #059669;
+}
+
+.scp-linkrow > .scp-linkrow-body,
+.scp-linkrow-main .scp-linkrow-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.scp-linkrow-external {
+  flex-shrink: 0;
+}
+
 .scp-linkrow {
   display: flex;
   align-items: center;
@@ -1204,11 +1242,10 @@
   }
 }
 
-.scp-linkrow-main {
-  display: flex;
+/* Fila carrera: enlace con cuerpo + flecha (no confundir con .scp-linkrow-main del LinkRow con ícono) */
+.scp-linkrow-main.scp-linkrow-main--with-afiche {
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
   color: inherit;
   text-decoration: none;
 }
@@ -1268,12 +1305,17 @@
     gap: 0.5rem 0.65rem;
   }
 
-  .scp-linkrow-body {
+  .scp-linkrow-main {
     flex: 1 1 100%;
     order: 1;
   }
 
-  .scp-linkrow > svg {
+  .scp-linkrow > .scp-linkrow-body {
+    flex: 1 1 100%;
+    order: 1;
+  }
+
+  .scp-linkrow-external {
     flex-shrink: 0;
     order: 2;
     margin-left: auto;
@@ -2141,6 +2183,107 @@
   opacity: 1 !important;
 }
 
+/* Seguros: tarjetas con alto uniforme en todos los dispositivos */
+#semana-seguros .scp-cards {
+  align-items: stretch;
+  grid-auto-rows: 1fr;
+}
+
+#semana-seguros .scp-cards .scp-scard {
+  min-height: 122px;
+  height: 100%;
+  box-sizing: border-box;
+  align-items: flex-start;
+}
+
+#semana-seguros .scp-cards .scp-scard > div {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  #semana-seguros .scp-cards .scp-scard {
+    min-height: 108px;
+  }
+}
+
+/* Políticas y reglamentos: consistencia visual + responsive en todos los dispositivos */
+.scp-reg-panel-body {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.scp-reg-panel-body .scp-h3-inline {
+  min-height: 1.75rem;
+  margin: 0.9rem 0 0.55rem;
+  font-size: clamp(0.8rem, 1.7vw, 0.9rem);
+  line-height: 1.25;
+}
+
+.scp-reg-panel-body .scp-h3-inline:first-child {
+  margin-top: 0.15rem;
+}
+
+.scp-reg-panel-body .scp-linklist {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.scp-reg-panel-body .scp-linkrow {
+  min-height: clamp(52px, 5.2vw, 60px);
+  padding: clamp(0.72rem, 1.7vw, 0.95rem) clamp(0.78rem, 2vw, 1.05rem);
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+.scp-reg-panel-body .scp-linkrow-lead,
+.scp-reg-panel-body .scp-linkrow-external {
+  flex-shrink: 0;
+}
+
+.scp-reg-panel-body .scp-linkrow-lead {
+  width: 20px;
+  height: 20px;
+}
+
+.scp-reg-panel-body .scp-linkrow-external {
+  width: 18px;
+  height: 18px;
+}
+
+.scp-reg-panel-body .scp-linkrow-body strong {
+  font-size: clamp(0.8rem, 1.75vw, 0.88rem);
+  line-height: 1.25;
+}
+
+.scp-reg-panel-body .scp-linkrow-body span {
+  font-size: clamp(0.7rem, 1.45vw, 0.76rem);
+}
+
+@media (max-width: 900px) {
+  .scp-reg-panel-body .scp-linkrow {
+    min-height: 50px;
+  }
+}
+
+@media (max-width: 540px) {
+  .scp-reg-panel-body .scp-h3-inline {
+    margin-top: 0.78rem;
+    margin-bottom: 0.48rem;
+  }
+
+  .scp-reg-panel-body .scp-linkrow {
+    min-height: 48px;
+    padding: 0.68rem 0.75rem;
+  }
+
+  .scp-reg-panel-body .scp-linkrow-body {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .scp-reg-panel-collapse,
   .scp-reg-panel-body {
@@ -2597,8 +2740,8 @@
 }
 
 .scp-banner-text {
-  flex: 1;
-  min-width: 180px;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .scp-banner-text strong {
@@ -2892,6 +3035,11 @@
 /* Incrustado en landing (sin página aparte) */
 .scp-page.scp-page--embed {
   min-height: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-x: clip;
   padding: 2rem max(1rem, env(safe-area-inset-right)) 3rem max(1rem, env(safe-area-inset-left));
   background: transparent;
   background-image: none;
@@ -2913,8 +3061,10 @@
 }
 
 .scp-embed-intro {
-  max-width: 720px;
+  max-width: min(720px, 100%);
   margin: 0 auto 1.25rem;
+  padding: 0 min(0.5rem, 2vw);
+  box-sizing: border-box;
   text-align: center;
 }
 
@@ -3604,6 +3754,10 @@
   align-items: center;
   gap: 0.65rem;
   margin-bottom: 1rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .scp-tabs-arrow {
@@ -3651,13 +3805,16 @@
 }
 
 .scp-tabs-container {
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: center;
   padding: 0.5rem 0.15rem 1rem;
   border-bottom: 1px solid var(--scp-border-ui-soft);
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .scp-tab-btn {
   display: flex;
@@ -3665,7 +3822,7 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.62rem 1rem;
-  min-width: 9.2rem;
+  min-width: min(9.2rem, 100%);
   background: var(--scp-surface);
   border: 1px solid var(--scp-border-ui);
   border-radius: 99px;
@@ -3772,6 +3929,13 @@
   color: #ffffff !important;
   border-color: var(--scp-accent);
   box-shadow: 0 4px 15px rgba(0, 153, 109, 0.25);
+}
+
+.scp-tab-content {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 /* Filtros Unidad Apoyo Interactivos */

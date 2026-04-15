@@ -13,6 +13,8 @@ export const LINKS = {
   conoceTomasinGemini: 'https://gemini.google.com/gem/7d22f9f82e12/b72da718780f6c73?usp=sharing',
   personajeSelloImg: 'https://i.imgur.com/0RRUTf8.jpeg',
   segurosDae: 'https://www.daesantotomas.cl/apoyo-estudiantil/seguros-para-estudiantes/',
+  pdfAficheSeguroEscolar: 'https://drive.google.com/file/d/1aSByy-VGFjmYbO_kgHpMkuKj6oHFwZb6/view',
+  pdfVolanteSeguroEscolar: 'https://drive.google.com/file/d/1STdSNQyrnSFwKTlTyscvp9JB8ohgrnAn/view',
   recuperaClave: 'https://recuperatuclave.santotomas.cl/',
   actualizaClave: 'https://actualizatuclave.santotomas.cl/login',
   canalDenuncias: 'https://www.ust.cl/genero-e-inclusion/canal-de-denuncias',
@@ -370,157 +372,433 @@ export const COMITE_CURICO: { nombre: string; cargo: string; foto: string }[] = 
   }
 ]
 
-/** Enlaces principales IP — portal y documentos (mismo origen que la web de referencia). */
-export const IP_LINKS: { title: string; subtitle?: string; href: string }[] = [
+/** Ícono al inicio de fila (Lucide, mapeado en SemanaCeroSections). */
+export type ScpLinkRowIcon =
+  | 'folderOpen'
+  | 'scale'
+  | 'users'
+  | 'fileBadge'
+  | 'lightbulb'
+  | 'handshake'
+  | 'leaf'
+  | 'userCheck'
+  | 'badgeCheck'
+  | 'bookOpen'
+  | 'monitor'
+  | 'hardHat'
+  | 'gavel'
+  | 'heart'
+  | 'plane'
+  | 'flag'
+  | 'wallet'
+  | 'percent'
+  | 'sparkles'
+  | 'bookMarked'
+  | 'shield'
+  | 'copyright'
+  | 'fileText'
+  | 'calendar'
+  | 'clipboardList'
+  | 'scrollText'
+
+export type ScpRegLinkItem = {
+  title: string
+  subtitle?: string
+  href: string
+  icon: ScpLinkRowIcon
+}
+
+/** IP — políticas institucionales. */
+export const IP_POLITICAS_INSTITUCIONALES: ScpRegLinkItem[] = [
   {
+    icon: 'folderOpen',
     title: 'Políticas, reglamentos y documentos (portal IP)',
     subtitle: 'Normativa completa en el sitio oficial',
     href: LINKS.ipPortalReglamentos
   },
   {
+    icon: 'scale',
     title: 'Política de solución de conflictos de intereses',
     subtitle: 'Dec. N° 010/19',
     href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2020/03/Decreto-10-de-2019.-PSCI-IPST.pdf'
   },
   {
+    icon: 'users',
     title: 'Política integral CEDI — convivencia e inclusión',
-    subtitle: 'Documento oficial',
+    subtitle: 'Ver política',
     href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2026/01/ST-13_25-Or-Politicas-CEDI-UST_Diciembre-2025.pdf'
   },
   {
-    title: 'Política de innovación y emprendimiento',
+    icon: 'fileBadge',
+    title: 'Dec. N° 099/24',
+    subtitle: 'Decreto de aprobación CEDI',
+    href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2025/03/301224-Aprueba-Actualizacion-Politica-Integral-CEDI-IPST.pdf'
+  },
+  {
+    icon: 'lightbulb',
+    title: 'Política general de innovación y emprendimiento',
     href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2024/11/Politica-de-Innovacion-y-Emprendimiento-IPCFT-09-24.pdf'
   },
   {
+    icon: 'handshake',
     title: 'Política vinculación con el medio',
     href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2024/07/politicas.ipst-vcm.pdf'
   },
   {
+    icon: 'fileBadge',
+    title: 'Dec. N° 47/15',
+    subtitle: 'Decreto política VcM',
+    href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2018/08/Decreto-N%C2%B0-47-15-Pol%C3%ADtica-VcM-IP.pdf'
+  },
+  {
+    icon: 'fileBadge',
+    title: 'Dec. N° 52/23',
+    subtitle: 'Modificación decreto VcM',
+    href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2025/06/Modifica-Politica-de-VCM-IPST.pdf'
+  },
+  {
+    icon: 'leaf',
     title: 'Política de sostenibilidad',
     href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2025/05/12.05.25_ST_Poli%CC%81ticas-Sostenibilidad-IP.pdf'
   },
   {
-    title: 'Política de aseguramiento interno de la calidad',
-    href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2025/10/Politica-Aseguramiento-Calidad-IPST-2025.pdf'
+    icon: 'fileBadge',
+    title: 'Dec. N° 012/25',
+    subtitle: 'Decreto de aprobación sostenibilidad',
+    href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2025/05/Aprueba-Politica-de-Sostenibilidad-del-Instituto-Profesional-Santo-Tomas.pdf'
   },
   {
+    icon: 'userCheck',
+    title: 'Política egresados y egresadas',
+    href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2025/03/ST-323-PDF-Politica-Relacionamiento-Egresados-IP-Junio.pdf'
+  },
+  {
+    icon: 'fileBadge',
+    title: 'Dec. N° 055/21',
+    subtitle: 'Decreto política egresados',
+    href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2025/06/Decreto-Politica-Egresados-y-Egresadas-IPST.pdf'
+  },
+  {
+    icon: 'badgeCheck',
+    title: 'Política de aseguramiento interno de la calidad',
+    href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2025/10/Politica-Aseguramiento-Calidad-IPST-2025.pdf'
+  }
+]
+
+/** IP — reglamentos. */
+export const IP_REGLAMENTOS: ScpRegLinkItem[] = [
+  {
+    icon: 'bookOpen',
     title: 'Reglamento académico',
     subtitle: 'Dec. N° 014/16',
     href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2016/04/Decreto-014-2016-VRA-IP.pdf'
   },
   {
+    icon: 'monitor',
     title: 'Reglamento académico online',
     subtitle: 'Dec. N° 012/23',
     href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2023/05/Reglamento-Academico-Online-IPST-2023.pdf'
   },
   {
+    icon: 'hardHat',
     title: 'Reglamento interno de orden, higiene y seguridad',
     href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2025/03/Reglamento-Interno-de-Orden-Higiene-y-Seguridad-IPST.pdf'
   },
   {
+    icon: 'gavel',
     title: 'Reglamento de disciplina — comunidad educativa',
     subtitle: 'Dec. N° 058/24',
     href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2024/11/Reglamento-de-Disciplina-Comunidad-Educativa-IPST-2024.pdf'
   },
   {
-    title: 'Decreto misión, visión y valores institucionales',
-    subtitle: 'Dec. N° 066/23',
-    href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2024/01/Decreto-Mision-Vision-y-Valores-Institucionales-del-Instituto-Profesional-Santo-Tomas-2023.pdf'
+    icon: 'heart',
+    title: 'Reglamento de beneficios para estudiantes padres, madres o al cuidado de menores',
+    subtitle: 'Dec. N° 016/23',
+    href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2023/05/Reglamento-IP.pdf'
+  },
+  {
+    icon: 'plane',
+    title: 'Reglamento de intercambio presencial',
+    subtitle: 'Programa de intercambio estudiantil',
+    href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2024/09/Reglamento-de-Intercambio-Presencial-Estudiantes-Santo-Toma%CC%81s.pdf'
   }
 ]
 
 /** IP — documentos institucionales en sección separada. */
-export const IP_DOCUMENTOS_INSTITUCIONALES: { title: string; subtitle?: string; href: string }[] = [
+export const IP_DOCUMENTOS_INSTITUCIONALES: ScpRegLinkItem[] = [
   {
+    icon: 'flag',
+    title: 'Decreto misión, visión y valores institucionales',
+    subtitle: 'Dec. N° 066/23',
+    href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2024/01/Decreto-Mision-Vision-y-Valores-Institucionales-del-Instituto-Profesional-Santo-Tomas-2023.pdf'
+  },
+  {
+    icon: 'wallet',
+    title: 'Aranceles básicos',
+    subtitle: 'Dec. N° 010/25',
+    href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2025/06/Aprueba-Aranceles-Basicos-de-la-IPST-2025.pdf'
+  },
+  {
+    icon: 'percent',
+    title: 'Normas para rebaja de arancel por baja carga académica',
+    subtitle: 'Dec. N° 001/17',
+    href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2022/08/NORMATIVA-REBAJA-DE-ARANCEL-por-baja-carga-acad%C3%A9mica-EGB-LJL-gjg-IPST.pdf'
+  },
+  {
+    icon: 'sparkles',
+    title: 'Lineamientos para el uso de inteligencia artificial',
+    href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2026/01/Lineamientos-para-el-uso-de-la-Inteligencia-Artificial-IP-ST.pdf'
+  },
+  {
+    icon: 'fileBadge',
+    title: 'Dec. N° 044/25',
+    subtitle: 'Decreto de aprobación lineamientos IA',
+    href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2025/09/Aprueba-lineamientos-para-el-uso-de-la-Inteligencia-Artificial-IPST.pdf'
+  },
+  {
+    icon: 'bookMarked',
     title: 'Estatutos',
     href: 'https://www.ipsantotomas.cl/informacion-institucional/politicas-y-reglamentos/estatutos/'
   },
   {
+    icon: 'scale',
     title: 'Código de ética',
     href: 'https://www.ipsantotomas.cl/informacion-institucional/politicas-y-reglamentos/codigo-de-etica/'
   },
   {
+    icon: 'shield',
+    title: 'Modelo de prevención del delito — Ley 20.393',
+    href: 'https://www.ipsantotomas.cl/informacion-institucional/politicas-y-reglamentos/modelo-prevencion-ley-n-20-393/'
+  },
+  {
+    icon: 'scale',
+    title: 'Política de solución de conflictos de intereses (portal)',
+    href: 'https://www.ipsantotomas.cl/informacion-institucional/politicas-y-reglamentos/politica-solucion-conflictos-intereses/'
+  },
+  {
+    icon: 'copyright',
+    title: 'Derechos de autor',
+    href: 'https://www.ipsantotomas.cl/informacion-institucional/politicas-y-reglamentos/derechos-de-autor/'
+  },
+  {
+    icon: 'fileText',
+    title: 'Contrato de prestación de servicios educacionales',
+    href: 'https://www.ipsantotomas.cl/informacion-institucional/politicas-y-reglamentos/contrato-prestacion-servicios-educacionales/'
+  },
+  {
+    icon: 'calendar',
     title: 'Calendario académico',
     href: 'https://www.ipsantotomas.cl/informacion-institucional/politicas-y-reglamentos/calendario/'
   },
   {
+    icon: 'clipboardList',
     title: 'Sistema de admisión',
     href: 'https://www.ipsantotomas.cl/informacion-institucional/politicas-y-reglamentos/sistema-de-admision/'
   }
 ]
 
-export const CFT_LINKS: { title: string; subtitle?: string; href: string }[] = [
+/** CFT — políticas institucionales. */
+export const CFT_POLITICAS_INSTITUCIONALES: ScpRegLinkItem[] = [
   {
+    icon: 'folderOpen',
     title: 'Políticas, reglamentos y documentos (portal CFT)',
-    subtitle: 'Normativa completa en el sitio oficial',
+    subtitle: 'Acceso a toda la normativa institucional CFT',
     href: LINKS.cftPortalReglamentos
   },
   {
+    icon: 'scale',
     title: 'Política de solución de conflictos de intereses',
     subtitle: 'Dec. N° 010/19',
     href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2020/03/Decreto-15-de-2019.-PSCI-CFT.pdf'
   },
   {
+    icon: 'users',
     title: 'Política integral CEDI — convivencia e inclusión',
-    href: LINKS.cftPortalReglamentos
+    subtitle: 'Ver política',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2025/04/Politica-CEDI-CFTST.pdf'
   },
   {
-    title: 'Política de innovación y emprendimiento',
+    icon: 'fileBadge',
+    title: 'Dec. N° 060/24',
+    subtitle: 'Decreto de actualización CEDI',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2025/06/Aprueba-Actualizacion-Politica-Integral-CEDI-CFTST.pdf'
+  },
+  {
+    icon: 'lightbulb',
+    title: 'Política general de innovación y emprendimiento',
     href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2024/09/Politica-de-Innovacion-y-Emprendimiento-IPCFT-09-24.pdf'
   },
   {
+    icon: 'handshake',
     title: 'Política vinculación con el medio',
-    href: LINKS.cftPortalReglamentos
+    subtitle: 'Ver política',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2024/07/politica-cftst-vcm.pdf'
   },
   {
+    icon: 'fileBadge',
+    title: 'Dec. N° 033/15',
+    subtitle: 'Decreto política VcM',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2018/08/Decreto-N%C2%B0-33-16-Pol%C3%ADtica-VcM-CFT.pdf'
+  },
+  {
+    icon: 'fileBadge',
+    title: 'Dec. N° 041/23',
+    subtitle: 'Modificación decreto VcM',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2025/06/Modifica-Politica-de-VCM-CFTST.pdf'
+  },
+  {
+    icon: 'badgeCheck',
+    title: 'Política de aseguramiento de la calidad',
+    subtitle: 'Ver política',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2024/09/POLITICA-DE-ASEGURAMIENTO-DE-LA-CALIDAD-CFTST_.pdf'
+  },
+  {
+    icon: 'fileBadge',
+    title: 'Dec. N° 006/23',
+    subtitle: 'Modificación política y sistema de calidad',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2024/07/MODIFICACION-POLITICA-Y-SISTEMA-DE-ASEGURAMIENTO-DE-LA-CALIDAD-CFT-2024-1.pdf'
+  },
+  {
+    icon: 'leaf',
     title: 'Política de sostenibilidad',
-    href: LINKS.cftPortalReglamentos
+    subtitle: 'Ver política',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2025/05/12.05.25_ST_Poli%CC%81ticas-Sostenibilidad-CFT.pdf'
   },
   {
-    title: 'Política de aseguramiento interno de la calidad',
-    href: LINKS.cftPortalReglamentos
+    icon: 'fileBadge',
+    title: 'Dec. N° 007/25',
+    subtitle: 'Decreto de aprobación sostenibilidad',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2025/05/Aprueba-Politica-de-Sostenibilidad-del-Centro-de-Formacion-Tecnica-Santo-Tomas.pdf'
   },
   {
+    icon: 'userCheck',
+    title: 'Política egresados y egresadas',
+    subtitle: 'Ver política',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2024/10/Politica-Relacionamiento-Egresados-CFT-low.pdf'
+  },
+  {
+    icon: 'fileBadge',
+    title: 'Dec. N° 064/21',
+    subtitle: 'Decreto política egresados',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2025/06/Decreto-Politica-Egresados-y-Egresadas-CFTST.pdf'
+  }
+]
+
+/** CFT — reglamentos. */
+export const CFT_REGLAMENTOS: ScpRegLinkItem[] = [
+  {
+    icon: 'scrollText',
     title: 'Reglamento general CFT',
     subtitle: 'Dec. N° 025/24',
     href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2024/06/Reglamento-General-del-Centro-de-Formacion-Tecnica-Santo-Tomas-1.pdf'
   },
   {
+    icon: 'bookOpen',
     title: 'Reglamento académico',
     subtitle: 'Dec. N° 014/16',
     href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2016/04/Reglamento-Academico-de-alumnos-CFTST-17102016.pdf'
   },
   {
+    icon: 'monitor',
     title: 'Reglamento académico online',
     subtitle: 'Dec. N° 053/23',
     href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2023/05/Reglamento-Academico-Online-CFT-2023.pdf'
   },
   {
+    icon: 'hardHat',
     title: 'Reglamento interno de orden, higiene y seguridad',
-    href: LINKS.cftPortalReglamentos
+    subtitle: 'Normativa interna de la institución',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2025/03/Reglamento-Interno-de-Orden-Higiene-y-Seguridad-CFT.pdf'
   },
   {
+    icon: 'gavel',
     title: 'Reglamento de disciplina — comunidad educativa',
-    href: LINKS.cftPortalReglamentos
+    subtitle: 'Dec. N° 042/24',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2024/11/Reglamento-de-Disciplina-Comunidad-Educativa-CFT-ST-2024.pdf'
   },
   {
+    icon: 'heart',
+    title: 'Reglamento de beneficios para estudiantes padres, madres o al cuidado de menores',
+    subtitle: 'Dec. N° 020/23',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2023/05/Reglamento-CFT.pdf'
+  },
+  {
+    icon: 'plane',
+    title: 'Reglamento de intercambio presencial',
+    subtitle: 'Para estudiantes de Santo Tomás',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2024/09/Reglamento-de-Intercambio-Presencial-Estudiantes-Santo-Toma%CC%81s.pdf'
+  }
+]
+
+/** CFT — documentación fundamental. */
+export const CFT_DOCUMENTACION_FUNDAMENTAL: ScpRegLinkItem[] = [
+  {
+    icon: 'flag',
     title: 'Decreto misión, visión y valores institucionales',
     subtitle: 'Dec. N° 055/23',
     href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2024/01/Decreto-Mision-Vision-y-Valores-Institucionales-del-Centro-de-Formacion-Tecnica-Santo-Tomas-2023.pdf'
   },
   {
+    icon: 'wallet',
+    title: 'Aranceles básicos',
+    subtitle: 'Dec. N° 005/25',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2025/06/Aprueba-Aranceles-Basicos-de-la-CFTST-2025.pdf'
+  },
+  {
+    icon: 'percent',
+    title: 'Normas para asignar rebaja de arancel por baja carga académica',
+    subtitle: 'Dec. N° 001/17',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2022/08/NORMATIVA-REBAJA-DE-ARANCEL-por-baja-carga-acad%C3%A9mica-EGB-LJL-gjg-CFT.pdf'
+  },
+  {
+    icon: 'sparkles',
+    title: 'Lineamientos para el uso de la inteligencia artificial',
+    subtitle: 'Ver documento',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2022/08/NORMATIVA-REBAJA-DE-ARANCEL-por-baja-carga-acad%C3%A9mica-EGB-LJL-gjg-CFT.pdf'
+  },
+  {
+    icon: 'fileBadge',
+    title: 'Dec. N° 021/25',
+    subtitle: 'Decreto lineamientos IA',
+    href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2025/09/Aprueba-Lineamientos-para-el-uso-de-la-Inteligencia-Artificial-CFT.pdf'
+  },
+  {
+    icon: 'bookMarked',
     title: 'Estatutos',
     href: 'https://www.cftsantotomas.cl/informacion-institucional/politicas-y-reglamentos/estatutos/'
   },
   {
+    icon: 'scale',
     title: 'Código de ética',
     href: 'https://www.cftsantotomas.cl/informacion-institucional/politicas-y-reglamentos/codigo-de-etica/'
   },
   {
+    icon: 'shield',
+    title: 'Modelo de prevención de delitos — Ley 20.393',
+    href: 'https://www.cftsantotomas.cl/informacion-institucional/politicas-y-reglamentos/modelo-prevencion-ley-n-20-393/'
+  },
+  {
+    icon: 'scale',
+    title: 'Política de solución de conflictos de intereses (portal)',
+    href: 'https://www.cftsantotomas.cl/informacion-institucional/politicas-y-reglamentos/politica-solucion-conflictos-intereses/'
+  },
+  {
+    icon: 'copyright',
+    title: 'Derechos de autor',
+    href: 'https://www.cftsantotomas.cl/informacion-institucional/politicas-y-reglamentos/derechos-de-autor/'
+  },
+  {
+    icon: 'fileText',
+    title: 'Contrato de prestación de servicios educacionales',
+    href: 'https://www.cftsantotomas.cl/informacion-institucional/politicas-y-reglamentos/contrato-prestacion-servicios-educacionales/'
+  },
+  {
+    icon: 'calendar',
     title: 'Calendario académico',
     href: 'https://www.cftsantotomas.cl/informacion-institucional/politicas-y-reglamentos/calendario-academico/'
   },
   {
+    icon: 'clipboardList',
     title: 'Sistema de admisión',
     href: 'https://www.cftsantotomas.cl/informacion-institucional/politicas-y-reglamentos/sistema-de-admision/'
   }

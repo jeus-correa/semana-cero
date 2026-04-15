@@ -6,6 +6,8 @@ import {
   BookOpen,
   ChevronDown,
   ExternalLink,
+  FileImage,
+  Newspaper,
   Flag,
   Globe,
   GraduationCap,
@@ -60,11 +62,72 @@ function LinkRow({
   )
 }
 
+/** Info oficial a la izquierda; afiche digital en columna derecha (responsive). */
+function CarreraAficheDualRow({
+  title,
+  subtitle,
+  infoHref,
+  aficheHref,
+  areaLabel
+}: {
+  title: string
+  subtitle: string
+  infoHref: string
+  aficheHref: string
+  areaLabel?: string
+}) {
+  const aficheLabel = `Ver afiche digital Semana Cero — ${title}`
+  return (
+    <div className="scp-linkrow scp-linkrow-dual scp-linkrow-dual--row">
+      <a
+        className="scp-linkrow-main scp-linkrow-main--with-afiche"
+        href={infoHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Información de la carrera (sitio oficial)"
+      >
+        <div className="scp-linkrow-body">
+          {areaLabel && <span className="scp-linkrow-area">{areaLabel}</span>}
+          <strong>{title}</strong>
+          <span>{subtitle}</span>
+        </div>
+        <ArrowUpRight size={18} aria-hidden />
+      </a>
+      <div className="scp-carrera-afiche-rail">
+        <button
+          type="button"
+          className="scp-apoyo-afiche-btn scp-afiche-btn--carrera"
+          aria-label={aficheLabel}
+          title="Abre el PDF del afiche digital de tu carrera"
+          onClick={() => window.open(aficheHref, '_blank', 'noopener,noreferrer')}
+        >
+          <span className="scp-apoyo-afiche-btn-ic" aria-hidden>
+            <FileImage size={22} strokeWidth={2} />
+          </span>
+          <span className="scp-apoyo-afiche-btn-copy">
+            <span className="scp-apoyo-afiche-btn-title">Afiche digital</span>
+            <span className="scp-apoyo-afiche-btn-sub">PDF de tu carrera · Semana Cero</span>
+          </span>
+          <ExternalLink size={18} aria-hidden className="scp-apoyo-afiche-btn-go" />
+        </button>
+      </div>
+    </div>
+  )
+}
+
 const secMotion = {
   initial: { opacity: 0, y: 32 },
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: -20 },
   transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const }
+}
+
+/** Transición más rápida al entrar a Apoyo (contenido útil al tiro). */
+const secMotionApoyo = {
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -12 },
+  transition: { duration: 0.18, ease: [0.22, 1, 0.36, 1] as const }
 }
 
 const childStagger = {
@@ -86,10 +149,17 @@ function DocHeroShell({
 }) {
   const rootRef = useRef<HTMLDivElement>(null)
   const rafRef = useRef<number>(0)
+  const lastPtrRef = useRef<{ x: number; y: number } | null>(null)
 
   const applyPointer = useCallback((clientX: number, clientY: number) => {
     const el = rootRef.current
     if (!el) return
+    const prev = lastPtrRef.current
+    if (prev) {
+      const d = Math.max(Math.abs(clientX - prev.x), Math.abs(clientY - prev.y))
+      if (d < 12) return
+    }
+    lastPtrRef.current = { x: clientX, y: clientY }
     const r = el.getBoundingClientRect()
     if (r.width < 1 || r.height < 1) return
     const x = (clientX - r.left) / r.width
@@ -107,6 +177,7 @@ function DocHeroShell({
   )
 
   const onLeave = useCallback(() => {
+    lastPtrRef.current = null
     const el = rootRef.current
     if (!el) return
     el.style.setProperty('--dx', '0.5')
@@ -503,7 +574,7 @@ function SemanaCeroFullSectionsInner() {
         )}
 
         {activeTab === 'apoyo' && (
-          <motion.section key="apoyo" className="scp-block" id="semana-apoyo" aria-labelledby="sec-ap" {...secMotion}>
+          <motion.section key="apoyo" className="scp-block" id="semana-apoyo" aria-labelledby="sec-ap" {...secMotionApoyo}>
             <h2 id="sec-ap" className="scp-h2">Unidades de apoyo</h2>
             <p className="scp-lead">Inducción pedagógica y recursos transversales.</p>
             
@@ -575,17 +646,19 @@ function SemanaCeroFullSectionsInner() {
                   const driveUrl = item.curico?.driveFolderUrl
                   const materialHref = item.href
                   const hasDualDestino = Boolean(driveUrl && materialHref !== driveUrl)
+                  /** Sin animación de entrada larga: se ve al instante y no confunde con “carga”. */
                   const cardMotion = {
-                    initial: { opacity: 0, scale: 0.96 },
+                    initial: { opacity: 1, scale: 1 },
                     whileInView: { opacity: 1, scale: 1 },
-                    viewport: { once: true }
+                    viewport: { once: true },
+                    transition: { duration: 0 }
                   } as const
 
                   const openMaterial = () => {
                     window.open(materialHref, '_blank', 'noopener,noreferrer')
                   }
 
-                  const eyeLabel = `Ver material Semana Cero — ${item.title}`
+                  const eyeLabel = `Abrir tu afiche digital — ${item.title}`
 
                   if (hasDualDestino) {
                     return (
@@ -600,7 +673,7 @@ function SemanaCeroFullSectionsInner() {
                           href={driveUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          title="Carpeta Google Drive — Sede Curicó"
+                          title="Abrir carpeta Google Drive — Sede Curicó"
                         >
                           <span className="scp-nav-num">{String(index + 1).padStart(2, '0')}</span>
                           <GraduationCap size={22} aria-hidden className="scp-apoyo-pdf-ic" />
@@ -609,17 +682,29 @@ function SemanaCeroFullSectionsInner() {
                             <span>{item.subtitle}</span>
                           </div>
                         </a>
+                        <div className="scp-apoyo-dual-split" role="presentation" aria-hidden />
                         <button
                           type="button"
-                          className="scp-apoyo-pdf-eye scp-apoyo-pdf-eye--corner"
+                          className="scp-apoyo-afiche-btn scp-apoyo-afiche-btn--apoyo"
                           aria-label={eyeLabel}
-                          title="tu afiche digital"
+                          title="Abre el PDF de tu afiche digital en una pestaña nueva"
                           onClick={(e) => {
                             e.preventDefault()
                             e.stopPropagation()
                             openMaterial()
                           }}
-                        />
+                        >
+                          <span className="scp-apoyo-afiche-leading" aria-hidden>
+                            <span className="scp-apoyo-afiche-tag">PDF</span>
+                            <span className="scp-apoyo-afiche-btn-ic">
+                              <Newspaper size={20} strokeWidth={2} />
+                            </span>
+                          </span>
+                          <span className="scp-apoyo-afiche-btn-copy">
+                            <span className="scp-apoyo-afiche-btn-title">Tu afiche digital</span>
+                          </span>
+                          <ExternalLink size={16} aria-hidden className="scp-apoyo-afiche-btn-go" />
+                        </button>
                       </motion.div>
                     )
                   }
@@ -713,25 +798,14 @@ function SemanaCeroFullSectionsInner() {
                           }
 
                           return (
-                            <div key={l.href + l.title} className="scp-linkrow scp-linkrow-dual">
-                              <a className="scp-linkrow-main" href={infoHref} target="_blank" rel="noopener noreferrer">
-                                <div className="scp-linkrow-body">
-                                  <span className="scp-linkrow-area">{l.area}</span>
-                                  <strong>{l.title}</strong>
-                                  <span>{l.subtitle}</span>
-                                </div>
-                                <ArrowUpRight size={18} aria-hidden />
-                              </a>
-                              <button
-                                type="button"
-                                className="scp-apoyo-pdf-eye scp-apoyo-pdf-eye--corner"
-                                aria-label={`Ver ficha virtual — ${l.title}`}
-                                title="afiche digital de tu carrera"
-                                onClick={() => {
-                                  window.open(l.href, '_blank', 'noopener,noreferrer')
-                                }}
-                              />
-                            </div>
+                            <CarreraAficheDualRow
+                              key={l.href + l.title}
+                              title={l.title}
+                              subtitle={l.subtitle}
+                              areaLabel={l.area}
+                              infoHref={infoHref}
+                              aficheHref={l.href}
+                            />
                           )
                         })
                       )}
@@ -758,24 +832,13 @@ function SemanaCeroFullSectionsInner() {
                 }
 
                 return (
-                  <div key={l.href + l.title} className="scp-linkrow scp-linkrow-dual">
-                    <a className="scp-linkrow-main" href={infoHref} target="_blank" rel="noopener noreferrer">
-                      <div className="scp-linkrow-body">
-                        <strong>{l.title}</strong>
-                        <span>{l.subtitle}</span>
-                      </div>
-                      <ArrowUpRight size={18} aria-hidden />
-                    </a>
-                    <button
-                      type="button"
-                      className="scp-apoyo-pdf-eye scp-apoyo-pdf-eye--corner"
-                      aria-label={`Ver ficha virtual — ${l.title}`}
-                      title="afiche digital de tu carrera"
-                      onClick={() => {
-                        window.open(l.href, '_blank', 'noopener,noreferrer')
-                      }}
-                    />
-                  </div>
+                  <CarreraAficheDualRow
+                    key={l.href + l.title}
+                    title={l.title}
+                    subtitle={l.subtitle}
+                    infoHref={infoHref}
+                    aficheHref={l.href}
+                  />
                 )
               })}
             </div>

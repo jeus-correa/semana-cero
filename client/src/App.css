@@ -1547,6 +1547,78 @@
   box-sizing: border-box;
 }
 
+/* YouTube: placeholder hasta que la sección esté cerca del viewport (ahorra red y CPU al abrir). */
+.n-video-pending {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+  background:
+    radial-gradient(ellipse at 50% 45%, rgba(0, 214, 148, 0.14) 0%, transparent 62%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.52) 100%);
+  pointer-events: none;
+}
+
+/* Chunk lazy de Semana Cero: feedback breve sin bloquear el hero. */
+.n-semana-suspense-fallback {
+  position: relative;
+  min-height: min(52vh, 480px);
+  border-radius: 18px;
+  border: 1px solid rgba(0, 214, 148, 0.12);
+  background: linear-gradient(
+    110deg,
+    rgba(0, 214, 148, 0.04) 0%,
+    rgba(0, 214, 148, 0.1) 45%,
+    rgba(0, 214, 148, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: nSemanaFallbackShimmer 1.35s ease-in-out infinite;
+}
+
+@keyframes nSemanaFallbackShimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: -100% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .n-semana-suspense-fallback {
+    animation: none;
+    background: rgba(0, 214, 148, 0.06);
+  }
+}
+
+.n-semana-suspense-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+[data-theme='light'] .n-semana-suspense-fallback {
+  border-color: rgba(0, 153, 109, 0.2);
+  background: linear-gradient(
+    110deg,
+    rgba(0, 153, 109, 0.05) 0%,
+    rgba(0, 153, 109, 0.12) 45%,
+    rgba(0, 153, 109, 0.05) 100%
+  );
+  background-size: 200% 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='light'] .n-semana-suspense-fallback {
+    background: rgba(0, 153, 109, 0.07);
+  }
+}
+
 @media (max-width: 520px) {
   .n-hero-text h1 strong {
     font-size: clamp(2rem, 10vw, 3.8rem);
@@ -3857,4 +3929,31 @@ footer {
 .n-sidebar { color: #fff; }
 [data-theme='light'] .n-sidebar-brand span, [data-theme='light'] .n-sidebar-menu a { color: #fff !important; }
 [data-theme='light'] .n-sidebar-toggle, [data-theme='light'] .n-theme-switch { color: #fff !important; }
+
+/* Pestaña en segundo plano: pausar animaciones infinitas (las mismas retoman al volver). */
+html[data-page-visible='0'] .n-dashboard-mesh,
+html[data-page-visible='0'] .n-dashboard-blob {
+  animation-play-state: paused !important;
+}
+
+html[data-page-visible='0'] .n-ingreso-track-fill {
+  animation-play-state: paused !important;
+}
+
+html[data-page-visible='0'] .n-btn-main {
+  animation-play-state: paused !important;
+}
+
+html[data-page-visible='0'] .n-semana-suspense-fallback {
+  animation-play-state: paused !important;
+}
+
+html[data-page-visible='0'] .scp-doc-hero-mesh,
+html[data-page-visible='0'] .scp-doc-hero-aurora,
+html[data-page-visible='0'] .scp-doc-hero-orb,
+html[data-page-visible='0'] .scp-doc-hero-shimmer,
+html[data-page-visible='0'] .scp-doc-hero-grid,
+html[data-page-visible='0'] .scp-doc-hero-glow {
+  animation-play-state: paused !important;
+}
 

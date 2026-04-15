@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -24,10 +24,15 @@ import {
 } from 'lucide-react'
 import './App.css'
 import './SemanaCeroPage.css'
-import { SemanaCeroFullSections } from './SemanaCeroSections'
 import { LINKS, type SemanaTabId } from './semanaCeroContent'
 
-const FALLBACK_HERO_SLIDES = ['/santo-tomas-curico.jpg', '/biblioteca--0.jpg', '/estudiantes--a.png'] as const
+const SemanaCeroFullSections = lazy(async () => {
+  const m = await import('./SemanaCeroSections')
+  return { default: m.SemanaCeroFullSections }
+})
+
+/** Carrusel hero: rutas estáticas en /public (evita triple `new Image()` al inicio). */
+const HERO_SLIDE_URLS = ['/santo-tomas-curico.jpg', '/biblioteca--0.jpg', '/estudiantes--a.png'] as const
 const VISITS_BASE = 2550
 const VISITS_NAMESPACE = 'st-curico-semana-cero-2026'
 const VISITS_KEY = 'visitas-total'
@@ -56,15 +61,6 @@ function sanitizeExternalHref(href: string) {
     return '#'
   }
   return '#'
-}
-
-function canLoadImage(src: string) {
-  return new Promise<boolean>((resolve) => {
-    const img = new Image()
-    img.onload = () => resolve(true)
-    img.onerror = () => resolve(false)
-    img.src = src
-  })
 }
 
 function scrollToSemanaTab(tab: SemanaTabId) {
@@ -195,9 +191,14 @@ function IngresoProgressBar() {
     let raf = 0
     const pctEl = pctElRef.current
 
+    let lastUiPct = -1
     const tick = (now: number) => {
       const pct = Math.min(((now - start) / durationMs) * 100, 100)
-      if (pctEl) pctEl.textContent = `${Math.round(pct)}%`
+      const uiPct = Math.round(pct)
+      if (uiPct !== lastUiPct && pctEl) {
+        lastUiPct = uiPct
+        pctEl.textContent = `${uiPct}%`
+      }
       if (pct < 100) raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
@@ -309,14 +310,14 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(() =>
     typeof window !== 'undefined' ? !window.matchMedia('(max-width: 1024px)').matches : true
   )
-  const [loading, setLoading] = useState(true)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [visits, setVisits] = useState(VISITS_BASE)
   const [selloOpen, setSelloOpen] = useState(false)
   const [showChatHint, setShowChatHint] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
   const [chatSection, setChatSection] = useState<ChatSectionId>('inicio')
-  const [heroSlides, setHeroSlides] = useState<string[]>([...FALLBACK_HERO_SLIDES])
+  const heroSlides = HERO_SLIDE_URLS
+  const [campusVideoEmbedOn, setCampusVideoEmbedOn] = useState(false)
   const [campusVideoActive, setCampusVideoActive] = useState(false)
   const campusVideoSectionRef = useRef<HTMLElement | null>(null)
   const [navActiveId, setNavActiveId] = useState('')
@@ -332,9 +333,16 @@ function App() {
     localStorage.setItem('theme', theme)
   }, [theme])
 
+  /** Pausa animaciones CSS infinitas cuando la pestaña no está visible (menos CPU/GPU). */
+  useLayoutEffect(() => {
+    document.documentElement.dataset.pageVisible = document.visibilityState === 'visible' ? '1' : '0'
+  }, [])
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 3000)
-    return () => clearTimeout(timer)
+    const sync = () => {
+      document.documentElement.dataset.pageVisible = document.visibilityState === 'visible' ? '1' : '0'
+    }
+    document.addEventListener('visibilitychange', sync)
+    return () => document.removeEventListener('visibilitychange', sync)
   }, [])
 
   useEffect(() => {
@@ -359,10 +367,30 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    let id: ReturnType<typeof setInterval> | undefined
+    const tick = () => {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
-    }, 9000)
-    return () => clearInterval(interval)
+    }
+    const start = () => {
+      if (id != null) return
+      id = setInterval(tick, 9000)
+    }
+    const stop = () => {
+      if (id != null) {
+        clearInterval(id)
+        id = undefined
+      }
+    }
+    const onVis = () => {
+      if (document.visibilityState === 'visible') start()
+      else stop()
+    }
+    start()
+    document.addEventListener('visibilitychange', onVis)
+    return () => {
+      stop()
+      document.removeEventListener('visibilitychange', onVis)
+    }
   }, [heroSlides.length])
 
   useEffect(() => {
@@ -413,38 +441,31 @@ function App() {
   }, [isMobileLayout, isMenuOpen])
 
   useEffect(() => {
-    let isMounted = true
-    const requestedSlides = ['/santo-tomas-curico.jpg', '/biblioteca--0.jpg', '/estudiantes--a.png']
-
-    const resolveSlides = async () => {
-      const checks = await Promise.all(requestedSlides.map((slide) => canLoadImage(slide)))
-      const safeSlides = requestedSlides.map((slide, idx) => (checks[idx] ? slide : FALLBACK_HERO_SLIDES[idx]))
-      if (isMounted) setHeroSlides(safeSlides)
-    }
-
-    void resolveSlides()
-    return () => {
-      isMounted = false
-    }
-  }, [])
-
-  useEffect(() => {
     const section = campusVideoSectionRef.current
     if (!section) return
 
-    const observer = new IntersectionObserver(
+    const loadObserver = new IntersectionObserver(
       ([entry]) => {
-        setCampusVideoActive(entry.isIntersecting)
+        if (entry.isIntersecting) setCampusVideoEmbedOn(true)
       },
-      { threshold: 0.55 }
+      { rootMargin: '340px 0px', threshold: 0 }
+    )
+    const playObserver = new IntersectionObserver(
+      ([entry]) => {
+        setCampusVideoActive(entry.isIntersecting && entry.intersectionRatio >= 0.55)
+      },
+      { threshold: [0, 0.15, 0.55] }
     )
 
-    observer.observe(section)
-    return () => observer.disconnect()
+    loadObserver.observe(section)
+    playObserver.observe(section)
+    return () => {
+      loadObserver.disconnect()
+      playObserver.disconnect()
+    }
   }, [])
 
   useEffect(() => {
-    if (loading) return
     const obs = new IntersectionObserver(
       (entries) => {
         const visible = entries
@@ -464,7 +485,7 @@ function App() {
       if (el) obs.observe(el)
     })
     return () => obs.disconnect()
-  }, [loading])
+  }, [])
 
   const triggerSemanaTab = useCallback((tab: SemanaTabId) => {
     if (typeof window !== 'undefined') {
@@ -500,30 +521,6 @@ function App() {
       document.getElementById('inicio-hero')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     })
   }, [navigate, isMobileLayout])
-
-  if (loading) {
-    return (
-      <div className="n-loader-screen">
-        <div className="n-loader-bg-motion" aria-hidden="true" />
-        <div className="n-loader-inner">
-          <div className="n-loader-logo-wrap">
-            <img src="/logo-st.svg" alt="Santo Tomás" />
-            <div className="n-loader-ring" />
-          </div>
-          <h2>Cargando Semana Cero...</h2>
-          <p>Preparando tu experiencia de bienvenida</p>
-          <div className="n-loader-bar">
-            <span />
-          </div>
-          <div className="n-loader-dots" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </div>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className={`n-dashboard ${isMenuOpen ? 'menu-open' : ''} ${isMobileLayout ? 'n-mobile-layout' : ''}`}>
@@ -794,18 +791,23 @@ function App() {
             <strong>TU SEDE</strong>
           </motion.h2>
           <div className="n-video-box">
-            <iframe
-              width="100%"
-              height="100%"
-              src={`https://www.youtube.com/embed/WWnK0FpAspM?rel=0&modestbranding=1&playsinline=1&mute=1${
-                campusVideoActive ? '&autoplay=1' : ''
-              }`}
-              title="Conoce tu sede Santo Tomás Curicó"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-              style={{ borderRadius: '12px' }}
-            ></iframe>
+            {campusVideoEmbedOn ? (
+              <iframe
+                width="100%"
+                height="100%"
+                src={`https://www.youtube.com/embed/WWnK0FpAspM?rel=0&modestbranding=1&playsinline=1&mute=1${
+                  campusVideoActive ? '&autoplay=1' : ''
+                }`}
+                title="Conoce tu sede Santo Tomás Curicó"
+                frameBorder="0"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                style={{ borderRadius: '12px' }}
+              />
+            ) : (
+              <div className="n-video-pending" aria-hidden="true" />
+            )}
           </div>
         </section>
 
@@ -827,7 +829,15 @@ function App() {
             </p>
           </div>
           <article className="scp-article">
-            <SemanaCeroFullSections />
+            <Suspense
+              fallback={
+                <div className="n-semana-suspense-fallback" role="status" aria-live="polite">
+                  <span className="n-semana-suspense-sr">Cargando información Semana Cero…</span>
+                </div>
+              }
+            >
+              <SemanaCeroFullSections />
+            </Suspense>
           </article>
         </div>
       </main>

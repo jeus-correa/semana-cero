@@ -32,6 +32,7 @@ import {
   CFT_LINKS,
   COMITE_CURICO,
   EVACUATION_VIDEOS,
+  IP_DOCUMENTOS_INSTITUCIONALES,
   IP_LINKS,
   LINKS,
   MISSION_VISION,
@@ -442,6 +443,12 @@ function SemanaCeroFullSectionsInner() {
                     <div className="scp-scard-body scp-cft-panel-body scp-reg-panel-body">
                       <div className="scp-linklist">
                         {IP_LINKS.map((l) => (
+                          <LinkRow key={l.href + l.title} {...l} />
+                        ))}
+                      </div>
+                      <h3 className="scp-h3-inline" style={{ marginTop: '0.9rem' }}>Documentos institucionales IP</h3>
+                      <div className="scp-linklist">
+                        {IP_DOCUMENTOS_INSTITUCIONALES.map((l) => (
                           <LinkRow key={l.href + l.title} {...l} />
                         ))}
                       </div>
@@ -860,46 +867,25 @@ function SemanaCeroFullSectionsInner() {
 
         {activeTab === 'vcm' && (
           <motion.section key="vcm" className="scp-block" id="semana-vcm" aria-labelledby="sec-vcm" {...secMotion}>
-            <h2 id="sec-vcm" className="scp-h2">Vinculación con el medio (VCM)</h2>
-            <p className="scp-lead">Proyectos con la comunidad, prácticas y alianzas.</p>
-            <div className="scp-cards" style={{ marginTop: '1.5rem', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
-              <div className="scp-scard scp-scard-highlight" style={{ cursor: 'default' }}>
-                <Globe size={28} style={{ color: 'var(--scp-accent)' }} />
-                <div>
-                  <strong>Prácticas y Comunidad</strong>
-                  <span>Conectamos el talento de nuestros estudiantes con las urgencias del entorno, entregando valor real.</span>
-                </div>
-              </div>
-              <div className="scp-scard scp-scard-highlight" style={{ cursor: 'default' }}>
-                <Target size={28} style={{ color: '#0284c7' }} />
-                <div>
-                  <strong>Proyectos e Iniciativas</strong>
-                  <span>Programas integradores que fortalecen comunidades y enriquecen la formación profesional continua.</span>
-                </div>
-              </div>
-            </div>
-            <p className="scp-prose" style={{ marginTop: '1.5rem' }}>
-              La VCM conecta tu formación con organizaciones y territorios.
-            </p>
+            <h2 id="sec-vcm" className="scp-h2">Vinculación con el medio</h2>
+            <p className="scp-lead">Accede al material oficial de Vinculación con el medio.</p>
+            <a className="scp-feature" href={LINKS.pdfVinculacionConElMedio} target="_blank" rel="noopener noreferrer">
+              <div className="scp-feature-ic"><Globe size={24} /></div>
+              <div><strong>Vinculación con el medio</strong><span>Documento oficial (PDF).</span></div>
+              <ArrowUpRight size={20} />
+            </a>
           </motion.section>
         )}
 
         {activeTab === 'innovacion' && (
           <motion.section key="innovacion" className="scp-block" id="semana-innovacion" aria-labelledby="sec-in" {...secMotion}>
             <h2 id="sec-in" className="scp-h2">Innovación y emprendimiento</h2>
-            <p className="scp-lead">Líneas de desarrollo de ideas y proyectos.</p>
-            <div className="scp-mv-grid" style={{ marginTop: '1.5rem' }}>
-              <article className="scp-card-mv">
-                <div className="scp-card-mv-ic" style={{ color: '#0284c7' }}><Sparkles size={22} /></div>
-                <h3>Talleres Activos</h3>
-                <p>Fomentamos el pensamiento crítico para que nuestras ideas transformen nuestro futuro profesional de manera transversal.</p>
-              </article>
-              <article className="scp-card-mv">
-                <div className="scp-card-mv-ic" style={{ color: '#ea580c' }}><BookOpen size={22} /></div>
-                <h3>Línea Emprendedora</h3>
-                <p>Construye tu propio futuro a partir de proyectos creativos y tecnológicos diseñados directamente desde el aula.</p>
-              </article>
-            </div>
+            <p className="scp-lead">Accede al material oficial de innovación y emprendimiento.</p>
+            <a className="scp-feature" href={LINKS.pdfInnovacionEmprendimiento} target="_blank" rel="noopener noreferrer">
+              <div className="scp-feature-ic"><Sparkles size={24} /></div>
+              <div><strong>Innovación y emprendimiento</strong><span>Documento oficial (PDF).</span></div>
+              <ArrowUpRight size={20} />
+            </a>
           </motion.section>
         )}
 

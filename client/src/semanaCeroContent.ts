@@ -42,6 +42,8 @@ export const LINKS = {
     'https://www.ipsantotomas.cl/informacion-institucional/politicas-y-reglamentos/politicas-reglamentos-y-documentos/',
   cftPortalReglamentos:
     'https://www.cftsantotomas.cl/informacion-institucional/politicas-y-reglamentos/politicas-reglamentos-y-documentos/',
+  pdfInnovacionEmprendimiento: 'https://drive.google.com/file/d/1SO7ENKJf8ffUX70NiH59NS0zWRUzySHg/view',
+  pdfVinculacionConElMedio: 'https://drive.google.com/file/d/1jcBVJ2hVz3A0uhUpIHqWrhG-Hr2DO7HI/view',
   /** Planos simbología emergencia — Sede Curicó */
   pdfEvacPlanta3Emergencia: 'https://drive.google.com/file/d/11gInreHeFsxtcb5UyjG3o2wI7k5WZfAq/view',
   pdfEvacPlanta4Emergencia: 'https://drive.google.com/file/d/148OnzJSSBaqWAo4x5SDTf2xiRtkSUFrI/view'
@@ -424,7 +426,11 @@ export const IP_LINKS: { title: string; subtitle?: string; href: string }[] = [
     title: 'Decreto misión, visión y valores institucionales',
     subtitle: 'Dec. N° 066/23',
     href: 'https://www.ipsantotomas.cl/web/wp-content/uploads/sites/27/2024/01/Decreto-Mision-Vision-y-Valores-Institucionales-del-Instituto-Profesional-Santo-Tomas-2023.pdf'
-  },
+  }
+]
+
+/** IP — documentos institucionales en sección separada. */
+export const IP_DOCUMENTOS_INSTITUCIONALES: { title: string; subtitle?: string; href: string }[] = [
   {
     title: 'Estatutos',
     href: 'https://www.ipsantotomas.cl/informacion-institucional/politicas-y-reglamentos/estatutos/'
@@ -455,8 +461,24 @@ export const CFT_LINKS: { title: string; subtitle?: string; href: string }[] = [
     href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2020/03/Decreto-15-de-2019.-PSCI-CFT.pdf'
   },
   {
+    title: 'Política integral CEDI — convivencia e inclusión',
+    href: LINKS.cftPortalReglamentos
+  },
+  {
     title: 'Política de innovación y emprendimiento',
     href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2024/09/Politica-de-Innovacion-y-Emprendimiento-IPCFT-09-24.pdf'
+  },
+  {
+    title: 'Política vinculación con el medio',
+    href: LINKS.cftPortalReglamentos
+  },
+  {
+    title: 'Política de sostenibilidad',
+    href: LINKS.cftPortalReglamentos
+  },
+  {
+    title: 'Política de aseguramiento interno de la calidad',
+    href: LINKS.cftPortalReglamentos
   },
   {
     title: 'Reglamento general CFT',
@@ -472,6 +494,14 @@ export const CFT_LINKS: { title: string; subtitle?: string; href: string }[] = [
     title: 'Reglamento académico online',
     subtitle: 'Dec. N° 053/23',
     href: 'https://www.cftsantotomas.cl/web/wp-content/uploads/sites/7/2023/05/Reglamento-Academico-Online-CFT-2023.pdf'
+  },
+  {
+    title: 'Reglamento interno de orden, higiene y seguridad',
+    href: LINKS.cftPortalReglamentos
+  },
+  {
+    title: 'Reglamento de disciplina — comunidad educativa',
+    href: LINKS.cftPortalReglamentos
   },
   {
     title: 'Decreto misión, visión y valores institucionales',

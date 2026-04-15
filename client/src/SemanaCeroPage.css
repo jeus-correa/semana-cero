@@ -2134,6 +2134,13 @@
   transform: translateY(0);
 }
 
+/* Políticas IP/CFT: sin límite de 200px del acordeón genérico. */
+.scp-scard.scp-cft-panel .scp-reg-panel-body {
+  max-height: none !important;
+  overflow: visible !important;
+  opacity: 1 !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .scp-reg-panel-collapse,
   .scp-reg-panel-body {

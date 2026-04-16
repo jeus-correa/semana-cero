@@ -3863,6 +3863,182 @@
   opacity: 1;
 }
 
+/* Acceso directo Educación Continua — debajo del contenido (agregado visual) */
+.scp-edu-continua-addon {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 1.85rem;
+  padding-top: 1.35rem;
+  border-top: 1px dashed rgba(0, 214, 148, 0.28);
+  box-sizing: border-box;
+}
+
+[data-theme='light'] .scp-edu-continua-addon {
+  border-top-color: rgba(0, 153, 109, 0.22);
+}
+
+.scp-edu-continua-kicker {
+  margin: 0 0 0.65rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+[data-theme='light'] .scp-edu-continua-kicker {
+  color: rgba(6, 61, 46, 0.52);
+}
+
+.scp-edu-continua-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem 1rem;
+  width: 100%;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 0.9rem 1.1rem;
+  border-radius: 16px;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 214, 148, 0.38);
+  background: linear-gradient(155deg, rgba(0, 214, 148, 0.16) 0%, rgba(0, 40, 30, 0.55) 55%, rgba(0, 24, 18, 0.72) 100%);
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.22),
+    0 0 0 1px rgba(0, 230, 168, 0.12) inset;
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.scp-edu-continua-link:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 230, 168, 0.55);
+  box-shadow:
+    0 14px 36px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(0, 230, 168, 0.2) inset,
+    0 0 24px rgba(0, 214, 148, 0.18);
+}
+
+.scp-edu-continua-link:focus-visible {
+  outline: 2px solid var(--scp-accent-bright, #34d399);
+  outline-offset: 3px;
+}
+
+.scp-edu-continua-ic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  background: rgba(0, 214, 148, 0.22);
+  color: var(--scp-accent-bright, #34d399);
+  border: 1px solid rgba(0, 214, 148, 0.35);
+}
+
+.scp-edu-continua-copy {
+  flex: 1 1 min(220px, 100%);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  text-align: center;
+}
+
+.scp-edu-continua-title {
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.scp-edu-continua-sub {
+  font-size: 0.78rem;
+  line-height: 1.35;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.scp-edu-continua-go {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.85);
+  opacity: 0.9;
+}
+
+.scp-edu-continua-link:hover .scp-edu-continua-go {
+  opacity: 1;
+  color: #fff;
+}
+
+[data-theme='light'] .scp-edu-continua-link {
+  color: #063d2e;
+  border-color: rgba(0, 153, 109, 0.32);
+  background: linear-gradient(165deg, #e8faf1 0%, #d4f0df 48%, #c5e9d4 100%);
+  box-shadow:
+    0 10px 28px rgba(0, 100, 75, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.75) inset;
+}
+
+[data-theme='light'] .scp-edu-continua-link:hover {
+  border-color: rgba(0, 153, 109, 0.45);
+  box-shadow:
+    0 14px 34px rgba(0, 100, 75, 0.14),
+    0 0 0 1px rgba(255, 255, 255, 0.85) inset;
+}
+
+[data-theme='light'] .scp-edu-continua-ic {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(0, 153, 109, 0.28);
+  color: #047857;
+}
+
+[data-theme='light'] .scp-edu-continua-sub {
+  color: rgba(16, 36, 29, 0.68);
+}
+
+[data-theme='light'] .scp-edu-continua-go {
+  color: #047857;
+}
+
+@media (min-width: 520px) {
+  .scp-edu-continua-link {
+    justify-content: flex-start;
+    padding: 0.85rem 1.25rem;
+  }
+
+  .scp-edu-continua-copy {
+    text-align: left;
+  }
+
+  .scp-edu-continua-go {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 519px) {
+  .scp-edu-continua-addon {
+    margin-top: 1.5rem;
+    padding-top: 1.1rem;
+    padding-left: 0.15rem;
+    padding-right: 0.15rem;
+  }
+
+  .scp-edu-continua-link {
+    flex-direction: column;
+    padding: 1rem 0.95rem;
+    border-radius: 14px;
+  }
+
+  .scp-edu-continua-go {
+    margin-top: 0.15rem;
+  }
+}
 
 /* Modo día: tarjetas = mismo verde Misión/Visión; fondo general blanco (variables en index.css) */
 [data-theme='light'] .scp-card-mv {

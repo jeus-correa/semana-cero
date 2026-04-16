@@ -18,6 +18,9 @@ export const LINKS = {
   recuperaClave: 'https://recuperatuclave.santotomas.cl/',
   actualizaClave: 'https://actualizatuclave.santotomas.cl/login',
   canalDenuncias: 'https://www.ust.cl/genero-e-inclusion/canal-de-denuncias',
+  /** Educación Continua — carpeta Sede Curicó (acceso directo Semana Cero) */
+  educacionContinuaCuricoDrive:
+    'https://drive.google.com/drive/folders/1QWf6cIPSBtOMN6DWJ4B1f2srTUA8VPXP?usp=drive_link',
   formacionDocenteDrive:
     'https://drive.google.com/drive/folders/1lSfa_dTOaIZMrs_u5fIFR5vvyNqmFrdn?usp=sharing',
   pdfCentroAprendizaje: 'https://drive.google.com/drive/folders/1xGz_EeAqA7uQO_EWr88D2K3CCjTh_npc?usp=drive_link',
@@ -215,7 +218,7 @@ export const ACADEMIC_CFT_BLOCKS: { title: string; subtitle: string; href: strin
 ]
 
 /** Áreas para filtrar la lista CFT en Área académica. */
-export const CFT_CARRERA_AREAS = ['Salud y deporte', 'Educación', 'Gastronomía y agro'] as const
+export const CFT_CARRERA_AREAS = ['Salud', 'Deporte', 'Educación', 'Gastronomía', 'Agrícola'] as const
 export type CftCarreraArea = (typeof CFT_CARRERA_AREAS)[number]
 
 /** CFT Semana Cero — carrera con ficha virtual + carpeta informativa. */
@@ -231,35 +234,35 @@ export const ACADEMIC_CFT_CARRERAS_PDFS: {
     subtitle: 'PDF de inducción Semana Cero',
     href: 'https://drive.google.com/drive/folders/1S5d603_V-aYcgDhxb4-kkS18nnCHUgZc?usp=drive_link',
     infoHref: 'https://drive.google.com/drive/folders/1_WjWq9jACk_dfGeajdnaxiiIyoG1pt99?usp=drive_link',
-    area: 'Salud y deporte'
+    area: 'Deporte'
   },
   {
     title: 'Técnico en Podología Clínica',
     subtitle: 'PDF de inducción Semana Cero',
     href: 'https://drive.google.com/drive/folders/1BOPVlGHS_el8MKePQP37ML9PIr3rYMWX?usp=drive_link',
     infoHref: 'https://drive.google.com/drive/folders/1GOUDjh9D4VwafkMwHgLPag6DIx7O4FB_?usp=drive_link',
-    area: 'Salud y deporte'
+    area: 'Salud'
   },
   {
     title: 'Técnico en Odontología, mención Higienista Dental',
     subtitle: 'PDF de inducción Semana Cero',
     href: 'https://drive.google.com/drive/folders/1utt9zKjvox5aQjBXKb8A01hw_A-0U71g?usp=drive_link',
     infoHref: 'https://drive.google.com/drive/folders/1FAh63KA3ovzslU-KBUKF5FE5w7dDX-Fs?usp=sharing',
-    area: 'Salud y deporte'
+    area: 'Salud'
   },
   {
     title: 'Técnico en Enfermería',
     subtitle: 'PDF de inducción Semana Cero',
     href: 'https://drive.google.com/drive/folders/1xsy63T-EkQYc6qkrbpiXGnxjvoyFHD-0?usp=drive_link',
     infoHref: 'https://drive.google.com/drive/folders/15eDtwnW7lNZFNOrDLQ09hQqJ7IF6VKZ_?usp=drive_link',
-    area: 'Salud y deporte'
+    area: 'Salud'
   },
   {
     title: 'Gastronomía Internacional y Tradicional Chilena',
     subtitle: 'PDF de inducción Semana Cero',
     href: 'https://drive.google.com/drive/folders/1qVMjYFSBCHx_zYOvOmHZQqmoYHZqEb8z?usp=drive_link',
     infoHref: 'https://drive.google.com/drive/folders/1DGFL55h6SAY-R40rn9EForiex_f3rr9b?usp=drive_link',
-    area: 'Gastronomía y agro'
+    area: 'Gastronomía'
   },
   {
     title: 'Técnico en Educación Especial',
@@ -280,7 +283,7 @@ export const ACADEMIC_CFT_CARRERAS_PDFS: {
     subtitle: 'PDF de inducción Semana Cero',
     href: 'https://drive.google.com/drive/folders/1tKR2d7ZUJLxK1IrUGSRy6eQBZbIHy-9V?usp=drive_link',
     infoHref: 'https://drive.google.com/drive/folders/13djnaMP1_SVVsWdo8Dhpll8AzWO9kuo8?usp=drive_link',
-    area: 'Gastronomía y agro'
+    area: 'Agrícola'
   }
 ]
 
@@ -310,7 +313,7 @@ export const SEMANA_TABS: { id: SemanaTabId; label: string; num: string }[] = [
   { id: 'vcm', label: 'VCM', num: '09' },
   { id: 'innovacion', label: 'Innovación', num: '10' },
   { id: 'comite', label: 'Comité directivo', num: '11' },
-  { id: 'denuncias', label: 'Canal de denuncias', num: '12' }
+  { id: 'denuncias', label: 'Denuncias', num: '12' }
 ]
 
 export const MISSION_VISION = {

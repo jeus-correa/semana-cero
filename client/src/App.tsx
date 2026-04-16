@@ -17,7 +17,6 @@ import {
   MessageCircle,
   Moon,
   Route,
-  Shield,
   Sparkles,
   Star,
   Sun
@@ -122,10 +121,10 @@ const SERVICE_CARDS: {
     externalHref: LINKS.conoceTomasinGemini
   },
   {
-    icon: Shield,
-    title: 'Seguro académico',
-    desc: 'Coberturas y canal oficial DAE Santo Tomás.',
-    tab: 'seguros'
+    icon: GraduationCap,
+    title: 'Educación Continua',
+    desc: 'Cursos, diplomados y especializaciones en Sede Curicó.',
+    externalHref: LINKS.educacionContinuaCuricoDrive
   },
   {
     icon: Route,

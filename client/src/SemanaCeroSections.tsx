@@ -21,7 +21,6 @@ import {
   Copyright,
   ExternalLink,
   FileBadge,
-  FileImage,
   FileText,
   Flag,
   FolderOpen,
@@ -182,10 +181,10 @@ function CarreraAficheDualRow({
           onClick={() => window.open(aficheHref, '_blank', 'noopener,noreferrer')}
         >
           <span className="scp-apoyo-afiche-btn-ic" aria-hidden>
-            <FileImage size={22} strokeWidth={2} />
+            <Newspaper size={22} strokeWidth={2} />
           </span>
           <span className="scp-apoyo-afiche-btn-copy">
-            <span className="scp-apoyo-afiche-btn-title">Afiche digital</span>
+            <span className="scp-apoyo-afiche-btn-title">Tu afiche digital</span>
             <span className="scp-apoyo-afiche-btn-sub">PDF de tu carrera · Semana Cero</span>
           </span>
           <ExternalLink size={18} aria-hidden className="scp-apoyo-afiche-btn-go" />
@@ -313,7 +312,7 @@ const TABS = [
   { id: 'vcm', label: 'Vinculación', icon: Globe },
   { id: 'innovacion', label: 'Innovación', icon: Sparkles },
   { id: 'comite', label: 'Comité', icon: User },
-  { id: 'denuncias', label: 'Canal', icon: Flag }
+  { id: 'denuncias', label: 'Denuncias', icon: Flag }
 ]
 
 const APOYO_AREAS = [
@@ -700,28 +699,15 @@ function SemanaCeroFullSectionsInner() {
                 <div className="scp-doc-hero-inner">
                   <div className="scp-doc-hero-icon" aria-hidden><Sparkles size={26} strokeWidth={1.75} /></div>
                   <div className="scp-doc-hero-copy">
-                    <p className="scp-doc-hero-kicker">Semana Cero · Docencia</p>
+                    <p className="scp-doc-hero-kicker">Exclusivo para docentes</p>
                     <h3 id="doc-hero-title" className="scp-doc-hero-title">Tu formación y desarrollo docente</h3>
-                    <p className="scp-doc-hero-desc">Inducción pedagógica, lineamientos y recursos para fortalecer tu práctica en el aula.</p>
+                    <p className="scp-doc-hero-desc">Cursos gratuitos 100% virtuales para apoyar tu práctica pedagógica.</p>
                     <div className="scp-doc-hero-actions">
                       <a className="scp-doc-hero-btn scp-doc-hero-btn-primary" href={LINKS.pdfFormacionDocente} target="_blank" rel="noopener noreferrer">
-                        Información <ExternalLink size={16} />
+                        Infórmate <ExternalLink size={16} />
                       </a>
-                    </div>
-                  </div>
-                </div>
-              </DocHeroShell>
-              <DocHeroShell className="scp-doc-hero scp-doc-hero--formation" aria-labelledby="doc-hero-formacion-id">
-                <div className="scp-doc-hero-glow" aria-hidden />
-                <div className="scp-doc-hero-inner">
-                  <div className="scp-doc-hero-icon" aria-hidden><Heart size={26} strokeWidth={1.75} /></div>
-                  <div className="scp-doc-hero-copy">
-                    <p className="scp-doc-hero-kicker">Semana Cero · Identidad</p>
-                    <h3 id="doc-hero-formacion-id" className="scp-doc-hero-title">Formación e identidad</h3>
-                    <p className="scp-doc-hero-desc">Material institucional sobre cultura, valores y pertenencia a la comunidad Santo Tomás.</p>
-                    <div className="scp-doc-hero-actions">
-                      <a className="scp-doc-hero-btn scp-doc-hero-btn-primary" href={LINKS.pdfFormacion} target="_blank" rel="noopener noreferrer">
-                        Abrir material <ExternalLink size={16} />
+                      <a className="scp-doc-hero-btn scp-doc-hero-btn-secondary" href={LINKS.formacionDocenteDrive} target="_blank" rel="noopener noreferrer">
+                        Ver Cursos <ExternalLink size={16} />
                       </a>
                     </div>
                   </div>
@@ -1015,7 +1001,7 @@ function SemanaCeroFullSectionsInner() {
 
         {activeTab === 'denuncias' && (
           <motion.section key="denuncias" className="scp-block" id="semana-denuncias" aria-labelledby="sec-de" {...secMotion}>
-            <h2 id="sec-de" className="scp-h2">Canal de denuncias</h2>
+            <h2 id="sec-de" className="scp-h2">Denuncias</h2>
             <p className="scp-lead">Plataforma confidencial y segura.</p>
             <a className="scp-feature" href={LINKS.canalDenuncias} target="_blank" rel="noopener noreferrer">
               <div className="scp-feature-ic scp-feature-ic-warn"><Flag size={24} /></div>

@@ -607,7 +607,7 @@ function SemanaCeroFullSectionsInner() {
               </a>
               <a className="scp-scard" href={LINKS.pdfAficheSeguroEscolar} target="_blank" rel="noopener noreferrer">
                 <Shield size={22} />
-                <div><strong>Afiche escolar seguro de accidente</strong><span>Material visual oficial (PDF)</span></div>
+                <div><strong>Afiche del seguro escolar de accidentes</strong><span>Material visual oficial (PDF)</span></div>
                 <ExternalLink size={16} />
               </a>
               <a className="scp-scard" href={LINKS.pdfVolanteSeguroEscolar} target="_blank" rel="noopener noreferrer">
@@ -627,7 +627,7 @@ function SemanaCeroFullSectionsInner() {
             <div className="scp-evac-emergency" role="region" aria-label="Planos prioritarios de emergencia">
               <p className="scp-evac-emergency-title">
                 <AlertTriangle size={20} strokeWidth={2.25} aria-hidden />
-                Prioritario: conocé la simbología de emergencia por piso
+                Prioritario: conoce la simbología de emergencia por piso
               </p>
               <div className="scp-evac-emergency-grid">
                 <a
@@ -789,7 +789,7 @@ function SemanaCeroFullSectionsInner() {
                           type="button"
                           className="scp-apoyo-afiche-btn scp-apoyo-afiche-btn--apoyo"
                           aria-label={eyeLabel}
-                          title="Abre el PDF de tu afiche digital en una pestaña nueva"
+                          title="Abre el afiche digital en una pestaña nueva"
                           onClick={(e) => {
                             e.preventDefault()
                             e.stopPropagation()
@@ -948,13 +948,16 @@ function SemanaCeroFullSectionsInner() {
             <h3 className="scp-h3"><Sparkles size={18} aria-hidden /> Unidades transversales — LIM</h3>
             <div className="scp-lim-grid">
               {ACADEMIC_LIM.map((lim) => (
-                <article key={lim.title} className="scp-lim-card">
+                <a
+                  key={lim.title}
+                  className="scp-lim-card"
+                  href={lim.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <h4 className="scp-lim-title">{lim.title}</h4>
                   <p className="scp-lim-body">{lim.body}</p>
-                  <a className="scp-lim-link" href={lim.href} target="_blank" rel="noopener noreferrer">
-                    {lim.linkLabel} <ExternalLink size={14} />
-                  </a>
-                </article>
+                </a>
               ))}
             </div>
           </motion.section>

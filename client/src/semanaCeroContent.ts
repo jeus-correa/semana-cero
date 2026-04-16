@@ -41,7 +41,8 @@ export const LINKS = {
   pdfPracticaTituloSemanaCero:
     'https://drive.google.com/file/d/1-nV2wbtuNTT87KKu76rX8n9KY_PGlr1h/view?usp=sharing',
   /** LIM: lenguaje, inglés y matemática (coordinaciones) */
-  pdfLimTransversales: 'https://drive.google.com/drive/folders/1BiQaDAP2QBA_ipox-EKENtFYHyx10N8P?usp=drive_link',
+  pdfLimTransversales:
+    'https://drive.google.com/drive/folders/1OPsO4Jl1B2xf-K92V5n3FqRVdlbHusQH?usp=drive_link',
   pdfPlataformasELearning: 'https://drive.google.com/file/d/1bzZnUaIbXyiyFPlM3B4dwNUuejxaZ_Lu/view?usp=sharing',
   ipPortalReglamentos:
     'https://www.ipsantotomas.cl/informacion-institucional/politicas-y-reglamentos/politicas-reglamentos-y-documentos/',
@@ -178,28 +179,24 @@ export const ACADEMIC_LIM: {
   title: string
   body: string
   href: string
-  linkLabel: string
 }[] = [
   {
     title: 'Lenguaje',
     body:
       'Comprensión lectora, producción escrita y comunicación efectiva en el aula. Refuerza bases para todas las asignaturas.',
-    href: LINKS.pdfLimTransversales,
-    linkLabel: 'Abrir PDF LIM — coordinaciones (Semana Cero)'
+    href: LINKS.pdfLimTransversales
   },
   {
     title: 'Inglés',
     body:
       'Desarrollo de habilidades comunicativas en inglés para tu malla y competencias laborales. Detalle en el material LIM.',
-    href: LINKS.pdfLimTransversales,
-    linkLabel: 'Abrir PDF LIM — coordinaciones (Semana Cero)'
+    href: LINKS.pdfLimTransversales
   },
   {
     title: 'Matemática',
     body:
       'Apoyo en razonamiento matemático, modelación y resolución de problemas; alineado a asignaturas transversales y de carrera.',
-    href: LINKS.pdfLimTransversales,
-    linkLabel: 'Abrir PDF LIM — coordinaciones (Semana Cero)'
+    href: LINKS.pdfLimTransversales
   }
 ]
 
@@ -307,7 +304,7 @@ export const SEMANA_TABS: { id: SemanaTabId; label: string; num: string }[] = [
   { id: 'reglamentos', label: 'Políticas y reglamentos', num: '03' },
   { id: 'seguros', label: 'Seguros', num: '04' },
   { id: 'evacuacion', label: 'Vías de evacuación', num: '05' },
-  { id: 'correo', label: 'Activación correo', num: '06' },
+  { id: 'correo', label: 'Activación de correo', num: '06' },
   { id: 'apoyo', label: 'Unidades de apoyo', num: '07' },
   { id: 'academica', label: 'Área académica', num: '08' },
   { id: 'vcm', label: 'VCM', num: '09' },

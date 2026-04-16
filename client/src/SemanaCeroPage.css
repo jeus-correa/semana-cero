@@ -2457,13 +2457,21 @@
 }
 
 .scp-lim-card {
+  display: block;
   padding: 1.15rem;
   background: linear-gradient(135deg, rgba(0, 214, 148, 0.06) 0%, rgba(0, 214, 148, 0.02) 100%);
   border: 1px solid rgba(0, 214, 148, 0.12);
   border-radius: 14px;
   color: #fff;
+  text-decoration: none;
+  cursor: pointer;
   transition: all 0.35s var(--scp-ease);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.scp-lim-card:focus-visible {
+  outline: 2px solid var(--scp-accent-mid);
+  outline-offset: 2px;
 }
 
 .scp-lim-card:hover {
@@ -2500,7 +2508,7 @@
 }
 
 .scp-lim-body {
-  margin: 0 0 0.55rem;
+  margin: 0;
   font-size: 0.8rem;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.78);
@@ -2508,20 +2516,6 @@
 
 [data-theme='light'] .scp-lim-body {
   color: rgba(16, 36, 29, 0.78);
-}
-
-.scp-lim-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.92);
-  text-decoration: underline;
-}
-
-[data-theme='light'] .scp-lim-link {
-  color: var(--scp-accent);
 }
 
 .scp-footnote {

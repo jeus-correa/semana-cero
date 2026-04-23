@@ -144,20 +144,20 @@ export const ACADEMIC_IP_CARRERAS: { title: string; subtitle: string; href: stri
   {
     title: 'Servicio Social',
     subtitle: 'PDF de inducción — Técnico en Trabajo Social (IP)',
-    href: 'https://drive.google.com/drive/folders/1QBhEtXo9npWEc5mCxJzWaBwELVkzLTqf?usp=drive_link',
-    infoHref: 'https://drive.google.com/drive/folders/18ktksL3SMOfmx9MbYqYrUV0wycSZjYcw?usp=drive_link'
+    href: 'https://drive.google.com/drive/folders/1w-qpDW8tvYhnZmPGTecnhwAQyayVSz33?usp=sharing',
+    infoHref: 'https://drive.google.com/drive/folders/1mkP65_VDjEF70bELgS3g7CZT6JB9qTnt?usp=sharing'
   },
   {
     title: 'Ingeniería en Administración de Empresas',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/drive/folders/1t_Q7vbSKYKJ46dLssgjMAgXU3NCrSo7h?usp=drive_link',
-    infoHref: 'https://drive.google.com/drive/folders/1ns5V3NAA0X1EHbylcrwGaX9CsG2bWgRq?usp=drive_link'
+    href: 'https://drive.google.com/drive/folders/1wph5-qlVYd0sJm8F1nek1k7Tozcj-TeG?usp=sharing',
+    infoHref: 'https://drive.google.com/drive/folders/1qYPoVrEdrbZZoLVBVW_Ms1t0_tzspf65?usp=sharing'
   },
   {
     title: 'Ingeniería Agrícola',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/drive/folders/1QemvBKaPnTwM_EoSkABoFeMACrvSlCyD?usp=drive_link',
-    infoHref: 'https://drive.google.com/drive/folders/1L7v3N_s99dvGGEWbwS3Oji9mebPDgqzp?usp=drive_link'
+    href: 'https://drive.google.com/drive/folders/1VZD6mlJSkFVWg1wI9GEimMgHioXmvkWS?usp=sharing',
+    infoHref: 'https://drive.google.com/drive/folders/1qYPoVrEdrbZZoLVBVW_Ms1t0_tzspf65?usp=sharing'
   }
 ]
 
@@ -229,43 +229,43 @@ export const ACADEMIC_CFT_CARRERAS_PDFS: {
   {
     title: 'Preparador físico',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/drive/folders/1S5d603_V-aYcgDhxb4-kkS18nnCHUgZc?usp=drive_link',
-    infoHref: 'https://drive.google.com/drive/folders/1_WjWq9jACk_dfGeajdnaxiiIyoG1pt99?usp=drive_link',
+    href: 'https://drive.google.com/drive/folders/1GT_larPwAiQk3AvbxDI21ja3tdCYDD0f?usp=sharing',
+    infoHref: 'https://drive.google.com/drive/folders/1cVNF7V1Ce2SkIw8eszhYQEiVLrIKVEks?usp=sharing',
     area: 'Deporte'
   },
   {
     title: 'Técnico en Podología Clínica',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/drive/folders/1BOPVlGHS_el8MKePQP37ML9PIr3rYMWX?usp=drive_link',
-    infoHref: 'https://drive.google.com/drive/folders/1GOUDjh9D4VwafkMwHgLPag6DIx7O4FB_?usp=drive_link',
+    href: 'https://drive.google.com/drive/folders/1Wvr39A4Z7Cr9P03ya9aYQENeCdApePiC?usp=sharing',
+    infoHref: 'https://drive.google.com/drive/folders/1_ZblHoDPBoIdyR0LC_nmeEjYXumdJlMw?usp=sharing',
     area: 'Salud'
   },
   {
     title: 'Técnico en Odontología, mención Higienista Dental',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/drive/folders/1utt9zKjvox5aQjBXKb8A01hw_A-0U71g?usp=drive_link',
-    infoHref: 'https://drive.google.com/drive/folders/1FAh63KA3ovzslU-KBUKF5FE5w7dDX-Fs?usp=sharing',
+    href: 'https://drive.google.com/drive/folders/1pzx57ZrR2afth_ke6jAio_rkhrnHQuo-?usp=sharing',
+    infoHref: 'https://drive.google.com/drive/folders/1hfQP0pmRfX37mHl9kfm32G3NPo8zyTRQ?usp=sharing',
     area: 'Salud'
   },
   {
     title: 'Técnico en Enfermería',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/drive/folders/1xsy63T-EkQYc6qkrbpiXGnxjvoyFHD-0?usp=drive_link',
-    infoHref: 'https://drive.google.com/drive/folders/15eDtwnW7lNZFNOrDLQ09hQqJ7IF6VKZ_?usp=drive_link',
+    href: 'https://drive.google.com/drive/folders/1jEhXMMtIC0Kpmu5hcFVBvMU2BglmUVmM?usp=drive_link',
+    infoHref: 'https://drive.google.com/drive/folders/1G0_2I2usLpxAS857fwD5lJb4cgOXPPTd?usp=drive_link',
     area: 'Salud'
   },
   {
     title: 'Gastronomía Internacional y Tradicional Chilena',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/drive/folders/1qVMjYFSBCHx_zYOvOmHZQqmoYHZqEb8z?usp=drive_link',
-    infoHref: 'https://drive.google.com/drive/folders/1DGFL55h6SAY-R40rn9EForiex_f3rr9b?usp=drive_link',
+    href: 'https://drive.google.com/drive/folders/1aXZh_IMMwzYFvcoZQ9crnGNncCUKjXhl?usp=drive_link',
+    infoHref: 'https://drive.google.com/drive/folders/1A7I8x_tFGJjuYemZaZ4-xEwjDCmPJCyO?usp=sharing',
     area: 'Gastronomía'
   },
   {
     title: 'Técnico en Educación Especial',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/drive/folders/1VExRfJqfoecJla6KHN0pmdUmQ1AHBTqR?usp=drive_link',
-    infoHref: 'https://drive.google.com/drive/folders/1rZ6jSm-7HZw3UMwgDBwjeYI9sP4RjWd1?usp=drive_link',
+    href: 'https://drive.google.com/drive/folders/1kiH_hYxe5urZFyJw2_GIScZtAHioOYkX?usp=drive_link',
+    infoHref: 'https://drive.google.com/drive/folders/1FcMvf4IhNi_g0OP2dBSMFSMBw5wuPXSf?usp=drive_link',
     area: 'Educación'
   },
   {
@@ -278,8 +278,8 @@ export const ACADEMIC_CFT_CARRERAS_PDFS: {
   {
     title: 'Técnico Agrícola',
     subtitle: 'PDF de inducción Semana Cero',
-    href: 'https://drive.google.com/drive/folders/1tKR2d7ZUJLxK1IrUGSRy6eQBZbIHy-9V?usp=drive_link',
-    infoHref: 'https://drive.google.com/drive/folders/13djnaMP1_SVVsWdo8Dhpll8AzWO9kuo8?usp=drive_link',
+    href: 'https://drive.google.com/drive/folders/139vIZBLdWKq8bKz5rZx5cC7-dmMKuLWO?usp=sharing',
+    infoHref: 'https://drive.google.com/drive/folders/13GWcBCvgU2AeRuy0MMPMuatQ7n4tsmmV?usp=drive_link',
     area: 'Agrícola'
   }
 ]

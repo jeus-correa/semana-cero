@@ -2,3 +2,9 @@ node_modules
 
 .DS_Store
 **/.DS_Store
+
+# Firebase / Vite (no subir claves)
+.env
+.env.local
+client/.env
+client/.env.local

@@ -24,6 +24,12 @@ import {
 import './App.css'
 import './SemanaCeroPage.css'
 import { LINKS, type SemanaTabId } from './semanaCeroContent'
+import {
+  VISITS_BASE,
+  VISITS_LOCAL_KEY,
+  getBumpedVisitCountOnce,
+  syncVisitsAfterLocalBump
+} from './lib/siteVisits'
 
 const SemanaCeroFullSections = lazy(async () => {
   const m = await import('./SemanaCeroSections')
@@ -32,22 +38,6 @@ const SemanaCeroFullSections = lazy(async () => {
 
 /** Carrusel hero: rutas estáticas en /public (evita triple `new Image()` al inicio). */
 const HERO_SLIDE_URLS = ['/santo-tomas-curico.jpg', '/biblioteca--0.jpg', '/estudiantes--a.png'] as const
-const VISITS_BASE = 2550
-const VISITS_NAMESPACE = 'st-curico-semana-cero-2026'
-const VISITS_KEY = 'visitas-total'
-const VISITS_LOCAL_KEY = 'st_visits_fallback'
-
-/** Una sola promesa por carga del documento: evita doble +1 en Strict Mode (misma promesa, un solo bump local). */
-let visitsOncePromise: Promise<number> | null = null
-
-function normalizeCountValue(raw: unknown): number | null {
-  if (typeof raw === 'number' && Number.isFinite(raw)) return raw
-  if (typeof raw === 'string') {
-    const n = Number(raw)
-    if (Number.isFinite(n)) return n
-  }
-  return null
-}
 
 function sanitizeExternalHref(href: string) {
   if (href.startsWith('#')) return href
@@ -233,77 +223,6 @@ function scrollToAnchorId(elementId: string) {
   document.getElementById(elementId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
-async function getCountApiValue(key: string): Promise<number | null> {
-  try {
-    const res = await fetch(`https://api.countapi.xyz/get/${VISITS_NAMESPACE}/${key}`)
-    if (!res.ok) return null
-    const data = (await res.json()) as { value?: unknown }
-    return normalizeCountValue(data.value)
-  } catch {
-    return null
-  }
-}
-
-async function setCountApiValue(key: string, value: number): Promise<boolean> {
-  try {
-    const res = await fetch(`https://api.countapi.xyz/set/${VISITS_NAMESPACE}/${key}?value=${value}`)
-    return res.ok
-  } catch {
-    return false
-  }
-}
-
-/** +1 remoto; preferimos `hit` y si falla probamos `update`. */
-async function incrementCountApiRemote(key: string): Promise<number> {
-  const hitRes = await fetch(`https://api.countapi.xyz/hit/${VISITS_NAMESPACE}/${key}`)
-  if (hitRes.ok) {
-    const data = (await hitRes.json()) as { value?: unknown }
-    const v = normalizeCountValue(data.value)
-    if (v !== null) return v
-  }
-  const updRes = await fetch(`https://api.countapi.xyz/update/${VISITS_NAMESPACE}/${key}?amount=1`)
-  if (!updRes.ok) throw new Error('No se pudo incrementar contador remoto')
-  const data = (await updRes.json()) as { value?: unknown }
-  const v = normalizeCountValue(data.value)
-  if (v === null) throw new Error('Respuesta invalida de contador')
-  return v
-}
-
-/** +1 en localStorage; nunca debería tirar (modo privado → número razonable igual). */
-function bumpLocalVisitsSafe(): number {
-  try {
-    const raw = Number(localStorage.getItem(VISITS_LOCAL_KEY) ?? String(VISITS_BASE))
-    const safeRaw = Number.isFinite(raw) ? Math.max(raw, VISITS_BASE) : VISITS_BASE
-    const next = safeRaw + 1
-    localStorage.setItem(VISITS_LOCAL_KEY, String(next))
-    return next
-  } catch {
-    return VISITS_BASE + 1
-  }
-}
-
-/** Resuelve al toque con el valor ya incrementado (no espera red). Misma promesa = un solo +1 por recarga. */
-function getBumpedVisitCountOnce(): Promise<number> {
-  if (visitsOncePromise) return visitsOncePromise
-  visitsOncePromise = Promise.resolve(bumpLocalVisitsSafe())
-  return visitsOncePromise
-}
-
-/** Sincroniza CountAPI después del bump local; no bloquea la UI. */
-async function syncRemoteAfterLocalBump(localFloor: number): Promise<number | null> {
-  try {
-    let current = await getCountApiValue(VISITS_KEY)
-    if (current === null || current < VISITS_BASE) {
-      const ok = await setCountApiValue(VISITS_KEY, VISITS_BASE)
-      if (!ok) throw new Error('set base remoto falló')
-    }
-    const remoteAfterHit = await incrementCountApiRemote(VISITS_KEY)
-    return Math.max(remoteAfterHit, VISITS_BASE, localFloor)
-  } catch {
-    return null
-  }
-}
-
 function App() {
   const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(() =>
@@ -348,7 +267,7 @@ function App() {
     let cancelled = false
     void getBumpedVisitCountOnce().then((v) => {
       if (!cancelled) setVisits(v)
-      void syncRemoteAfterLocalBump(v).then((merged) => {
+      void syncVisitsAfterLocalBump(v).then((merged) => {
         if (merged == null || cancelled) return
         if (merged > v) {
           try {

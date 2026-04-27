@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Contador (ruta en client/src/lib/siteVisits.ts: contador / lYLaLHhXNCaRt2nRkSAz / vistas)
+    match /contador/lYLaLHhXNCaRt2nRkSAz {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasAll(['vistas', 'updatedAt'])
+        && request.resource.data.vistas is int;
+      allow update: if request.resource.data.keys().hasAll(['vistas', 'updatedAt'])
+        && request.resource.data.vistas is int;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

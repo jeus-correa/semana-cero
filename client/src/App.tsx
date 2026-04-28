@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   BookOpen,
+  Boxes,
   ChevronRight,
   ChevronDown,
   Eye,
@@ -440,6 +441,11 @@ function App() {
     })
   }, [navigate, isMobileLayout])
 
+  const goInventarioLogin = useCallback(() => {
+    navigate('/inventario/login')
+    if (isMobileLayout) setIsMenuOpen(false)
+  }, [navigate, isMobileLayout])
+
   return (
     <div className={`n-dashboard ${isMenuOpen ? 'menu-open' : ''} ${isMobileLayout ? 'n-mobile-layout' : ''}`}>
       <div className="n-dashboard-bg" aria-hidden="true">
@@ -587,6 +593,10 @@ function App() {
               </a>
             )
           })}
+          <button type="button" onClick={goInventarioLogin}>
+            <Boxes size={16} aria-hidden />
+            {isMenuOpen && <span>Inventario</span>}
+          </button>
           <button type="button" className="highlight" onClick={() => setSelloOpen(true)}>
             <Star size={16} aria-hidden />
             {isMenuOpen && <span>Personaje Sello 2026</span>}

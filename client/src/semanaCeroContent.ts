@@ -31,7 +31,7 @@ export const LINKS = {
   pdfSoporte: 'https://drive.google.com/drive/folders/1QmaZT2EZQzyyrJSNzrk8d4D_5g-nZI7N?usp=drive_link',
   pdfFormacion: 'https://drive.google.com/drive/folders/1fnMPtt33Yy0BUOBHtJCjrqn3OnhEFwUA?usp=drive_link',
   pdfFormacionDocente: 'https://drive.google.com/file/d/1GAO-aa4Wp4fSEGtHAJU6FHDjliGYGJJ5/view?usp=sharing',
-  pdfComoImprimir: 'https://drive.google.com/file/d/1aucpW3M-2wfvujAPWkT4hOKYsdlhbqdU/view?usp=sharing',
+  pdfComoImprimir: 'https://drive.google.com/drive/folders/16O1dkLQtxVWjQnAxDTGFeljck1rYuFsW?usp=drive_link',
   /** PDF Semana Cero — Servicio Social (IP) */
   pdfServicioSocial: 'https://drive.google.com/file/d/1-UV85Ld4UqrpuGEa4_0hFr7VG6FVPyWm/view?usp=sharing',
   pdfIngAdministracionEmpresas:

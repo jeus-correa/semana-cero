@@ -1,4 +1,4 @@
-import { doc, getFirestore, runTransaction, serverTimestamp } from 'firebase/firestore'
+import { doc, getFirestore, onSnapshot, runTransaction, serverTimestamp } from 'firebase/firestore'
 import { getFirebaseApp } from './firebase'
 
 export const VISITS_BASE = 2550
@@ -119,4 +119,19 @@ async function syncCountApiAfterLocalBump(localFloor: number): Promise<number | 
 export async function syncVisitsAfterLocalBump(localFloor: number): Promise<number | null> {
   if (getFirebaseApp()) return syncFirestoreAfterLocalBump(localFloor)
   return syncCountApiAfterLocalBump(localFloor)
+}
+
+/** Escucha cambios de vistas en tiempo real (solo Firestore). */
+export function subscribeVisitsRealtime(onValue: (value: number) => void): (() => void) | null {
+  const app = getFirebaseApp()
+  if (!app) return null
+  const db = getFirestore(app)
+  const ref = doc(db, FIRESTORE_VISITS_COLLECTION, FIRESTORE_VISITS_DOC)
+  return onSnapshot(ref, (snap) => {
+    if (!snap.exists()) return
+    const raw = snap.data()?.[FIRESTORE_VISITS_FIELD]
+    const parsed = normalizeCountValue(raw)
+    if (parsed == null) return
+    onValue(Math.max(parsed, VISITS_BASE))
+  })
 }

@@ -9,7 +9,6 @@ type GridRow = Record<string, string>
 type RowItem = { id: string; data: GridRow }
 
 const BASE_COLUMNS: string[] = []
-
 function normalizeRows(raw: unknown[]): GridRow[] {
   return raw.map((item) => {
     const row = item as Record<string, unknown>
@@ -65,7 +64,7 @@ function InventarioPage() {
     e.target.value = ''
   }
 
-  const onExport = () => {
+  const buildWorkbook = () => {
     const exportRows = rows.map((r) => r.data)
     const fallbackRow =
       columns.length > 0 ? Object.fromEntries(columns.map((c) => [c, ''])) : { Hoja: 'Sin columnas definidas' }
@@ -80,7 +79,28 @@ function InventarioPage() {
     })
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, ws, 'Inventario')
-    XLSX.writeFile(wb, 'inventario-ust.xlsx')
+    const fileName = `inventario-ust-${new Date().toISOString().slice(0, 10)}.xlsx`
+    return { wb, fileName }
+  }
+
+  const onSendByEmail = async () => {
+    const { wb, fileName } = buildWorkbook()
+    const envTo = (import.meta.env.VITE_INVENTARIO_CONTACT_EMAIL as string | undefined)?.trim()
+    const toEmail = envTo || window.prompt('Correo destino para redactar:')?.trim() || ''
+    if (!toEmail) return
+    XLSX.writeFile(wb, fileName)
+    const subject = encodeURIComponent(`Inventario UST ${new Date().toISOString().slice(0, 10)}`)
+    const body = encodeURIComponent(
+      `Hola,\n\nAdjunto la planilla de inventario exportada desde la app.\n\nArchivo: ${fileName}\n\nSaludos.`
+    )
+    const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(toEmail)}&su=${subject}&body=${body}`
+    window.open(gmailComposeUrl, '_blank', 'noopener,noreferrer')
+    window.alert('Se descargó el Excel. Se abrió Gmail para redactar; ahora adjunta el archivo y envíalo.')
+  }
+
+  const onSaveToPc = () => {
+    const { wb, fileName } = buildWorkbook()
+    XLSX.writeFile(wb, fileName)
   }
 
   const clearData = () => {
@@ -129,7 +149,7 @@ function InventarioPage() {
         <div>
           <p className="inv-kicker">Universidad Santo Tomás</p>
           <h1>Registro de equipos informáticos</h1>
-          <p>Gestión local del inventario con importación y exportación Excel (.xlsx).</p>
+          <p>Gestión local del inventario con importación, exportación Excel y envío por correo.</p>
         </div>
         <button className="inv-logout" onClick={onLogout}>
           <LogOut size={16} /> Cerrar sesión
@@ -145,8 +165,11 @@ function InventarioPage() {
               Importar planilla
               <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" hidden onChange={onImport} />
             </label>
-            <button className="inv-btn" onClick={onExport}>
-              Exportar planilla
+            <button className="inv-btn" onClick={() => void onSendByEmail()}>
+              Enviar por correo
+            </button>
+            <button className="inv-btn" onClick={onSaveToPc}>
+              Guardar en PC
             </button>
             <button className="inv-btn inv-btn-secondary" onClick={addColumn}>
               Nueva columna

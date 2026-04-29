@@ -29,6 +29,7 @@ import {
   VISITS_BASE,
   VISITS_LOCAL_KEY,
   getBumpedVisitCountOnce,
+  subscribeVisitsRealtime,
   syncVisitsAfterLocalBump
 } from './lib/siteVisits'
 
@@ -265,6 +266,15 @@ function App() {
   }, [])
 
   useEffect(() => {
+    const unsubRealtime = subscribeVisitsRealtime((value) => {
+      setVisits((prev) => Math.max(prev, value))
+      try {
+        localStorage.setItem(VISITS_LOCAL_KEY, String(value))
+      } catch {
+        /* noop */
+      }
+    })
+
     let cancelled = false
     void getBumpedVisitCountOnce().then((v) => {
       if (!cancelled) setVisits(v)
@@ -282,6 +292,7 @@ function App() {
     })
     return () => {
       cancelled = true
+      unsubRealtime?.()
     }
   }, [])
 

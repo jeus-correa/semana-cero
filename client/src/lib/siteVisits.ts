@@ -1,4 +1,4 @@
-import { doc, getFirestore, onSnapshot, runTransaction, serverTimestamp } from 'firebase/firestore'
+import { doc, getDoc, getFirestore, increment, onSnapshot, serverTimestamp, setDoc } from 'firebase/firestore'
 import { getFirebaseApp } from './firebase'
 
 export const VISITS_BASE = 2550
@@ -81,21 +81,12 @@ async function syncFirestoreAfterLocalBump(localFloor: number): Promise<number |
   const db = getFirestore(app)
   const ref = doc(db, FIRESTORE_VISITS_COLLECTION, FIRESTORE_VISITS_DOC)
   try {
-    const next = await runTransaction(db, async (transaction) => {
-      const snap = await transaction.get(ref)
-      if (!snap.exists()) {
-        const initial = Math.max(VISITS_BASE + 1, localFloor)
-        transaction.set(ref, { [FIRESTORE_VISITS_FIELD]: initial, updatedAt: serverTimestamp() })
-        return initial
-      }
-      // Firestore puede tener `vistas` como string; lo interpretamos y guardamos número (int).
-      const raw = snap.data()?.[FIRESTORE_VISITS_FIELD]
-      const current = Math.max(normalizeCountValue(raw) ?? VISITS_BASE, VISITS_BASE)
-      const nextVal = Math.max(current + 1, localFloor, VISITS_BASE)
-      transaction.update(ref, { [FIRESTORE_VISITS_FIELD]: nextVal, updatedAt: serverTimestamp() })
-      return nextVal
-    })
-    return next
+    // Evita conflictos de precondición bajo concurrencia alta.
+    await setDoc(ref, { [FIRESTORE_VISITS_FIELD]: increment(1), updatedAt: serverTimestamp() }, { merge: true })
+    const snap = await getDoc(ref)
+    if (!snap.exists()) return localFloor
+    const remote = normalizeCountValue(snap.data()?.[FIRESTORE_VISITS_FIELD]) ?? localFloor
+    return Math.max(remote, localFloor, VISITS_BASE)
   } catch {
     return null
   }

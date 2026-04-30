@@ -255,12 +255,18 @@ function InventarioPage() {
     }
     try {
       const pngData = await barcodeToPngDataUrl(value)
-      const a = document.createElement('a')
-      a.href = pngData
-      a.download = `barcode-${value}.png`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      const pageW = pdf.internal.pageSize.getWidth()
+      const margin = 16
+      const imageW = pageW - margin * 2
+      const imageH = 30
+      const y = 50
+      pdf.setFontSize(14)
+      pdf.text('Codigo de barras', margin, 30)
+      pdf.addImage(pngData, 'PNG', margin, y, imageW, imageH, undefined, 'FAST')
+      pdf.setFontSize(11)
+      pdf.text(value, margin, y + imageH + 10)
+      pdf.save(`codigo-${value}.pdf`)
     } catch {
       window.alert('No se pudo descargar el codigo.')
     }
@@ -321,28 +327,8 @@ function InventarioPage() {
       image.src = svgUrl
     })
 
-  const downloadBarcodePng = async (value: string) => {
-    const dataUrl = await barcodeToPngDataUrl(value)
-    const a = document.createElement('a')
-    a.href = dataUrl
-    a.download = `barcode-${value}.png`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-  }
-
   const onDownloadBatchBarcodes = async () => {
-    const codes = buildBatchCodes()
-    try {
-      for (const code of codes) {
-        await downloadBarcodePng(code)
-        await new Promise((r) => window.setTimeout(r, 120))
-      }
-      window.alert(`Se descargaron ${codes.length} codigos.`)
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Error descargando lote'
-      window.alert(msg)
-    }
+    await onDownloadBatchPdf()
   }
 
   const onDownloadBatchPdf = async () => {
@@ -571,7 +557,7 @@ function InventarioPage() {
                   Buscar este codigo
                 </button>
                 <button className="inv-btn" onClick={() => void onDownloadBarcode()}>
-                  Descargar codigo (PNG)
+                  Descargar codigo (PDF)
                 </button>
                 <div className="inv-batch-grid">
                   <input
@@ -605,9 +591,6 @@ function InventarioPage() {
                   />
                 </div>
                 <button className="inv-btn" onClick={() => void onDownloadBatchBarcodes()}>
-                  Descargar lote de codigos
-                </button>
-                <button className="inv-btn inv-btn-secondary" onClick={() => void onDownloadBatchPdf()}>
                   Descargar lote en PDF
                 </button>
               </div>

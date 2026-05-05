@@ -1,9 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import * as XLSX from 'xlsx'
-import JsBarcode from 'jsbarcode'
-import { BrowserMultiFormatReader } from '@zxing/browser'
-import { jsPDF } from 'jspdf'
+import type { BrowserMultiFormatReader } from '@zxing/browser'
 import { LogOut, Barcode, Camera, Download, FilePlus, Search, AlertCircle, CheckCircle2, ShieldCheck } from 'lucide-react'
 import { listenInventarioSession, logoutInventario } from './lib/inventoryAuth'
 import {
@@ -15,6 +12,13 @@ import {
 } from './lib/inventoryUserAdmin'
 import { uploadExcelViaAppsScript } from './lib/googleAppsScriptUpload'
 import './inventario.css'
+
+// ─── Lazy loaders para librerías pesadas (se descargan solo cuando se usan) ───
+const getXLSX = () => import('xlsx')
+const getJsPDF = () => import('jspdf').then(m => m.jsPDF)
+const getJsBarcode = () => import('jsbarcode').then(m => m.default)
+const getBrowserMultiFormatReader = () => import('@zxing/browser').then(m => m.BrowserMultiFormatReader)
+
 
 type GridRow = Record<string, string>
 type RowItem = { id: string; data: GridRow }
@@ -132,11 +136,13 @@ function InventarioPage() {
     const svg = barcodeSvgRef.current
     const value = barcodeValue.trim()
     if (!svg || !value) return
-    try {
-      JsBarcode(svg, value, BARCODE_RENDER_OPTIONS)
-    } catch {
-      setScanError('No se pudo generar el código. Usa letras/números sin símbolos raros.')
-    }
+    void getJsBarcode().then(JsBarcode => {
+      try {
+        JsBarcode(svg, value, BARCODE_RENDER_OPTIONS)
+      } catch {
+        setScanError('No se pudo generar el código. Usa letras/números sin símbolos raros.')
+      }
+    })
   }, [barcodeValue])
 
   useEffect(() => {
@@ -185,6 +191,7 @@ function InventarioPage() {
     const file = e.target.files?.[0]
     if (!file) return
     const buf = await file.arrayBuffer()
+    const XLSX = await getXLSX()
     const wb = XLSX.read(buf, { type: 'array' })
     const sheet = wb.Sheets[wb.SheetNames[0]]
     const json = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: '' })
@@ -204,7 +211,8 @@ function InventarioPage() {
     e.target.value = ''
   }
 
-  const buildWorkbook = () => {
+  const buildWorkbook = async () => {
+    const XLSX = await getXLSX()
     const exportRows = rows.map((r) => r.data)
     const fallbackRow =
       columns.length > 0 ? Object.fromEntries(columns.map((c) => [c, ''])) : { Hoja: 'Sin columnas definidas' }
@@ -220,11 +228,11 @@ function InventarioPage() {
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, ws, 'Inventario')
     const fileName = `inventario-ust-${new Date().toISOString().slice(0, 10)}.xlsx`
-    return { wb, fileName }
+    return { wb, fileName, XLSX }
   }
 
   const onSendByEmail = async () => {
-    const { wb, fileName } = buildWorkbook()
+    const { wb, fileName, XLSX } = await buildWorkbook()
     const envTo = (import.meta.env.VITE_INVENTARIO_CONTACT_EMAIL as string | undefined)?.trim()
     const toEmail = envTo || window.prompt('Correo destino para redactar:')?.trim() || ''
     if (!toEmail) return
@@ -238,13 +246,13 @@ function InventarioPage() {
     window.alert('Se descargó el Excel. Se abrió Gmail para redactar; ahora adjunta el archivo y envíalo.')
   }
 
-  const onSaveToPc = () => {
-    const { wb, fileName } = buildWorkbook()
+  const onSaveToPc = async () => {
+    const { wb, fileName, XLSX } = await buildWorkbook()
     XLSX.writeFile(wb, fileName)
   }
 
   const onSaveToDrive = async () => {
-    const { wb, fileName } = buildWorkbook()
+    const { wb, fileName, XLSX } = await buildWorkbook()
     if (!DRIVE_FOLDER_ID) {
       window.alert('Falta VITE_DRIVE_EXCELL_FOLDER_ID en .env para definir la carpeta de Drive.')
       return
@@ -284,7 +292,8 @@ function InventarioPage() {
   const onDownloadBatchBarcodes = async () => {
     const codes = buildBatchCodes()
     try {
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      const JsPDF = await getJsPDF()
+      const pdf = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
       const pageW = pdf.internal.pageSize.getWidth()
       const pageH = pdf.internal.pageSize.getHeight()
       const margin = 8
@@ -414,6 +423,7 @@ function InventarioPage() {
       setCameraReading(true)
       scannerControlsRef.current?.stop()
       scannerControlsRef.current = null
+      const BrowserMultiFormatReader = await getBrowserMultiFormatReader()
       const reader = new BrowserMultiFormatReader()
       scannerRef.current = reader
       const onDetect = (result: { getText: () => string } | undefined, err: unknown) => {
@@ -443,8 +453,9 @@ function InventarioPage() {
   }
 
   const barcodeToPngDataUrlForPdf = (value: string) =>
-    new Promise<string>((resolve, reject) => {
+    new Promise<string>(async (resolve, reject) => {
       try {
+        const JsBarcode = await getJsBarcode()
         const scale = 3
         const logicalWidth = 760
         const logicalHeight = 220

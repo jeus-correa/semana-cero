@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx'
 import JsBarcode from 'jsbarcode'
 import { BrowserMultiFormatReader } from '@zxing/browser'
 import { jsPDF } from 'jspdf'
-import { LogOut, Barcode, Camera, Download, FilePlus, Search, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { LogOut, Download, Search, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { listenInventarioSession, logoutInventario } from './lib/inventoryAuth'
 import {
   createInventoryUser,
@@ -25,23 +25,26 @@ const BARCODE_RENDER_OPTIONS = {
   format: 'CODE128' as const,
   lineColor: '#000000',
   background: '#ffffff',
-  width: 2.4,
-  height: 92,
+  width: 2.8,
+  height: 96,
   displayValue: true,
   margin: 10,
   fontSize: 18,
   textMargin: 4
 }
+/** Parámetros más gruesos/altos para que la pistola lea bien al imprimir el PDF. */
 const BARCODE_PDF_RENDER_OPTIONS = {
   format: 'CODE128' as const,
   lineColor: '#000000',
   background: '#ffffff',
-  width: 1.8,
-  height: 70,
+  width: 2.8,
+  height: 96,
   displayValue: true,
-  margin: 8,
-  fontSize: 12,
-  textMargin: 3
+  margin: 12,
+  fontSize: 15,
+  textMargin: 5,
+  // Aumenta el “margen en blanco” alrededor para mejorar lectura en pistola.
+  quieter: 10
 }
 const DRIVE_FOLDER_ID =
   (import.meta.env.VITE_DRIVE_EXCELL_FOLDER_ID as string | undefined)?.trim() || '1bVaHYYFJi8QBcGwsqqHcz8-3u_0PnMzt'
@@ -81,7 +84,8 @@ function InventarioPage() {
   const hardwareScanBufferRef = useRef('')
   const hardwareScanTimerRef = useRef<number | null>(null)
   const hardwareScanLastKeyAtRef = useRef(0)
-  const barcodeInputRef = useRef<HTMLInputElement>(null)
+  /** Solo el campo de escaneo (pistola/cámara); no es el mismo que la base del lote PDF. */
+  const scanCaptureInputRef = useRef<HTMLInputElement>(null)
   const [columns, setColumns] = useState<string[]>(BASE_COLUMNS)
   const [rows, setRows] = useState<RowItem[]>([])
   const [search, setSearch] = useState('')
@@ -89,6 +93,7 @@ function InventarioPage() {
   const [uploadingDrive, setUploadingDrive] = useState(false)
   const [barcodeValue, setBarcodeValue] = useState(BARCODE_PREFIX)
   const [barcodeCount, setBarcodeCount] = useState(1)
+  const [scanCapture, setScanCapture] = useState('')
   const [lastScan, setLastScan] = useState('')
   const [cameraReading, setCameraReading] = useState(false)
   const [scanError, setScanError] = useState('')
@@ -283,12 +288,12 @@ function InventarioPage() {
       const pageW = pdf.internal.pageSize.getWidth()
       const pageH = pdf.internal.pageSize.getHeight()
       const margin = 8
-      const cols = 3
-      const rowsPerPage = 8
+      const cols = 2
+      const rowsPerPage = 5
       const cellW = (pageW - margin * 2) / cols
       const cellH = (pageH - margin * 2) / rowsPerPage
-      const imageW = cellW - 6
-      const imageH = 11
+      const imageW = cellW - 5
+      const imageH = 16
 
       for (let i = 0; i < codes.length; i++) {
         if (i > 0 && i % (cols * rowsPerPage) === 0) pdf.addPage()
@@ -302,8 +307,8 @@ function InventarioPage() {
         pdf.setDrawColor(210)
         pdf.rect(x + 1, y + 1, cellW - 2, cellH - 2)
         pdf.addImage(dataUrl, 'PNG', x + 3, y + 3, imageW, imageH, undefined, 'NONE')
-        pdf.setFontSize(7)
-        pdf.text(code, x + 3, y + imageH + 6)
+        pdf.setFontSize(8)
+        pdf.text(code, x + 3, y + imageH + 7)
       }
 
       pdf.save(`codigos-lote-${codes.length}.pdf`)
@@ -317,7 +322,7 @@ function InventarioPage() {
     if (!normalized) return
     const parts = normalized.split('-')
     const maybeDept = parts.length >= 3 ? parts[2] : ''
-    setBarcodeValue(normalized)
+    setScanCapture(normalized)
     setLastScan(normalized)
     setScanError('')
     setEntryForm((prev) => ({
@@ -327,7 +332,7 @@ function InventarioPage() {
     }))
   }
 
-  const onScannerInputKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+  const onScanCaptureKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
     if (e.key !== 'Enter' && e.key !== 'Tab') return
     e.preventDefault()
     applyScannedCode(e.currentTarget.value)
@@ -345,19 +350,11 @@ function InventarioPage() {
     }
 
     const onGlobalScannerKeyDown = (e: KeyboardEvent) => {
-      // Permitir escaneo a todos los usuarios autenticados
       const ae = document.activeElement as HTMLElement | null
-      
-      // Si el usuario ya está parado en el input de código de barra principal, 
-      // dejamos que el navegador y el listener local manejen el input normalmente.
-      if (ae === barcodeInputRef.current) return
-
-      // Si el usuario está escribiendo en otro campo (modal, etc.), 
-      // pero las teclas vienen muy rápido (es un escáner), capturamos para el código de barra.
-      // Si vienen lento (humano escribiendo), dejamos que sigan su curso al input enfocado.
-      const now = performance.now()
-      const isFast = now - hardwareScanLastKeyAtRef.current < 50 // Teclas muy rápidas = escáner
-
+      // Si el foco ya está en el campo de escaneo, dejamos que el input normal maneje Enter/Tab.
+      if (ae === scanCaptureInputRef.current) return
+      // Si estás escribiendo en cualquier otro input (lote, planilla, búsqueda, etc.), no capturamos.
+      if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return
       if (e.key === 'Enter' || e.key === 'Tab') {
         const scanned = hardwareScanBufferRef.current.trim()
         if (scanned.length >= 2) {
@@ -370,38 +367,23 @@ function InventarioPage() {
       }
 
       if (e.key.length === 1) {
-        // Si no hay foco en un input O si detectamos que es un escáner (isFast)
-        const isInputFocused = ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)
-        
-        if (!isInputFocused || isFast || hardwareScanBufferRef.current.length > 0) {
-          // Si es el primer caracter de una posible ráfaga, o ya estamos en medio de una ráfaga
-          if (now - hardwareScanLastKeyAtRef.current > 200) {
-            hardwareScanBufferRef.current = ''
-          }
-          
-          hardwareScanLastKeyAtRef.current = now
-          hardwareScanBufferRef.current += e.key
-          
-          // Actualizamos visualmente para que el usuario vea que se está capturando
-          setBarcodeValue(hardwareScanBufferRef.current)
-          
-          if (hardwareScanTimerRef.current) window.clearTimeout(hardwareScanTimerRef.current)
-          hardwareScanTimerRef.current = window.setTimeout(() => {
-            flushHardwareBuffer()
-          }, 150)
-
-          // Si detectamos que es escáner, evitamos que el caracter se escriba en el input actual (si lo hay)
-          if (isInputFocused && (isFast || hardwareScanBufferRef.current.length > 1)) {
-            e.preventDefault()
-            e.stopPropagation()
-          }
+        const now = performance.now()
+        if (now - hardwareScanLastKeyAtRef.current > 220) {
+          hardwareScanBufferRef.current = ''
         }
+        hardwareScanLastKeyAtRef.current = now
+        hardwareScanBufferRef.current += e.key
+        setScanCapture(hardwareScanBufferRef.current)
+        if (hardwareScanTimerRef.current) window.clearTimeout(hardwareScanTimerRef.current)
+        hardwareScanTimerRef.current = window.setTimeout(() => {
+          flushHardwareBuffer()
+        }, 180)
       }
     }
 
     window.addEventListener('keydown', onGlobalScannerKeyDown)
     return () => window.removeEventListener('keydown', onGlobalScannerKeyDown)
-  }, [sessionIsAdmin])
+  }, [])
 
   const stopCameraReader = () => {
     scannerControlsRef.current?.stop()
@@ -511,7 +493,7 @@ function InventarioPage() {
   }
 
   const openEntryModal = () => {
-    const code = barcodeValue.trim()
+    const code = scanCapture.trim()
     if (code) applyScannedCode(code)
     setEntryModalOpen(true)
   }
@@ -638,7 +620,9 @@ function InventarioPage() {
           {sessionEmail && <p className="inv-session-user">Sesión: {sessionEmail}</p>}
           {sessionIsAdmin && <p className="inv-session-user">Perfil administrador: sí</p>}
           {!sessionIsAdmin && sessionEmail && (
-            <p className="inv-session-user inv-session-hint">Modo planilla: no se muestran códigos de barra ni envío a correo/Drive.</p>
+            <p className="inv-session-user inv-session-hint">
+              Modo planilla: podés escanear códigos y rellenar datos; no hay lote PDF ni envío a correo/Drive.
+            </p>
           )}
         </div>
         <button className="inv-logout" onClick={onLogout}>
@@ -774,30 +758,22 @@ function InventarioPage() {
           </div>
         </section>
 
-        {sessionIsAdmin && (
         <section className="inv-card">
-          <h2>Codigos de barra</h2>
-          <div className="inv-barcode-box">
-            <p className="inv-barcode-label">Códigos de barra</p>
-            <div className="inv-barcode-actions">
-              <p className="inv-scan-result">
-                Un solo campo: escribe o escanea (pistola/cámara). El lote PDF usa este mismo código como base.
-              </p>
-              <div className="inv-scanner-input-wrap">
-                <Barcode className="inv-scanner-ic" size={20} />
-                <input
-                  ref={barcodeInputRef}
-                  className="inv-search inv-scanner-bar"
-                  type="text"
-                  value={barcodeValue}
-                  placeholder="Escanea aquí con la pistola..."
-                  onChange={(e) => setBarcodeValue(e.target.value.replace(/\s+/g, ''))}
-                  onKeyDown={onScannerInputKeyDown}
-                  autoFocus
-                />
-                <div className="inv-scanner-status-pulse" />
-              </div>
+          <h2>Códigos de barra</h2>
 
+          {sessionIsAdmin && (
+            <div className="inv-barcode-box inv-barcode-lote-block">
+              <p className="inv-barcode-label">Generar lote PDF CODE128 (solo administrador)</p>
+              <p className="inv-scan-result">
+                Este bloque es independiente del escaneo: acá definís la base numérica para imprimir etiquetas (no se llena con la pistola abajo).
+              </p>
+              <input
+                className="inv-search"
+                type="text"
+                value={barcodeValue}
+                placeholder="Base para lote, ej: IPST2026010001"
+                onChange={(e) => setBarcodeValue(e.target.value.replace(/\s+/g, ''))}
+              />
               <div className="inv-batch-grid">
                 <input
                   className="inv-search"
@@ -813,23 +789,41 @@ function InventarioPage() {
                 </button>
               </div>
 
-              <div className="inv-scanner-actions-row">
-                <button
-                  className="inv-btn inv-btn-secondary"
-                  onClick={() => {
-                    if (cameraReading) stopCameraReader()
-                    else void startCameraReader()
-                  }}
-                >
-                  <Camera size={18} /> {cameraReading ? 'Detener cámara' : 'Escanear con cámara'}
-                </button>
-                <button className="inv-btn" onClick={openEntryModal}>
-                  <FilePlus size={18} /> Rellenar datos equipo
-                </button>
+              <div className="inv-barcode-preview">
+                {barcodeValue.trim() ? <svg ref={barcodeSvgRef} /> : <p>Vista previa de la base del lote.</p>}
               </div>
             </div>
-            <div className="inv-barcode-preview">
-              {barcodeValue.trim() ? <svg ref={barcodeSvgRef} /> : <p>Vista previa del código (mismo campo de arriba).</p>}
+          )}
+
+          <div className="inv-barcode-box inv-barcode-scan-block">
+            <p className="inv-barcode-label">Escanear código (pistola o cámara)</p>
+            <p className="inv-scan-result">
+              Campo aparte del lote PDF: escribí acá o usá pistola/cámara. No modifica la base de arriba.
+            </p>
+            <div className="inv-barcode-actions">
+              <input
+                ref={scanCaptureInputRef}
+                className="inv-search"
+                type="text"
+                value={scanCapture}
+                placeholder="Código leído — pistola (Enter/Tab) o escribí manual"
+                onChange={(e) => setScanCapture(e.target.value.replace(/\s+/g, ''))}
+                onKeyDown={onScanCaptureKeyDown}
+                autoComplete="off"
+              />
+              <button
+                className="inv-btn inv-btn-secondary"
+                type="button"
+                onClick={() => {
+                  if (cameraReading) stopCameraReader()
+                  else void startCameraReader()
+                }}
+              >
+                {cameraReading ? 'Detener cámara' : 'Escanear con cámara'}
+              </button>
+              <button className="inv-btn" type="button" onClick={openEntryModal}>
+                Rellenar datos
+              </button>
             </div>
             <video ref={cameraVideoRef} className={`inv-camera ${cameraReading ? 'is-on' : ''}`} muted playsInline />
             {lastScan && (
@@ -846,7 +840,6 @@ function InventarioPage() {
             )}
           </div>
         </section>
-        )}
 
         <section className="inv-card">
           <h2>Búsqueda</h2>

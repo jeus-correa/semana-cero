@@ -439,6 +439,18 @@
   padding: 0.8rem;
 }
 
+.inv-barcode-scan-block {
+  margin-top: 0.85rem;
+  border-color: rgba(120, 220, 255, 0.35);
+  background: rgba(5, 36, 44, 0.55);
+}
+
+.inv-barcode-lote-block + .inv-barcode-scan-block {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(170, 255, 222, 0.2);
+}
+
 .inv-barcode-label {
   margin: 0 0 0.55rem;
   color: #d6f6e8;

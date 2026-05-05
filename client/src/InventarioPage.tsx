@@ -20,6 +20,29 @@ type GridRow = Record<string, string>
 type RowItem = { id: string; data: GridRow }
 
 const BASE_COLUMNS: string[] = []
+const BARCODE_PREFIX = 'IPST202601'
+const BARCODE_RENDER_OPTIONS = {
+  format: 'CODE128' as const,
+  lineColor: '#000000',
+  background: '#ffffff',
+  width: 2.4,
+  height: 92,
+  displayValue: true,
+  margin: 10,
+  fontSize: 18,
+  textMargin: 4
+}
+const BARCODE_PDF_RENDER_OPTIONS = {
+  format: 'CODE128' as const,
+  lineColor: '#000000',
+  background: '#ffffff',
+  width: 1.8,
+  height: 70,
+  displayValue: true,
+  margin: 8,
+  fontSize: 12,
+  textMargin: 3
+}
 const DRIVE_FOLDER_ID =
   (import.meta.env.VITE_DRIVE_EXCELL_FOLDER_ID as string | undefined)?.trim() || '1bVaHYYFJi8QBcGwsqqHcz8-3u_0PnMzt'
 function normalizeRows(raw: unknown[]): GridRow[] {
@@ -55,20 +78,32 @@ function InventarioPage() {
   const cameraVideoRef = useRef<HTMLVideoElement>(null)
   const scannerRef = useRef<BrowserMultiFormatReader | null>(null)
   const scannerControlsRef = useRef<{ stop: () => void } | null>(null)
+  const hardwareScanBufferRef = useRef('')
+  const hardwareScanTimerRef = useRef<number | null>(null)
+  const hardwareScanLastKeyAtRef = useRef(0)
+  const barcodeInputRef = useRef<HTMLInputElement>(null)
   const [columns, setColumns] = useState<string[]>(BASE_COLUMNS)
   const [rows, setRows] = useState<RowItem[]>([])
   const [search, setSearch] = useState('')
   const [loadedFileName, setLoadedFileName] = useState('')
   const [uploadingDrive, setUploadingDrive] = useState(false)
-  const [barcodeValue, setBarcodeValue] = useState('')
-  const [barcodeDepartment, setBarcodeDepartment] = useState('INFORMATICA')
-  const [barcodePrefix, setBarcodePrefix] = useState('UST-INV-')
-  const [barcodeStart, setBarcodeStart] = useState(1)
-  const [barcodeCount, setBarcodeCount] = useState(20)
-  const [scanInput, setScanInput] = useState('')
+  const [barcodeValue, setBarcodeValue] = useState(BARCODE_PREFIX)
+  const [barcodeCount, setBarcodeCount] = useState(1)
   const [lastScan, setLastScan] = useState('')
   const [cameraReading, setCameraReading] = useState(false)
   const [scanError, setScanError] = useState('')
+  const [entryModalOpen, setEntryModalOpen] = useState(false)
+  const [entryForm, setEntryForm] = useState({
+    departamento: '',
+    codigoBarra: '',
+    equipo: '',
+    marca: '',
+    modelo: '',
+    serie: '',
+    ubicacion: '',
+    responsable: '',
+    observacion: ''
+  })
   const [sessionEmail, setSessionEmail] = useState('')
   const [sessionIsAdmin, setSessionIsAdmin] = useState(false)
   const [managedUsers, setManagedUsers] = useState<InventoryManagedUser[]>([])
@@ -81,17 +116,6 @@ function InventarioPage() {
   const [creatingUser, setCreatingUser] = useState(false)
   const [deletingUserUid, setDeletingUserUid] = useState('')
   const [adminPanelView, setAdminPanelView] = useState<'none' | 'create' | 'manage'>('create')
-  const [entryForm, setEntryForm] = useState({
-    departamento: '',
-    codigoBarra: '',
-    equipo: '',
-    marca: '',
-    modelo: '',
-    serie: '',
-    ubicacion: '',
-    responsable: '',
-    observacion: ''
-  })
 
   const filteredRows = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -104,16 +128,7 @@ function InventarioPage() {
     const value = barcodeValue.trim()
     if (!svg || !value) return
     try {
-      JsBarcode(svg, value, {
-        format: 'CODE128',
-        lineColor: '#0f172a',
-        background: '#ffffff',
-        width: 2,
-        height: 72,
-        displayValue: true,
-        margin: 8
-      })
-      setScanError('')
+      JsBarcode(svg, value, BARCODE_RENDER_OPTIONS)
     } catch {
       setScanError('No se pudo generar el código. Usa letras/números sin símbolos raros.')
     }
@@ -125,6 +140,10 @@ function InventarioPage() {
       scannerControlsRef.current = null
       scannerRef.current = null
       setCameraReading(false)
+      if (hardwareScanTimerRef.current) {
+        window.clearTimeout(hardwareScanTimerRef.current)
+        hardwareScanTimerRef.current = null
+      }
     }
   }, [])
 
@@ -243,25 +262,116 @@ function InventarioPage() {
     }
   }
 
+  const buildBatchCodes = () => {
+    const base = barcodeValue.trim()
+    const qty = Math.max(1, Math.min(200, Number(barcodeCount) || 1))
+    const match = base.match(/^(.*?)(\d+)$/)
+    if (!match) {
+      return Array.from({ length: qty }, (_, i) => `${base}${String(i + 1).padStart(4, '0')}`)
+    }
+    const prefix = match[1]
+    const numberText = match[2]
+    const start = Number(numberText)
+    const width = numberText.length
+    return Array.from({ length: qty }, (_, i) => `${prefix}${String(start + i).padStart(width, '0')}`)
+  }
+
+  const onDownloadBatchBarcodes = async () => {
+    const codes = buildBatchCodes()
+    try {
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+      const pageW = pdf.internal.pageSize.getWidth()
+      const pageH = pdf.internal.pageSize.getHeight()
+      const margin = 8
+      const cols = 3
+      const rowsPerPage = 8
+      const cellW = (pageW - margin * 2) / cols
+      const cellH = (pageH - margin * 2) / rowsPerPage
+      const imageW = cellW - 6
+      const imageH = 11
+
+      for (let i = 0; i < codes.length; i++) {
+        if (i > 0 && i % (cols * rowsPerPage) === 0) pdf.addPage()
+        const idxOnPage = i % (cols * rowsPerPage)
+        const col = idxOnPage % cols
+        const row = Math.floor(idxOnPage / cols)
+        const x = margin + col * cellW
+        const y = margin + row * cellH
+        const code = codes[i]
+        const dataUrl = await barcodeToPngDataUrlForPdf(code)
+        pdf.setDrawColor(210)
+        pdf.rect(x + 1, y + 1, cellW - 2, cellH - 2)
+        pdf.addImage(dataUrl, 'PNG', x + 3, y + 3, imageW, imageH, undefined, 'NONE')
+        pdf.setFontSize(7)
+        pdf.text(code, x + 3, y + imageH + 6)
+      }
+
+      pdf.save(`codigos-lote-${codes.length}.pdf`)
+    } catch {
+      window.alert('No se pudo generar el lote de códigos.')
+    }
+  }
+
   const applyScannedCode = (value: string) => {
     const normalized = value.trim()
     if (!normalized) return
     const parts = normalized.split('-')
     const maybeDept = parts.length >= 3 ? parts[2] : ''
+    setBarcodeValue(normalized)
+    setLastScan(normalized)
+    setScanError('')
     setEntryForm((prev) => ({
       ...prev,
       codigoBarra: normalized,
       departamento: prev.departamento || maybeDept
     }))
-    setScanInput(normalized)
-    setLastScan(normalized)
   }
 
   const onScannerInputKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
-    if (e.key !== 'Enter') return
+    if (e.key !== 'Enter' && e.key !== 'Tab') return
     e.preventDefault()
-    applyScannedCode(scanInput)
+    applyScannedCode(e.currentTarget.value)
   }
+
+  useEffect(() => {
+    const flushHardwareBuffer = () => {
+      const scanned = hardwareScanBufferRef.current.trim()
+      if (scanned.length >= 4) applyScannedCode(scanned)
+      hardwareScanBufferRef.current = ''
+      if (hardwareScanTimerRef.current) {
+        window.clearTimeout(hardwareScanTimerRef.current)
+        hardwareScanTimerRef.current = null
+      }
+    }
+
+    const onGlobalScannerKeyDown = (e: KeyboardEvent) => {
+      if (!sessionIsAdmin) return
+      const ae = document.activeElement as HTMLElement | null
+      if (ae === barcodeInputRef.current) return
+      if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return
+      if (e.key === 'Enter' || e.key === 'Tab') {
+        if (hardwareScanBufferRef.current.trim().length >= 4) e.preventDefault()
+        flushHardwareBuffer()
+        return
+      }
+      if (e.key.length === 1) {
+        const now = performance.now()
+        if (now - hardwareScanLastKeyAtRef.current > 220) {
+          hardwareScanBufferRef.current = ''
+        }
+        hardwareScanLastKeyAtRef.current = now
+        hardwareScanBufferRef.current += e.key
+        setBarcodeValue(hardwareScanBufferRef.current)
+        if (hardwareScanTimerRef.current) window.clearTimeout(hardwareScanTimerRef.current)
+        hardwareScanTimerRef.current = window.setTimeout(() => {
+          flushHardwareBuffer()
+        }, 180)
+      }
+    }
+
+    window.addEventListener('keydown', onGlobalScannerKeyDown)
+    return () => window.removeEventListener('keydown', onGlobalScannerKeyDown)
+  }, [sessionIsAdmin])
 
   const stopCameraReader = () => {
     scannerControlsRef.current?.stop()
@@ -276,18 +386,29 @@ function InventarioPage() {
     try {
       setScanError('')
       setCameraReading(true)
+      scannerControlsRef.current?.stop()
+      scannerControlsRef.current = null
       const reader = new BrowserMultiFormatReader()
       scannerRef.current = reader
-      const controls = await reader.decodeFromVideoDevice(undefined, videoEl, (result, err) => {
+      const onDetect = (result: { getText: () => string } | undefined, err: unknown) => {
         if (result?.getText()) {
           applyScannedCode(result.getText())
           stopCameraReader()
           return
         }
         if (err && (err as Error).name !== 'NotFoundException') {
-          setScanError('No se pudo leer la camara en este dispositivo.')
+          setScanError('No se pudo leer la cámara en este dispositivo.')
         }
-      })
+      }
+      let controls
+      try {
+        controls = await reader.decodeFromVideoDevice(undefined, videoEl, onDetect)
+      } catch {
+        const devices = await navigator.mediaDevices.enumerateDevices()
+        const firstVideo = devices.find((d) => d.kind === 'videoinput')
+        if (!firstVideo) throw new Error('No hay cámara disponible')
+        controls = await reader.decodeFromVideoDevice(firstVideo.deviceId, videoEl, onDetect)
+      }
       scannerControlsRef.current = controls
     } catch {
       stopCameraReader()
@@ -295,126 +416,58 @@ function InventarioPage() {
     }
   }
 
-  const onDownloadBarcode = async () => {
-    const value = barcodeValue.trim()
-    if (!value) {
-      window.alert('Primero genera un código de barras para descargar.')
-      return
-    }
-    try {
-      const pngData = await barcodeToPngDataUrl(value)
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-      const pageW = pdf.internal.pageSize.getWidth()
-      const margin = 16
-      const imageW = pageW - margin * 2
-      const imageH = 30
-      const y = 50
-      pdf.setFontSize(14)
-      pdf.text('Código de barras', margin, 30)
-      pdf.addImage(pngData, 'PNG', margin, y, imageW, imageH, undefined, 'FAST')
-      pdf.setFontSize(11)
-      pdf.text(value, margin, y + imageH + 10)
-      pdf.save(`código-${value}.pdf`)
-    } catch {
-      window.alert('No se pudo descargar el código.')
-    }
-  }
-
-  const buildBatchCodes = () => {
-    const dept = barcodeDepartment.trim().replace(/\s+/g, '-').toUpperCase()
-    const prefix = barcodePrefix.trim()
-    const start = Math.max(1, Number(barcodeStart) || 1)
-    const count = Math.max(1, Math.min(200, Number(barcodeCount) || 1))
-    const width = String(start + count - 1).length
-    return Array.from({ length: count }, (_, i) => `${prefix}${dept}-${String(start + i).padStart(width, '0')}`)
-  }
-
-  const barcodeToPngDataUrl = (value: string) =>
+  const barcodeToPngDataUrlForPdf = (value: string) =>
     new Promise<string>((resolve, reject) => {
-      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
       try {
-        JsBarcode(svg, value, {
-          format: 'CODE128',
-          lineColor: '#0f172a',
-          background: '#ffffff',
-          width: 2,
-          height: 72,
-          displayValue: true,
-          margin: 8
-        })
-      } catch {
-        reject(new Error(`Código inválido: ${value}`))
-        return
-      }
-      const serializer = new XMLSerializer()
-      const svgText = serializer.serializeToString(svg)
-      const svgBlob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' })
-      const svgUrl = URL.createObjectURL(svgBlob)
-      const image = new Image()
-      image.onload = () => {
+        const scale = 3
+        const logicalWidth = 760
+        const logicalHeight = 220
         const canvas = document.createElement('canvas')
-        canvas.width = image.width || 520
-        canvas.height = image.height || 180
+        canvas.width = logicalWidth * scale
+        canvas.height = logicalHeight * scale
         const ctx = canvas.getContext('2d')
         if (!ctx) {
-          URL.revokeObjectURL(svgUrl)
           reject(new Error('No se pudo crear canvas'))
           return
         }
+        ctx.setTransform(scale, 0, 0, scale, 0, 0)
+        ctx.imageSmoothingEnabled = false
         ctx.fillStyle = '#ffffff'
-        ctx.fillRect(0, 0, canvas.width, canvas.height)
-        ctx.drawImage(image, 0, 0)
-        URL.revokeObjectURL(svgUrl)
-        const dataUrl = canvas.toDataURL('image/png')
-        resolve(dataUrl)
+        ctx.fillRect(0, 0, logicalWidth, logicalHeight)
+        JsBarcode(canvas, value, BARCODE_PDF_RENDER_OPTIONS)
+        resolve(canvas.toDataURL('image/png'))
+      } catch {
+        reject(new Error(`Codigo invalido: ${value}`))
       }
-      image.onerror = () => {
-        URL.revokeObjectURL(svgUrl)
-        reject(new Error(`No se pudo convertir: ${value}`))
-      }
-      image.src = svgUrl
     })
 
-  const onDownloadBatchBarcodes = async () => {
-    await onDownloadBatchPdf()
+  const clearData = () => {
+    setColumns(BASE_COLUMNS)
+    setRows([])
+    setSearch('')
+    setLoadedFileName('')
+    if (fileRef.current) fileRef.current.value = ''
   }
 
-  const onDownloadBatchPdf = async () => {
-    const codes = buildBatchCodes()
-    try {
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
-      const pageW = pdf.internal.pageSize.getWidth()
-      const pageH = pdf.internal.pageSize.getHeight()
-      const margin = 10
-      const cols = 2
-      const rowsPerPage = 5
-      const cellW = (pageW - margin * 2) / cols
-      const cellH = (pageH - margin * 2) / rowsPerPage
-      const imageW = cellW - 8
-      const imageH = 22
-      const maxCodes = Math.min(200, codes.length)
+  const addColumn = () => {
+    const name = window.prompt('Nombre de la nueva columna:')
+    if (!name?.trim()) return
+    if (columns.includes(name)) return
+    setColumns((prev) => [...prev, name])
+    setRows((prev) =>
+      prev.map((r) => ({
+        ...r,
+        data: { ...r.data, [name]: '' }
+      }))
+    )
+  }
 
-      for (let i = 0; i < maxCodes; i++) {
-        if (i > 0 && i % (cols * rowsPerPage) === 0) pdf.addPage()
-        const idxOnPage = i % (cols * rowsPerPage)
-        const col = idxOnPage % cols
-        const row = Math.floor(idxOnPage / cols)
-        const x = margin + col * cellW
-        const y = margin + row * cellH
-        const code = codes[i]
-        const dataUrl = await barcodeToPngDataUrl(code)
-        pdf.setDrawColor(210)
-        pdf.rect(x + 1.5, y + 1.5, cellW - 3, cellH - 3)
-        pdf.addImage(dataUrl, 'PNG', x + 4, y + 4, imageW, imageH, undefined, 'FAST')
-        pdf.setFontSize(9)
-        pdf.text(code, x + 4, y + imageH + 8)
-      }
-
-      pdf.save(`codigos-${barcodeDepartment.toLowerCase() || 'inventario'}.pdf`)
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'No se pudo generar el PDF'
-      window.alert(msg)
+  const addRow = () => {
+    if (columns.length === 0) {
+      window.alert('Primero importa una planilla o crea al menos una columna.')
+      return
     }
+    setRows((prev) => [...prev, makeRow(columns)])
   }
 
   const resolveColumnName = (preferred: string, aliases: string[]) => {
@@ -427,7 +480,13 @@ function InventarioPage() {
     setEntryForm((prev) => ({ ...prev, [field]: value }))
   }
 
-  const onAddRowFromScan = () => {
+  const openEntryModal = () => {
+    const code = barcodeValue.trim()
+    if (code) applyScannedCode(code)
+    setEntryModalOpen(true)
+  }
+
+  const onAddRowFromModal = () => {
     if (!entryForm.codigoBarra.trim()) {
       window.alert('Primero escanea o escribe un código de barra.')
       return
@@ -467,7 +526,6 @@ function InventarioPage() {
     newData[columnMap.ubicacion] = entryForm.ubicacion.trim()
     newData[columnMap.responsable] = entryForm.responsable.trim()
     newData[columnMap.observacion] = entryForm.observacion.trim()
-
     setRows((prev) => [...prev, { id: crypto.randomUUID(), data: newData }])
     setEntryForm((prev) => ({
       ...prev,
@@ -480,47 +538,7 @@ function InventarioPage() {
       responsable: '',
       observacion: ''
     }))
-  }
-
-  const onAddRowFromPistol = () => {
-    const scanned = scanInput.trim()
-    if (!scanned) {
-      window.alert('Escanea primero con la pistola y luego agrega la fila.')
-      return
-    }
-    applyScannedCode(scanned)
-    window.setTimeout(() => {
-      onAddRowFromScan()
-    }, 0)
-  }
-
-  const clearData = () => {
-    setColumns(BASE_COLUMNS)
-    setRows([])
-    setSearch('')
-    setLoadedFileName('')
-    if (fileRef.current) fileRef.current.value = ''
-  }
-
-  const addColumn = () => {
-    const name = window.prompt('Nombre de la nueva columna:')
-    if (!name?.trim()) return
-    if (columns.includes(name)) return
-    setColumns((prev) => [...prev, name])
-    setRows((prev) =>
-      prev.map((r) => ({
-        ...r,
-        data: { ...r.data, [name]: '' }
-      }))
-    )
-  }
-
-  const addRow = () => {
-    if (columns.length === 0) {
-      window.alert('Primero importa una planilla o crea al menos una columna.')
-      return
-    }
-    setRows((prev) => [...prev, makeRow(columns)])
+    setEntryModalOpen(false)
   }
 
   const updateCell = (rowId: string, col: string, val: string) => {
@@ -580,7 +598,7 @@ function InventarioPage() {
     <div className="inv-page">
       <header className="inv-header">
         <div>
-          <p className="inv-kicker">Universidad Santo Tomás</p>
+          <p className="inv-kicker">INSTITUTO PROFECIONAL SANTOTOMAS</p>
           <h1>Registro de equipos informáticos</h1>
           <p>
             {sessionIsAdmin
@@ -601,7 +619,7 @@ function InventarioPage() {
       <main className="inv-main">
         {sessionIsAdmin && (
           <section className="inv-card">
-            <h2>Administrador de trabajadores</h2>
+            <h2>Administrador de usuarios</h2>
             <div className="inv-user-admin-actions">
               <button
                 className={`inv-btn ${adminPanelView === 'create' ? '' : 'inv-btn-secondary'}`}
@@ -694,7 +712,7 @@ function InventarioPage() {
         )}
 
         <section className="inv-card">
-          <h2>{sessionIsAdmin ? 'Operaciones' : 'Planilla Excel'}</h2>
+          <h2>{sessionIsAdmin ? 'Acciones' : 'Planilla Excel'}</h2>
           {loadedFileName && <p className="inv-loaded-file">Archivo cargado: {loadedFileName}</p>}
           <div className="inv-actions">
             <label className="inv-btn">
@@ -726,6 +744,60 @@ function InventarioPage() {
           </div>
         </section>
 
+        {sessionIsAdmin && (
+        <section className="inv-card">
+          <h2>Codigos de barra</h2>
+          <div className="inv-barcode-box">
+            <p className="inv-barcode-label">Códigos de barra</p>
+            <div className="inv-barcode-actions">
+              <p className="inv-scan-result">
+                Un solo campo: escribe o escanea (pistola/cámara). El lote PDF usa este mismo código como base.
+              </p>
+              <input
+                ref={barcodeInputRef}
+                className="inv-search"
+                type="text"
+                value={barcodeValue}
+                placeholder="Código de barra — escribe o escanea aquí"
+                onChange={(e) => setBarcodeValue(e.target.value.replace(/\s+/g, ''))}
+                onKeyDown={onScannerInputKeyDown}
+              />
+              <div className="inv-batch-grid">
+                <input
+                  className="inv-search"
+                  type="number"
+                  min={1}
+                  max={200}
+                  value={barcodeCount}
+                  onChange={(e) => setBarcodeCount(Number(e.target.value))}
+                />
+                <button className="inv-btn inv-btn-secondary" onClick={() => void onDownloadBatchBarcodes()}>
+                  Cantidad: generar lote
+                </button>
+              </div>
+              <button
+                className="inv-btn inv-btn-secondary"
+                onClick={() => {
+                  if (cameraReading) stopCameraReader()
+                  else void startCameraReader()
+                }}
+              >
+                {cameraReading ? 'Detener cámara' : 'Escanear con cámara'}
+              </button>
+              <button className="inv-btn" onClick={openEntryModal}>
+                Rellenar datos
+              </button>
+            </div>
+            <div className="inv-barcode-preview">
+              {barcodeValue.trim() ? <svg ref={barcodeSvgRef} /> : <p>Vista previa del código (mismo campo de arriba).</p>}
+            </div>
+            <video ref={cameraVideoRef} className={`inv-camera ${cameraReading ? 'is-on' : ''}`} muted playsInline />
+            {lastScan && <p className="inv-scan-result">Último código leído: {lastScan}</p>}
+            {scanError && <p className="inv-scan-error">{scanError}</p>}
+          </div>
+        </section>
+        )}
+
         <section className="inv-card">
           <h2>Búsqueda</h2>
           <input
@@ -736,166 +808,6 @@ function InventarioPage() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </section>
-
-        {sessionIsAdmin && (
-        <section className="inv-card">
-          <h2>Códigos de barra</h2>
-          <div className="inv-barcode-grid">
-            <div className="inv-barcode-box">
-              <p className="inv-barcode-label">Generar código (CODE128)</p>
-              <div className="inv-barcode-actions">
-                <input
-                  className="inv-search"
-                  type="text"
-                  value={barcodeValue}
-                  placeholder="Ej: UST-INV-INFORMATICA-0001"
-                  onChange={(e) => setBarcodeValue(e.target.value)}
-                />
-                <button className="inv-btn inv-btn-secondary" onClick={() => barcodeValue && setSearch(barcodeValue.trim())}>
-                  Buscar este código
-                </button>
-                <button className="inv-btn" onClick={() => void onDownloadBarcode()}>
-                  Descargar código (PDF)
-                </button>
-                <div className="inv-batch-grid">
-                  <input
-                    className="inv-search"
-                    type="text"
-                    value={barcodeDepartment}
-                    placeholder="Departamento (ej: INFORMATICA)"
-                    onChange={(e) => setBarcodeDepartment(e.target.value)}
-                  />
-                  <input
-                    className="inv-search"
-                    type="text"
-                    value={barcodePrefix}
-                    placeholder="Prefijo (ej: UST-INV-)"
-                    onChange={(e) => setBarcodePrefix(e.target.value)}
-                  />
-                  <input
-                    className="inv-search"
-                    type="number"
-                    min={1}
-                    value={barcodeStart}
-                    onChange={(e) => setBarcodeStart(Number(e.target.value))}
-                  />
-                  <input
-                    className="inv-search"
-                    type="number"
-                    min={1}
-                    max={200}
-                    value={barcodeCount}
-                    onChange={(e) => setBarcodeCount(Number(e.target.value))}
-                  />
-                </div>
-                <button className="inv-btn" onClick={() => void onDownloadBatchBarcodes()}>
-                  Descargar lote en PDF
-                </button>
-              </div>
-              <div className="inv-barcode-preview">
-                {barcodeValue.trim() ? <svg ref={barcodeSvgRef} /> : <p>Escribe un valor para generar el código.</p>}
-              </div>
-            </div>
-
-            <div className="inv-barcode-box">
-              <p className="inv-barcode-label">Leer código (pistola o celular)</p>
-              <div className="inv-barcode-actions">
-                <input
-                  className="inv-search"
-                  type="text"
-                  value={scanInput}
-                  placeholder="Escanea con pistola y presiona Enter"
-                  onChange={(e) => setScanInput(e.target.value)}
-                  onKeyDown={onScannerInputKeyDown}
-                />
-                <button
-                  className="inv-btn"
-                  onClick={() => {
-                    if (cameraReading) stopCameraReader()
-                    else void startCameraReader()
-                  }}
-                >
-                  {cameraReading ? 'Detener cámara' : 'Leer con cámara'}
-                </button>
-                <button className="inv-btn inv-btn-secondary" onClick={onAddRowFromPistol}>
-                  Agregar con pistola
-                </button>
-              </div>
-              <div className="inv-entry-grid">
-                <input
-                  className="inv-search"
-                  type="text"
-                  value={entryForm.departamento}
-                  placeholder="Departamento"
-                  onChange={(e) => onEntryFormChange('departamento', e.target.value)}
-                />
-                <input
-                  className="inv-search"
-                  type="text"
-                  value={entryForm.codigoBarra}
-                  placeholder="Código de barra"
-                  onChange={(e) => onEntryFormChange('codigoBarra', e.target.value)}
-                />
-                <input
-                  className="inv-search"
-                  type="text"
-                  value={entryForm.equipo}
-                  placeholder="Equipo"
-                  onChange={(e) => onEntryFormChange('equipo', e.target.value)}
-                />
-                <input
-                  className="inv-search"
-                  type="text"
-                  value={entryForm.marca}
-                  placeholder="Marca"
-                  onChange={(e) => onEntryFormChange('marca', e.target.value)}
-                />
-                <input
-                  className="inv-search"
-                  type="text"
-                  value={entryForm.modelo}
-                  placeholder="Modelo"
-                  onChange={(e) => onEntryFormChange('modelo', e.target.value)}
-                />
-                <input
-                  className="inv-search"
-                  type="text"
-                  value={entryForm.serie}
-                  placeholder="Serie"
-                  onChange={(e) => onEntryFormChange('serie', e.target.value)}
-                />
-                <input
-                  className="inv-search"
-                  type="text"
-                  value={entryForm.ubicacion}
-                  placeholder="Ubicación"
-                  onChange={(e) => onEntryFormChange('ubicacion', e.target.value)}
-                />
-                <input
-                  className="inv-search"
-                  type="text"
-                  value={entryForm.responsable}
-                  placeholder="Responsable"
-                  onChange={(e) => onEntryFormChange('responsable', e.target.value)}
-                />
-                <input
-                  className="inv-search"
-                  type="text"
-                  value={entryForm.observacion}
-                  placeholder="Observación"
-                  onChange={(e) => onEntryFormChange('observacion', e.target.value)}
-                />
-              </div>
-              <button className="inv-btn" onClick={onAddRowFromScan}>
-                Agregar fila desde escaneo
-              </button>
-              <video ref={cameraVideoRef} className={`inv-camera ${cameraReading ? 'is-on' : ''}`} muted playsInline />
-              {lastScan && <p className="inv-scan-result">Último código leído: {lastScan}</p>}
-              {scanError && <p className="inv-scan-error">{scanError}</p>}
-            </div>
-          </div>
-        </section>
-        )}
 
         <section className="inv-card">
           <div className="inv-meta">
@@ -943,6 +855,32 @@ function InventarioPage() {
           )}
         </section>
       </main>
+      {entryModalOpen && (
+        <div className="inv-modal-backdrop" role="presentation" onClick={() => setEntryModalOpen(false)}>
+          <section className="inv-modal" role="dialog" aria-modal="true" aria-label="Agregar equipo" onClick={(e) => e.stopPropagation()}>
+            <h3>Completar datos del equipo</h3>
+            <div className="inv-entry-grid">
+              <input className="inv-search" type="text" value={entryForm.departamento} placeholder="Departamento" onChange={(e) => onEntryFormChange('departamento', e.target.value)} />
+              <input className="inv-search" type="text" value={entryForm.codigoBarra} placeholder="Código de barra" onChange={(e) => onEntryFormChange('codigoBarra', e.target.value)} />
+              <input className="inv-search" type="text" value={entryForm.equipo} placeholder="Equipo" onChange={(e) => onEntryFormChange('equipo', e.target.value)} />
+              <input className="inv-search" type="text" value={entryForm.marca} placeholder="Marca" onChange={(e) => onEntryFormChange('marca', e.target.value)} />
+              <input className="inv-search" type="text" value={entryForm.modelo} placeholder="Modelo" onChange={(e) => onEntryFormChange('modelo', e.target.value)} />
+              <input className="inv-search" type="text" value={entryForm.serie} placeholder="Serie" onChange={(e) => onEntryFormChange('serie', e.target.value)} />
+              <input className="inv-search" type="text" value={entryForm.ubicacion} placeholder="Ubicación" onChange={(e) => onEntryFormChange('ubicacion', e.target.value)} />
+              <input className="inv-search" type="text" value={entryForm.responsable} placeholder="Responsable" onChange={(e) => onEntryFormChange('responsable', e.target.value)} />
+              <input className="inv-search" type="text" value={entryForm.observacion} placeholder="Observación" onChange={(e) => onEntryFormChange('observacion', e.target.value)} />
+            </div>
+            <div className="inv-modal-actions">
+              <button className="inv-btn inv-btn-secondary" type="button" onClick={() => setEntryModalOpen(false)}>
+                Cancelar
+              </button>
+              <button className="inv-btn" type="button" onClick={onAddRowFromModal}>
+                Guardar en Excel
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   )
 }

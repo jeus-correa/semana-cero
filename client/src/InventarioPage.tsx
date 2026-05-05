@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx'
 import JsBarcode from 'jsbarcode'
 import { BrowserMultiFormatReader } from '@zxing/browser'
 import { jsPDF } from 'jspdf'
-import { LogOut } from 'lucide-react'
+import { LogOut, Barcode, Camera, Download, FilePlus, Search, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { listenInventarioSession, logoutInventario } from './lib/inventoryAuth'
 import {
   createInventoryUser,
@@ -345,27 +345,57 @@ function InventarioPage() {
     }
 
     const onGlobalScannerKeyDown = (e: KeyboardEvent) => {
-      if (!sessionIsAdmin) return
+      // Permitir escaneo a todos los usuarios autenticados
       const ae = document.activeElement as HTMLElement | null
+      
+      // Si el usuario ya está parado en el input de código de barra principal, 
+      // dejamos que el navegador y el listener local manejen el input normalmente.
       if (ae === barcodeInputRef.current) return
-      if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return
+
+      // Si el usuario está escribiendo en otro campo (modal, etc.), 
+      // pero las teclas vienen muy rápido (es un escáner), capturamos para el código de barra.
+      // Si vienen lento (humano escribiendo), dejamos que sigan su curso al input enfocado.
+      const now = performance.now()
+      const isFast = now - hardwareScanLastKeyAtRef.current < 50 // Teclas muy rápidas = escáner
+
       if (e.key === 'Enter' || e.key === 'Tab') {
-        if (hardwareScanBufferRef.current.trim().length >= 4) e.preventDefault()
-        flushHardwareBuffer()
-        return
-      }
-      if (e.key.length === 1) {
-        const now = performance.now()
-        if (now - hardwareScanLastKeyAtRef.current > 220) {
+        const scanned = hardwareScanBufferRef.current.trim()
+        if (scanned.length >= 2) {
+          e.preventDefault()
+          e.stopPropagation()
+          applyScannedCode(scanned)
           hardwareScanBufferRef.current = ''
+          return
         }
-        hardwareScanLastKeyAtRef.current = now
-        hardwareScanBufferRef.current += e.key
-        setBarcodeValue(hardwareScanBufferRef.current)
-        if (hardwareScanTimerRef.current) window.clearTimeout(hardwareScanTimerRef.current)
-        hardwareScanTimerRef.current = window.setTimeout(() => {
-          flushHardwareBuffer()
-        }, 180)
+      }
+
+      if (e.key.length === 1) {
+        // Si no hay foco en un input O si detectamos que es un escáner (isFast)
+        const isInputFocused = ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)
+        
+        if (!isInputFocused || isFast || hardwareScanBufferRef.current.length > 0) {
+          // Si es el primer caracter de una posible ráfaga, o ya estamos en medio de una ráfaga
+          if (now - hardwareScanLastKeyAtRef.current > 200) {
+            hardwareScanBufferRef.current = ''
+          }
+          
+          hardwareScanLastKeyAtRef.current = now
+          hardwareScanBufferRef.current += e.key
+          
+          // Actualizamos visualmente para que el usuario vea que se está capturando
+          setBarcodeValue(hardwareScanBufferRef.current)
+          
+          if (hardwareScanTimerRef.current) window.clearTimeout(hardwareScanTimerRef.current)
+          hardwareScanTimerRef.current = window.setTimeout(() => {
+            flushHardwareBuffer()
+          }, 150)
+
+          // Si detectamos que es escáner, evitamos que el caracter se escriba en el input actual (si lo hay)
+          if (isInputFocused && (isFast || hardwareScanBufferRef.current.length > 1)) {
+            e.preventDefault()
+            e.stopPropagation()
+          }
+        }
       }
     }
 
@@ -753,15 +783,21 @@ function InventarioPage() {
               <p className="inv-scan-result">
                 Un solo campo: escribe o escanea (pistola/cámara). El lote PDF usa este mismo código como base.
               </p>
-              <input
-                ref={barcodeInputRef}
-                className="inv-search"
-                type="text"
-                value={barcodeValue}
-                placeholder="Código de barra — escribe o escanea aquí"
-                onChange={(e) => setBarcodeValue(e.target.value.replace(/\s+/g, ''))}
-                onKeyDown={onScannerInputKeyDown}
-              />
+              <div className="inv-scanner-input-wrap">
+                <Barcode className="inv-scanner-ic" size={20} />
+                <input
+                  ref={barcodeInputRef}
+                  className="inv-search inv-scanner-bar"
+                  type="text"
+                  value={barcodeValue}
+                  placeholder="Escanea aquí con la pistola..."
+                  onChange={(e) => setBarcodeValue(e.target.value.replace(/\s+/g, ''))}
+                  onKeyDown={onScannerInputKeyDown}
+                  autoFocus
+                />
+                <div className="inv-scanner-status-pulse" />
+              </div>
+
               <div className="inv-batch-grid">
                 <input
                   className="inv-search"
@@ -770,43 +806,60 @@ function InventarioPage() {
                   max={200}
                   value={barcodeCount}
                   onChange={(e) => setBarcodeCount(Number(e.target.value))}
+                  placeholder="Cant."
                 />
                 <button className="inv-btn inv-btn-secondary" onClick={() => void onDownloadBatchBarcodes()}>
-                  Cantidad: generar lote
+                  <Download size={18} /> Generar lote PDF
                 </button>
               </div>
-              <button
-                className="inv-btn inv-btn-secondary"
-                onClick={() => {
-                  if (cameraReading) stopCameraReader()
-                  else void startCameraReader()
-                }}
-              >
-                {cameraReading ? 'Detener cámara' : 'Escanear con cámara'}
-              </button>
-              <button className="inv-btn" onClick={openEntryModal}>
-                Rellenar datos
-              </button>
+
+              <div className="inv-scanner-actions-row">
+                <button
+                  className="inv-btn inv-btn-secondary"
+                  onClick={() => {
+                    if (cameraReading) stopCameraReader()
+                    else void startCameraReader()
+                  }}
+                >
+                  <Camera size={18} /> {cameraReading ? 'Detener cámara' : 'Escanear con cámara'}
+                </button>
+                <button className="inv-btn" onClick={openEntryModal}>
+                  <FilePlus size={18} /> Rellenar datos equipo
+                </button>
+              </div>
             </div>
             <div className="inv-barcode-preview">
               {barcodeValue.trim() ? <svg ref={barcodeSvgRef} /> : <p>Vista previa del código (mismo campo de arriba).</p>}
             </div>
             <video ref={cameraVideoRef} className={`inv-camera ${cameraReading ? 'is-on' : ''}`} muted playsInline />
-            {lastScan && <p className="inv-scan-result">Último código leído: {lastScan}</p>}
-            {scanError && <p className="inv-scan-error">{scanError}</p>}
+            {lastScan && (
+              <p className="inv-scan-result">
+                <CheckCircle2 size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} />
+                Último código leído: <strong>{lastScan}</strong>
+              </p>
+            )}
+            {scanError && (
+              <p className="inv-scan-error">
+                <AlertCircle size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} />
+                {scanError}
+              </p>
+            )}
           </div>
         </section>
         )}
 
         <section className="inv-card">
           <h2>Búsqueda</h2>
-          <input
-            className="inv-search"
-            type="search"
-            value={search}
-            placeholder="Buscar en todas las columnas..."
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <div className="inv-scanner-input-wrap">
+            <Search className="inv-scanner-ic" size={18} />
+            <input
+              className="inv-search inv-scanner-bar"
+              type="search"
+              value={search}
+              placeholder="Buscar en todas las columnas..."
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
         </section>
 
         <section className="inv-card">

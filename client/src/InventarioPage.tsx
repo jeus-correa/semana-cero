@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx'
 import JsBarcode from 'jsbarcode'
 import { BrowserMultiFormatReader } from '@zxing/browser'
 import { jsPDF } from 'jspdf'
-import { LogOut, Download, Search, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { LogOut, Barcode, Camera, Download, FilePlus, Search, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { listenInventarioSession, logoutInventario } from './lib/inventoryAuth'
 import {
   createInventoryUser,

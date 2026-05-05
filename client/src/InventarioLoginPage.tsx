@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ShieldCheck } from 'lucide-react'
-import { getInventoryAdminEmail, loginInventario } from './lib/inventoryAuth'
+import { ShieldCheck, Eye, EyeOff } from 'lucide-react'
+import { loginInventario, getInventoryAdminEmail } from './lib/inventoryAuth'
 import './inventario.css'
 
 function InventarioLoginPage() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -40,20 +41,30 @@ function InventarioLoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              autoComplete="username"
+              autoComplete="off"
               placeholder="tu-correo@dominio.cl"
               required
             />
           </label>
-          <label>
+          <label className="inv-login-field">
             Clave
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-            />
+            <div className="inv-password-input-wrap">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                className="inv-password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </label>
           {error && <p className="inv-login-error">{error}</p>}
           <button type="submit" disabled={loading}>

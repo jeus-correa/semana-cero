@@ -71,6 +71,35 @@
   background: #083e31;
   color: #fff;
   padding: 0.7rem 0.8rem;
+  width: 100%;
+}
+
+.inv-password-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inv-password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  background: none !important;
+  border: none !important;
+  color: #94f2c6 !important;
+  padding: 0 !important;
+  min-height: auto !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  box-shadow: none !important;
+  margin: 0 !important;
+}
+
+.inv-password-toggle:hover {
+  color: #fff !important;
+  transform: none !important;
 }
 
 .inv-login-form button {

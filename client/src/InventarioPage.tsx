@@ -115,7 +115,7 @@ function InventarioPage() {
       })
       setScanError('')
     } catch {
-      setScanError('No se pudo generar el codigo. Usa letras/numeros sin simbolos raros.')
+      setScanError('No se pudo generar el código. Usa letras/números sin símbolos raros.')
     }
   }, [barcodeValue])
 
@@ -230,7 +230,7 @@ function InventarioPage() {
       const base64 = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' })
       const link = await uploadExcelViaAppsScript(base64, fileName, DRIVE_FOLDER_ID)
       if (link) {
-        const open = window.confirm('Excel subido a Google Drive correctamente. Quieres abrirlo ahora?')
+        const open = window.confirm('Excel subido a Google Drive correctamente. ¿Quieres abrirlo ahora?')
         if (open) window.open(link, '_blank', 'noopener,noreferrer')
       } else {
         window.alert('Excel subido a Google Drive correctamente.')
@@ -291,14 +291,14 @@ function InventarioPage() {
       scannerControlsRef.current = controls
     } catch {
       stopCameraReader()
-      setScanError('No se pudo iniciar la camara. Revisa permisos del navegador.')
+      setScanError('No se pudo iniciar la cámara. Revisa permisos del navegador.')
     }
   }
 
   const onDownloadBarcode = async () => {
     const value = barcodeValue.trim()
     if (!value) {
-      window.alert('Primero genera un codigo de barras para descargar.')
+      window.alert('Primero genera un código de barras para descargar.')
       return
     }
     try {
@@ -310,13 +310,13 @@ function InventarioPage() {
       const imageH = 30
       const y = 50
       pdf.setFontSize(14)
-      pdf.text('Codigo de barras', margin, 30)
+      pdf.text('Código de barras', margin, 30)
       pdf.addImage(pngData, 'PNG', margin, y, imageW, imageH, undefined, 'FAST')
       pdf.setFontSize(11)
       pdf.text(value, margin, y + imageH + 10)
-      pdf.save(`codigo-${value}.pdf`)
+      pdf.save(`código-${value}.pdf`)
     } catch {
-      window.alert('No se pudo descargar el codigo.')
+      window.alert('No se pudo descargar el código.')
     }
   }
 
@@ -343,7 +343,7 @@ function InventarioPage() {
           margin: 8
         })
       } catch {
-        reject(new Error(`Codigo invalido: ${value}`))
+        reject(new Error(`Código inválido: ${value}`))
         return
       }
       const serializer = new XMLSerializer()
@@ -429,7 +429,7 @@ function InventarioPage() {
 
   const onAddRowFromScan = () => {
     if (!entryForm.codigoBarra.trim()) {
-      window.alert('Primero escanea o escribe un codigo de barra.')
+      window.alert('Primero escanea o escribe un código de barra.')
       return
     }
     const columnMap = {
@@ -549,7 +549,7 @@ function InventarioPage() {
       setNewUserPassword('')
       setNewUserName('')
       setUsersSuccess(
-        'Usuario guardado correctamente en base de datos.'
+        'Quedó guardado en Firestore. Crea la cuenta en Firebase Console → Authentication con el mismo correo (y la clave que quieras) para que pueda entrar al inventario.'
       )
       await refreshManagedUsers()
     } catch (err) {
@@ -567,7 +567,7 @@ function InventarioPage() {
     setDeletingUserUid(uid)
     try {
       await deleteInventoryUser({ uid })
-      setUsersSuccess('Se borró de la lista en Firestore. Si tenía cuenta en Authentication, borrala también en la consola si corresponde.')
+      setUsersSuccess('Se borró de la lista en Firestore. Si tenía cuenta en Authentication, bórrala también en la consola si corresponde.')
       await refreshManagedUsers()
     } catch (err) {
       setUsersError(formatCallableError(err))
@@ -641,7 +641,7 @@ function InventarioPage() {
                 <input
                   className="inv-search"
                   type="password"
-                  placeholder="Clave (referencial)"
+                  placeholder="Clave (no se guarda aquí; úsala al crear el usuario en la consola)"
                   value={newUserPassword}
                   onChange={(e) => setNewUserPassword(e.target.value)}
                   autoComplete="new-password"
@@ -739,10 +739,10 @@ function InventarioPage() {
 
         {sessionIsAdmin && (
         <section className="inv-card">
-          <h2>Codigos de barra</h2>
+          <h2>Códigos de barra</h2>
           <div className="inv-barcode-grid">
             <div className="inv-barcode-box">
-              <p className="inv-barcode-label">Generar codigo (CODE128)</p>
+              <p className="inv-barcode-label">Generar código (CODE128)</p>
               <div className="inv-barcode-actions">
                 <input
                   className="inv-search"
@@ -752,10 +752,10 @@ function InventarioPage() {
                   onChange={(e) => setBarcodeValue(e.target.value)}
                 />
                 <button className="inv-btn inv-btn-secondary" onClick={() => barcodeValue && setSearch(barcodeValue.trim())}>
-                  Buscar este codigo
+                  Buscar este código
                 </button>
                 <button className="inv-btn" onClick={() => void onDownloadBarcode()}>
-                  Descargar codigo (PDF)
+                  Descargar código (PDF)
                 </button>
                 <div className="inv-batch-grid">
                   <input
@@ -793,12 +793,12 @@ function InventarioPage() {
                 </button>
               </div>
               <div className="inv-barcode-preview">
-                {barcodeValue.trim() ? <svg ref={barcodeSvgRef} /> : <p>Escribe un valor para generar el codigo.</p>}
+                {barcodeValue.trim() ? <svg ref={barcodeSvgRef} /> : <p>Escribe un valor para generar el código.</p>}
               </div>
             </div>
 
             <div className="inv-barcode-box">
-              <p className="inv-barcode-label">Leer codigo (pistola o celular)</p>
+              <p className="inv-barcode-label">Leer código (pistola o celular)</p>
               <div className="inv-barcode-actions">
                 <input
                   className="inv-search"
@@ -815,7 +815,7 @@ function InventarioPage() {
                     else void startCameraReader()
                   }}
                 >
-                  {cameraReading ? 'Detener camara' : 'Leer con camara'}
+                  {cameraReading ? 'Detener cámara' : 'Leer con cámara'}
                 </button>
                 <button className="inv-btn inv-btn-secondary" onClick={onAddRowFromPistol}>
                   Agregar con pistola
@@ -833,7 +833,7 @@ function InventarioPage() {
                   className="inv-search"
                   type="text"
                   value={entryForm.codigoBarra}
-                  placeholder="Codigo de barra"
+                  placeholder="Código de barra"
                   onChange={(e) => onEntryFormChange('codigoBarra', e.target.value)}
                 />
                 <input
@@ -868,7 +868,7 @@ function InventarioPage() {
                   className="inv-search"
                   type="text"
                   value={entryForm.ubicacion}
-                  placeholder="Ubicacion"
+                  placeholder="Ubicación"
                   onChange={(e) => onEntryFormChange('ubicacion', e.target.value)}
                 />
                 <input
@@ -882,7 +882,7 @@ function InventarioPage() {
                   className="inv-search"
                   type="text"
                   value={entryForm.observacion}
-                  placeholder="Observacion"
+                  placeholder="Observación"
                   onChange={(e) => onEntryFormChange('observacion', e.target.value)}
                 />
               </div>
@@ -890,7 +890,7 @@ function InventarioPage() {
                 Agregar fila desde escaneo
               </button>
               <video ref={cameraVideoRef} className={`inv-camera ${cameraReading ? 'is-on' : ''}`} muted playsInline />
-              {lastScan && <p className="inv-scan-result">Ultimo codigo leido: {lastScan}</p>}
+              {lastScan && <p className="inv-scan-result">Último código leído: {lastScan}</p>}
               {scanError && <p className="inv-scan-error">{scanError}</p>}
             </div>
           </div>

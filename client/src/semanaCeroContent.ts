@@ -48,8 +48,8 @@ export const LINKS = {
     'https://www.ipsantotomas.cl/informacion-institucional/politicas-y-reglamentos/politicas-reglamentos-y-documentos/',
   cftPortalReglamentos:
     'https://www.cftsantotomas.cl/informacion-institucional/politicas-y-reglamentos/politicas-reglamentos-y-documentos/',
-  pdfInnovacionEmprendimiento: 'https://drive.google.com/file/d/1SO7ENKJf8ffUX70NiH59NS0zWRUzySHg/view',
-  pdfVinculacionConElMedio: 'https://drive.google.com/file/d/1jcBVJ2hVz3A0uhUpIHqWrhG-Hr2DO7HI/view',
+  pdfInnovacionEmprendimiento: 'https://drive.google.com/drive/u/5/folders/1D_o_X77YzUgcbR8hNrmEPZ1zFkwQZ_UY',
+  pdfVinculacionConElMedio: 'https://drive.google.com/drive/folders/1vD4hDhmlpp9IlHjLGKO2l7l1t5zcsiEp?usp=sharing',
   /** Planos simbología emergencia — Sede Curicó */
   pdfEvacPlanta3Emergencia: 'https://drive.google.com/file/d/11gInreHeFsxtcb5UyjG3o2wI7k5WZfAq/view',
   pdfEvacPlanta4Emergencia: 'https://drive.google.com/file/d/148OnzJSSBaqWAo4x5SDTf2xiRtkSUFrI/view'
@@ -117,7 +117,7 @@ export const APOYO_CURICO_CONTACT: Partial<Record<string, { email: string; drive
     email: 'st.curico.innovacion@gmail.com',
     driveFolderUrl: 'https://drive.google.com/drive/folders/1jZnE7yMpLsJEUu1IPqXPbX48ujkQuuZ3?usp=drive_link'
   },
-  'Prevención de Riesgo': {
+  'Prevención de Riesgos': {
     email: 'st.curico.prevencion.riesgos@gmail.com',
     driveFolderUrl: 'https://drive.google.com/drive/folders/1wPPJyCvFZOZwMK8gkSk7lc25XDmBMJV5?usp=drive_link'
   },
@@ -328,10 +328,10 @@ export const VALORES = [
 ]
 
 export const EVACUATION_VIDEOS: { label: string; href: string }[] = [
-  { label: '3.er piso zona este', href: 'https://www.youtube.com/watch?v=vQye3IozH90' },
-  { label: '3.er piso zona oeste', href: 'https://www.youtube.com/watch?v=Zh11T7Zuv5c' },
-  { label: '4.to piso zona este', href: 'https://www.youtube.com/watch?v=Nx8CpMWfAYU' },
-  { label: '4.to piso zona oeste', href: 'https://www.youtube.com/watch?v=4iPA0cxWQ94' },
+  { label: '3º piso zona este', href: 'https://www.youtube.com/watch?v=vQye3IozH90' },
+  { label: '3º piso zona oeste', href: 'https://www.youtube.com/watch?v=Zh11T7Zuv5c' },
+  { label: '4º piso zona este', href: 'https://www.youtube.com/watch?v=Nx8CpMWfAYU' },
+  { label: '4º piso zona oeste', href: 'https://www.youtube.com/watch?v=4iPA0cxWQ94' },
   { label: 'Vía de emergencia calle Merced', href: 'https://www.youtube.com/watch?v=rEWRHxTMcTM' },
   { label: 'Vía de emergencia calle Peña', href: 'https://www.youtube.com/watch?v=xRWd5OKxQIs' },
   { label: 'Vías y salidas de emergencia', href: 'https://www.youtube.com/watch?v=UvHmr4BZImY' }

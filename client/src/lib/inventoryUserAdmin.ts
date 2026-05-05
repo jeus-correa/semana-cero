@@ -63,6 +63,7 @@ export async function listInventoryUsers(): Promise<InventoryManagedUser[]> {
   })
 }
 
+/** Plan gratis: solo guarda en Firestore. La clave de inicio de sesión la defines en Authentication (consola). */
 export async function createInventoryUser(payload: CreateUserPayload): Promise<CreateUserResponse> {
   const email = payload.email.trim().toLowerCase()
   if (!email) throw new Error('El correo es obligatorio.')
@@ -114,10 +115,14 @@ export function formatCallableError(err: unknown): string {
     const code = 'code' in err && typeof (err as { code: unknown }).code === 'string' ? (err as { code: string }).code : ''
     const msg = String((err as { message: unknown }).message).trim()
     if (code === 'functions/not-found' || /not\s*found/i.test(msg)) {
-      return 'Las Cloud Functions no están desplegadas o no coinciden con esta región. Revisá el deploy en Firebase (plan Blaze) y la región us-central1.'
+      return 'Las Cloud Functions no están desplegadas o no coinciden con esta región. Revisa el deploy en Firebase (plan Blaze) y la región us-central1.'
     }
-    if (code === 'functions/permission-denied' || code === 'permission-denied' || code === 'firestore/permission-denied') {
-      return 'No tenés permiso para escribir acá. Revisá que estés logueado como administrador y que las reglas de Firestore estén actualizadas (deploy de rules).'
+    if (
+      code === 'functions/permission-denied' ||
+      code === 'permission-denied' ||
+      code === 'firestore/permission-denied'
+    ) {
+      return 'No tienes permiso para escribir aquí. Revisa que estés logueado como administrador y que las reglas de Firestore estén actualizadas (deploy de rules).'
     }
     if (code === 'functions/already-exists' || code === 'already-exists') {
       return msg || 'Ese recurso ya existe (por ejemplo el correo ya está registrado).'
@@ -126,7 +131,7 @@ export function formatCallableError(err: unknown): string {
       return `${msg} (${code})`
     }
     if (code === 'functions/failed-precondition' || code === 'failed-precondition') {
-      return msg ? `${msg} (${code})` : 'Falta alguna configuración en Firebase (revisá Authentication y Firestore).'
+      return msg ? `${msg} (${code})` : 'Falta alguna configuración en Firebase (revisa Authentication y Firestore).'
     }
     if (code === 'functions/invalid-argument' || code === 'invalid-argument') {
       return msg || 'Datos inválidos. Verifica correo y clave.'

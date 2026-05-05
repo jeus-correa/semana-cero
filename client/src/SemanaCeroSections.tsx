@@ -337,7 +337,7 @@ const APOYO_AREAS = [
     href: LINKS.pdfLimTransversales
   },
   {
-    title: 'Prevención de Riesgo',
+    title: 'Prevención de Riesgos',
     subtitle: 'Protocolos y apoyo en seguridad estudiantil',
     href: 'https://drive.google.com/drive/folders/1TZVwmI99huyHOAH0ekTY3sOgui6MBEVz?usp=drive_link'
   },
@@ -377,7 +377,7 @@ function SemanaCeroFullSectionsInner() {
       case 'Admisión':
         return 'Administrativo';
       case 'DAE':
-      case 'Prevención de Riesgo':
+      case 'Prevención de Riesgos':
         return 'Vida Estudiantil';
       case 'Innovación':
       case 'Rectoría':
@@ -637,7 +637,7 @@ function SemanaCeroFullSectionsInner() {
                   rel="noopener noreferrer"
                 >
                   <span className="scp-evac-emergency-card-kicker">Plano PDF</span>
-                  <strong>Planta 3° piso</strong>
+                  <strong>Planta 3º piso</strong>
                   <span>Simbología de emergencia</span>
                   <span className="scp-evac-emergency-card-cta">
                     Abrir en Drive <ExternalLink size={16} aria-hidden />
@@ -650,7 +650,7 @@ function SemanaCeroFullSectionsInner() {
                   rel="noopener noreferrer"
                 >
                   <span className="scp-evac-emergency-card-kicker">Plano PDF</span>
-                  <strong>Planta 4° piso</strong>
+                  <strong>Planta 4º piso</strong>
                   <span>Simbología de emergencia y zona segura (sismos)</span>
                   <span className="scp-evac-emergency-card-cta">
                     Abrir en Drive <ExternalLink size={16} aria-hidden />
@@ -847,14 +847,14 @@ function SemanaCeroFullSectionsInner() {
                   <BookOpen size={22} />
                   <div>
                     <strong>Centro de Formación Técnica (CFT)</strong>
-                    <span>PDF Semana Cero por carrera — abrí, buscá o filtrá por área</span>
+                    <span>PDF Semana Cero por carrera — abre, busca o filtra por área</span>
                   </div>
                   <ChevronDown size={16} className="scp-scard-chevron" />
                 </button>
                 {cftPanelOpen && (
                   <div className="scp-scard-body scp-cft-panel-body" role="region" aria-labelledby="cft-panel-toggle">
                     <div className="scp-cft-interactive">
-                      <p className="scp-cft-filter-hint">Encontrá tu carrera por nombre o por área formativa.</p>
+                      <p className="scp-cft-filter-hint">Encuentra tu carrera por nombre o por área formativa.</p>
                       <div className="scp-cft-search-center">
                         <div className="scp-apoyo-search-bar scp-cft-search-bar-centered">
                           <Search className="scp-apoyo-search-ic" size={18} aria-hidden />
@@ -887,7 +887,7 @@ function SemanaCeroFullSectionsInner() {
                     </div>
                     <div className="scp-linklist scp-cft-linklist">
                       {filteredCftCarreras.length === 0 ? (
-                        <div className="scp-apoyo-empty">No hay carreras con ese criterio. Probá otra búsqueda o elegí &quot;Todas&quot;.</div>
+                        <div className="scp-apoyo-empty">No hay carreras con ese criterio. Prueba otra búsqueda o elige &quot;Todas&quot;.</div>
                       ) : (
                         filteredCftCarreras.map((l) => {
                           const infoHref = l.infoHref ?? l.href

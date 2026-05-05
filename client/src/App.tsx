@@ -109,7 +109,7 @@ const SERVICE_CARDS: {
   {
     icon: Sparkles,
     title: 'Tomasín',
-    desc: 'Asistente con IA (Google Gemini): preguntá por la sede y los servicios.',
+    desc: 'Asistente con IA (Google Gemini): pregunta por la sede y los servicios.',
     externalHref: LINKS.conoceTomasinGemini
   },
   {
@@ -136,7 +136,7 @@ const CHAT_FAQ = {
   inicio: [
     {
       q: '¡Hola! Soy Tomasín 🤖',
-      a: 'Tu asistente virtual especializado en los servicios de Santo Tomás. ¡Tú puedes! ¿En qué puedo ayudarte hoy? Revisá el menú lateral para ir al inicio, valores, sede, guía o enlaces útiles.'
+      a: 'Tu asistente virtual especializado en los servicios de Santo Tomás. ¡Tú puedes! ¿En qué puedo ayudarte hoy? Revisa el menú lateral para ir al inicio, valores, sede, guía o enlaces útiles.'
     }
   ],
   academica: [
@@ -637,7 +637,7 @@ function App() {
           <div className="n-hero-text">
             <div className="n-hero-top-badges">
               <div className="n-hero-pill">
-                <span>BIENVENIDO TOMACIN@S</span>
+                <span>BIENVENIDOS TOMASIN@S</span>
               </div>
               <div className="n-views-chip">
                 <Eye size={16} strokeWidth={2.5} aria-hidden="true" />
@@ -763,7 +763,7 @@ function App() {
               <strong>INFORMACIÓN COMPLETA</strong>
             </motion.h2>
             <p className="scp-lead">
-              Todo el material de inducción en esta misma página: deslizá o tocá las tarjetas de arriba para ir a cada
+              Todo el material de inducción en esta misma página: desliza o toca las tarjetas de arriba para ir a cada
               bloque.
             </p>
           </div>

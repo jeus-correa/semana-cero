@@ -12,12 +12,12 @@ export async function uploadExcelViaAppsScript(base64: string, fileName: string,
     replaceIfExists: true
   }
   const parseResponse = async (res: Response) => {
-    if (!res.ok) throw new Error(`Apps Script respondio ${res.status}`)
+    if (!res.ok) throw new Error(`Apps Script respondió ${res.status}`)
     const text = await res.text()
     try {
       return JSON.parse(text.trim()) as { ok?: boolean; error?: string; url?: string }
     } catch {
-      throw new Error(`Respuesta invalida de Apps Script: ${text.slice(0, 120)}`)
+      throw new Error(`Respuesta inválida de Apps Script: ${text.slice(0, 120)}`)
     }
   }
 
@@ -44,7 +44,7 @@ export async function uploadExcelViaAppsScript(base64: string, fileName: string,
       return data.url || ''
     } catch {
       throw new Error(
-        'No se pudo conectar con Apps Script (Failed to fetch). Revisa que el Web App este en "Cualquiera con el enlace", que la URL termine en /exec y vuelve a desplegar la ultima version.'
+        'No se pudo conectar con Apps Script (Failed to fetch). Revisa que el Web App esté en "Cualquiera con el enlace", que la URL termine en /exec y vuelve a desplegar la última versión.'
       )
     }
   }

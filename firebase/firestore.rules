@@ -1,6 +1,18 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Admin inventario (debe coincidir con VITE_INVENTARIO_ADMIN_EMAIL del cliente, hoy admin@ust.cl)
+    function esAdminInventario() {
+      return request.auth != null
+        && request.auth.token.email.lower() == 'admin@ust.cl';
+    }
+
+    // Trabajadores: plan gratis, solo el admin lee/escribe usuarios/trabajadores desde la app
+    match /usuarios/{docId} {
+      allow read, write: if docId == 'trabajadores' && esAdminInventario();
+    }
+
     // Contador (ruta en client/src/lib/siteVisits.ts: contador / lYLaLHhXNCaRt2nRkSAz / vistas)
     match /contador/lYLaLHhXNCaRt2nRkSAz {
       allow read: if true;

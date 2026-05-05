@@ -129,6 +129,16 @@
   color: #c9f8e2;
 }
 
+.inv-session-user {
+  margin-top: 0.6rem !important;
+  font-size: 0.9rem;
+  color: #a7f5d1 !important;
+}
+
+.inv-session-hint {
+  opacity: 0.92;
+}
+
 .inv-logout {
   border: 1px solid rgba(180, 255, 215, 0.32);
   background: linear-gradient(160deg, rgba(13, 71, 55, 0.9), rgba(8, 48, 38, 0.9));
@@ -424,6 +434,49 @@
   margin-top: 0.6rem;
 }
 
+.inv-user-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.6rem;
+  align-items: center;
+  margin-top: 0.7rem;
+}
+
+.inv-user-admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.inv-users-list {
+  margin-top: 0.8rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.inv-user-row {
+  border: 1px solid rgba(170, 255, 222, 0.2);
+  border-radius: 10px;
+  padding: 0.65rem;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(7, 56, 44, 0.5);
+}
+
+.inv-user-email {
+  margin: 0;
+  font-weight: 700;
+  color: #d7ffec;
+}
+
+.inv-user-meta {
+  margin: 0.25rem 0 0;
+  color: #bae9d3;
+  font-size: 0.87rem;
+}
+
 .inv-barcode-preview {
   margin-top: 0.7rem;
   min-height: 118px;
@@ -468,6 +521,13 @@
   margin: 0.45rem 0 0;
   color: #ffd5d5;
   font-size: 0.9rem;
+}
+
+.inv-success-hint {
+  margin: 0.45rem 0 0;
+  color: #c9ffd8;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .inv-rownum-head {
@@ -521,6 +581,35 @@
 
   .inv-actions {
     grid-template-columns: 1fr;
+  }
+
+  .inv-user-admin-actions {
+    flex-direction: column;
+  }
+
+  .inv-user-admin-actions .inv-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .inv-user-form {
+    grid-template-columns: 1fr;
+  }
+
+  .inv-user-form .inv-btn[type='submit'] {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .inv-user-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+  }
+
+  .inv-user-row .inv-btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .inv-table-wrap > table.inv-sheet-table {

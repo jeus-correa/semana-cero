@@ -5,7 +5,14 @@ import JsBarcode from 'jsbarcode'
 import { BrowserMultiFormatReader } from '@zxing/browser'
 import { jsPDF } from 'jspdf'
 import { LogOut } from 'lucide-react'
-import { logoutInventario } from './lib/inventoryAuth'
+import { listenInventarioSession, logoutInventario } from './lib/inventoryAuth'
+import {
+  createInventoryUser,
+  deleteInventoryUser,
+  formatCallableError,
+  listInventoryUsers,
+  type InventoryManagedUser
+} from './lib/inventoryUserAdmin'
 import { uploadExcelViaAppsScript } from './lib/googleAppsScriptUpload'
 import './inventario.css'
 
@@ -62,6 +69,18 @@ function InventarioPage() {
   const [lastScan, setLastScan] = useState('')
   const [cameraReading, setCameraReading] = useState(false)
   const [scanError, setScanError] = useState('')
+  const [sessionEmail, setSessionEmail] = useState('')
+  const [sessionIsAdmin, setSessionIsAdmin] = useState(false)
+  const [managedUsers, setManagedUsers] = useState<InventoryManagedUser[]>([])
+  const [usersLoading, setUsersLoading] = useState(false)
+  const [usersError, setUsersError] = useState('')
+  const [usersSuccess, setUsersSuccess] = useState('')
+  const [newUserEmail, setNewUserEmail] = useState('')
+  const [newUserPassword, setNewUserPassword] = useState('')
+  const [newUserName, setNewUserName] = useState('')
+  const [creatingUser, setCreatingUser] = useState(false)
+  const [deletingUserUid, setDeletingUserUid] = useState('')
+  const [adminPanelView, setAdminPanelView] = useState<'none' | 'create' | 'manage'>('create')
   const [entryForm, setEntryForm] = useState({
     departamento: '',
     codigoBarra: '',
@@ -108,6 +127,35 @@ function InventarioPage() {
       setCameraReading(false)
     }
   }, [])
+
+  useEffect(() => {
+    const un = listenInventarioSession((session) => {
+      setSessionEmail(session.user?.email ?? '')
+      setSessionIsAdmin(session.isAdmin)
+    })
+    return () => un()
+  }, [])
+
+  const refreshManagedUsers = async () => {
+    setUsersError('')
+    setUsersLoading(true)
+    try {
+      const users = await listInventoryUsers()
+      setManagedUsers(users)
+    } catch (err) {
+      setUsersError(formatCallableError(err))
+    } finally {
+      setUsersLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (!sessionIsAdmin || adminPanelView !== 'manage') {
+      setManagedUsers([])
+      return
+    }
+    void refreshManagedUsers()
+  }, [sessionIsAdmin, adminPanelView])
 
   const onImport: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
     const file = e.target.files?.[0]
@@ -486,13 +534,64 @@ function InventarioPage() {
     navigate('/inventario/login', { replace: true })
   }
 
+  const onCreateUser: React.FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault()
+    setUsersError('')
+    setUsersSuccess('')
+    setCreatingUser(true)
+    try {
+      await createInventoryUser({
+        email: newUserEmail.trim(),
+        password: newUserPassword,
+        displayName: newUserName.trim() || undefined
+      })
+      setNewUserEmail('')
+      setNewUserPassword('')
+      setNewUserName('')
+      setUsersSuccess(
+        'Quedó guardado en Firestore. Creá la cuenta en Firebase Console → Authentication con el mismo correo (y la clave que quieras) para que pueda entrar al inventario.'
+      )
+      await refreshManagedUsers()
+    } catch (err) {
+      setUsersError(formatCallableError(err))
+    } finally {
+      setCreatingUser(false)
+    }
+  }
+
+  const onDeleteUser = async (uid: string, email: string) => {
+    const ok = window.confirm(`Se eliminará la cuenta ${email}. Deseas continuar?`)
+    if (!ok) return
+    setUsersError('')
+    setUsersSuccess('')
+    setDeletingUserUid(uid)
+    try {
+      await deleteInventoryUser({ uid })
+      setUsersSuccess('Se borró de la lista en Firestore. Si tenía cuenta en Authentication, borrala también en la consola si corresponde.')
+      await refreshManagedUsers()
+    } catch (err) {
+      setUsersError(formatCallableError(err))
+    } finally {
+      setDeletingUserUid('')
+    }
+  }
+
   return (
     <div className="inv-page">
       <header className="inv-header">
         <div>
           <p className="inv-kicker">Universidad Santo Tomás</p>
           <h1>Registro de equipos informáticos</h1>
-          <p>Gestión local del inventario con importación, exportación Excel y envío por correo.</p>
+          <p>
+            {sessionIsAdmin
+              ? 'Gestión del inventario: planilla Excel, códigos de barra, envío por correo y Drive.'
+              : 'Acceso solo a la planilla: importar, editar celdas y bajar el Excel a tu PC.'}
+          </p>
+          {sessionEmail && <p className="inv-session-user">Sesión: {sessionEmail}</p>}
+          {sessionIsAdmin && <p className="inv-session-user">Perfil administrador: sí</p>}
+          {!sessionIsAdmin && sessionEmail && (
+            <p className="inv-session-user inv-session-hint">Modo planilla: no se muestran códigos de barra ni envío a correo/Drive.</p>
+          )}
         </div>
         <button className="inv-logout" onClick={onLogout}>
           <LogOut size={16} /> Cerrar sesión
@@ -500,30 +599,128 @@ function InventarioPage() {
       </header>
 
       <main className="inv-main">
+        {sessionIsAdmin && (
+          <section className="inv-card">
+            <h2>Administrador de trabajadores</h2>
+            <div className="inv-user-admin-actions">
+              <button
+                className={`inv-btn ${adminPanelView === 'create' ? '' : 'inv-btn-secondary'}`}
+                type="button"
+                onClick={() => {
+                  setUsersError('')
+                  setUsersSuccess('')
+                  setAdminPanelView('create')
+                }}
+              >
+                Agregar
+              </button>
+              <button
+                className={`inv-btn ${adminPanelView === 'manage' ? '' : 'inv-btn-secondary'}`}
+                type="button"
+                onClick={() => {
+                  setUsersError('')
+                  setUsersSuccess('')
+                  setAdminPanelView('manage')
+                }}
+              >
+                Ver lista
+              </button>
+            </div>
+            {usersError && <p className="inv-scan-error">{usersError}</p>}
+            {usersSuccess && <p className="inv-success-hint">{usersSuccess}</p>}
+            {adminPanelView === 'create' && (
+              <form className="inv-user-form" onSubmit={onCreateUser}>
+                <input
+                  className="inv-search"
+                  type="email"
+                  placeholder="Correo nuevo usuario"
+                  value={newUserEmail}
+                  onChange={(e) => setNewUserEmail(e.target.value)}
+                  required
+                />
+                <input
+                  className="inv-search"
+                  type="password"
+                  placeholder="Clave (no se guarda acá; úsala al crear el usuario en la consola)"
+                  value={newUserPassword}
+                  onChange={(e) => setNewUserPassword(e.target.value)}
+                  autoComplete="new-password"
+                />
+                <input
+                  className="inv-search"
+                  type="text"
+                  placeholder="Nombre (opcional)"
+                  value={newUserName}
+                  onChange={(e) => setNewUserName(e.target.value)}
+                />
+                <button className="inv-btn" type="submit" disabled={creatingUser}>
+                  {creatingUser ? 'Guardando...' : 'Guardar'}
+                </button>
+              </form>
+            )}
+            {adminPanelView === 'manage' && (
+              <>
+                <button className="inv-btn inv-btn-secondary" type="button" disabled={usersLoading} onClick={() => void refreshManagedUsers()}>
+                  {usersLoading ? 'Actualizando...' : 'Recargar lista'}
+                </button>
+                <div className="inv-users-list">
+                  {usersLoading && managedUsers.length === 0 ? (
+                    <p className="inv-empty-sheet">Cargando...</p>
+                  ) : managedUsers.length === 0 ? (
+                    <p className="inv-empty-sheet">Lista vacía.</p>
+                  ) : (
+                    managedUsers.map((user) => (
+                      <article key={user.uid} className="inv-user-row">
+                        <div>
+                          <p className="inv-user-email">{user.email}</p>
+                          {user.displayName ? <p className="inv-user-meta">Nombre: {user.displayName}</p> : null}
+                        </div>
+                        <button
+                          className="inv-btn inv-btn-danger"
+                          type="button"
+                          disabled={deletingUserUid === user.uid || user.email.toLowerCase() === sessionEmail.toLowerCase()}
+                          onClick={() => void onDeleteUser(user.uid, user.email)}
+                        >
+                          {deletingUserUid === user.uid ? 'Eliminando...' : 'Eliminar'}
+                        </button>
+                      </article>
+                    ))
+                  )}
+                </div>
+              </>
+            )}
+            {adminPanelView === 'none' && <p className="inv-empty-sheet">Selecciona una acción para comenzar.</p>}
+          </section>
+        )}
+
         <section className="inv-card">
-          <h2>Operaciones</h2>
+          <h2>{sessionIsAdmin ? 'Operaciones' : 'Planilla Excel'}</h2>
           {loadedFileName && <p className="inv-loaded-file">Archivo cargado: {loadedFileName}</p>}
           <div className="inv-actions">
             <label className="inv-btn">
               Importar planilla
               <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" hidden onChange={onImport} />
             </label>
-            <button className="inv-btn" onClick={() => void onSendByEmail()}>
-              Enviar por correo
-            </button>
-            <button className="inv-btn" onClick={onSaveToPc}>
+            {sessionIsAdmin && (
+              <>
+                <button type="button" className="inv-btn" onClick={() => void onSendByEmail()}>
+                  Enviar por correo
+                </button>
+                <button type="button" className="inv-btn" onClick={() => void onSaveToDrive()} disabled={uploadingDrive}>
+                  {uploadingDrive ? 'Subiendo a Drive...' : 'Guardar en Drive'}
+                </button>
+              </>
+            )}
+            <button type="button" className="inv-btn" onClick={onSaveToPc}>
               Guardar en PC
             </button>
-            <button className="inv-btn" onClick={() => void onSaveToDrive()} disabled={uploadingDrive}>
-              {uploadingDrive ? 'Subiendo a Drive...' : 'Guardar en Drive'}
-            </button>
-            <button className="inv-btn inv-btn-secondary" onClick={addColumn}>
+            <button type="button" className="inv-btn inv-btn-secondary" onClick={addColumn}>
               Nueva columna
             </button>
-            <button className="inv-btn inv-btn-secondary" onClick={addRow}>
+            <button type="button" className="inv-btn inv-btn-secondary" onClick={addRow}>
               Nueva fila
             </button>
-            <button className="inv-btn inv-btn-danger" onClick={clearData}>
+            <button type="button" className="inv-btn inv-btn-danger" onClick={clearData}>
               Limpiar Excel completo
             </button>
           </div>
@@ -540,6 +737,7 @@ function InventarioPage() {
           />
         </section>
 
+        {sessionIsAdmin && (
         <section className="inv-card">
           <h2>Codigos de barra</h2>
           <div className="inv-barcode-grid">
@@ -697,6 +895,7 @@ function InventarioPage() {
             </div>
           </div>
         </section>
+        )}
 
         <section className="inv-card">
           <div className="inv-meta">

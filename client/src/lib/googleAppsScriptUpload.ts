@@ -34,7 +34,10 @@ export async function uploadExcelViaAppsScript(base64: string, fileName: string,
   } catch {
     // Intento 2: form-urlencoded (compatibilidad si el script usa e.parameter).
     try {
-      const form = new URLSearchParams(payloadObj)
+      const form = new URLSearchParams({
+        ...payloadObj,
+        replaceIfExists: String(payloadObj.replaceIfExists)
+      })
       const asForm = await fetch(endpoint, { method: 'POST', body: form })
       const data = await parseResponse(asForm)
       if (!data.ok) throw new Error(data.error || 'Apps Script no pudo guardar el archivo en Drive')

@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ShieldCheck } from 'lucide-react'
-import { getInventoryAdminUser, loginInventario } from './lib/inventoryAuth'
+import { getInventoryAdminEmail, loginInventario } from './lib/inventoryAuth'
 import './inventario.css'
 
 function InventarioLoginPage() {
   const navigate = useNavigate()
+  const [email, setEmail] = useState(getInventoryAdminEmail())
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -15,7 +16,7 @@ function InventarioLoginPage() {
     setError('')
     setLoading(true)
     try {
-      await loginInventario(getInventoryAdminUser(), password)
+      await loginInventario(email, password)
       navigate('/inventario', { replace: true })
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'No se pudo iniciar sesión.'
@@ -31,8 +32,18 @@ function InventarioLoginPage() {
         <img src="/logo-santo-tomas.png" alt="Santo Tomás" className="inv-login-logo" />
         <p className="inv-login-eyebrow">Universidad Santo Tomás</p>
         <h1>Acceso Inventario TI</h1>
-        <p className="inv-login-lead">Ingreso de administrador para registrar y gestionar equipos informáticos.</p>
+        <p className="inv-login-lead">Ingreso de usuarios autorizados para gestionar equipos informáticos.</p>
         <form onSubmit={onSubmit} className="inv-login-form">
+          <label>
+            Correo
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="username"
+              required
+            />
+          </label>
           <label>
             Clave
             <input

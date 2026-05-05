@@ -1,0 +1,11 @@
+{
+  "functions": {
+    "source": "firebase/functions",
+    "environmentVariables": {
+      "INVENTARIO_ADMIN_EMAIL": "admin@ust.cl"
+    }
+  },
+  "firestore": {
+    "rules": "firebase/firestore.rules"
+  }
+}

@@ -11,8 +11,8 @@ function InventarioRoute({ children }: Props) {
   const [ok, setOk] = useState(false)
 
   useEffect(() => {
-    const un = listenInventarioAuth((user) => {
-      setOk(Boolean(user))
+    const un = listenInventarioAuth((isOk) => {
+      setOk(isOk)
       setLoading(false)
     })
     return () => un()

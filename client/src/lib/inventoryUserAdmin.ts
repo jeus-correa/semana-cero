@@ -63,7 +63,6 @@ export async function listInventoryUsers(): Promise<InventoryManagedUser[]> {
   })
 }
 
-/** Plan gratis: solo guarda en Firestore. La clave de inicio de sesión la definís en Authentication (consola). */
 export async function createInventoryUser(payload: CreateUserPayload): Promise<CreateUserResponse> {
   const email = payload.email.trim().toLowerCase()
   if (!email) throw new Error('El correo es obligatorio.')
@@ -117,11 +116,7 @@ export function formatCallableError(err: unknown): string {
     if (code === 'functions/not-found' || /not\s*found/i.test(msg)) {
       return 'Las Cloud Functions no están desplegadas o no coinciden con esta región. Revisá el deploy en Firebase (plan Blaze) y la región us-central1.'
     }
-    if (
-      code === 'functions/permission-denied' ||
-      code === 'permission-denied' ||
-      code === 'firestore/permission-denied'
-    ) {
+    if (code === 'functions/permission-denied' || code === 'permission-denied' || code === 'firestore/permission-denied') {
       return 'No tenés permiso para escribir acá. Revisá que estés logueado como administrador y que las reglas de Firestore estén actualizadas (deploy de rules).'
     }
     if (code === 'functions/already-exists' || code === 'already-exists') {
@@ -132,6 +127,12 @@ export function formatCallableError(err: unknown): string {
     }
     if (code === 'functions/failed-precondition' || code === 'failed-precondition') {
       return msg ? `${msg} (${code})` : 'Falta alguna configuración en Firebase (revisá Authentication y Firestore).'
+    }
+    if (code === 'functions/invalid-argument' || code === 'invalid-argument') {
+      return msg || 'Datos inválidos. Verifica correo y clave.'
+    }
+    if (code === 'functions/unavailable' || code === 'unavailable') {
+      return 'El servicio de Firebase no está disponible ahora. Intenta de nuevo en unos minutos.'
     }
     return code ? `${msg} (${code})` : msg
   }

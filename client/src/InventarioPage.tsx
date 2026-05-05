@@ -130,7 +130,7 @@ function InventarioPage() {
 
   useEffect(() => {
     const un = listenInventarioSession((session) => {
-      setSessionEmail(session.user?.email ?? '')
+      setSessionEmail(session.email)
       setSessionIsAdmin(session.isAdmin)
     })
     return () => un()
@@ -549,7 +549,7 @@ function InventarioPage() {
       setNewUserPassword('')
       setNewUserName('')
       setUsersSuccess(
-        'Quedó guardado en Firestore. Creá la cuenta en Firebase Console → Authentication con el mismo correo (y la clave que quieras) para que pueda entrar al inventario.'
+        'Usuario guardado correctamente en base de datos.'
       )
       await refreshManagedUsers()
     } catch (err) {
@@ -641,7 +641,7 @@ function InventarioPage() {
                 <input
                   className="inv-search"
                   type="password"
-                  placeholder="Clave (no se guarda acá; úsala al crear el usuario en la consola)"
+                  placeholder="Clave (referencial)"
                   value={newUserPassword}
                   onChange={(e) => setNewUserPassword(e.target.value)}
                   autoComplete="new-password"

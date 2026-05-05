@@ -6,7 +6,7 @@ import './inventario.css'
 
 function InventarioLoginPage() {
   const navigate = useNavigate()
-  const [email, setEmail] = useState(getInventoryAdminEmail())
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -32,7 +32,7 @@ function InventarioLoginPage() {
         <img src="/logo-santo-tomas.png" alt="Santo Tomás" className="inv-login-logo" />
         <p className="inv-login-eyebrow">Universidad Santo Tomás</p>
         <h1>Acceso Inventario TI</h1>
-        <p className="inv-login-lead">Ingreso de usuarios autorizados para gestionar equipos informáticos.</p>
+        <p className="inv-login-lead">Ingreso para administrador y trabajadores autorizados.</p>
         <form onSubmit={onSubmit} className="inv-login-form">
           <label>
             Correo
@@ -41,6 +41,7 @@ function InventarioLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="username"
+              placeholder="tu-correo@dominio.cl"
               required
             />
           </label>
@@ -59,6 +60,7 @@ function InventarioLoginPage() {
             <ShieldCheck size={16} /> {loading ? 'Ingresando...' : 'Ingresar a Inventario'}
           </button>
         </form>
+        <p className="inv-login-lead">Administrador por defecto: {getInventoryAdminEmail()}</p>
         <Link to="/" className="inv-back-home">
           Volver al inicio
         </Link>

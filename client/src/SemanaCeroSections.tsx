@@ -408,21 +408,24 @@ function SemanaCeroFullSectionsInner() {
   ]
   const listCat = ['Todas', 'Académico', 'Administrativo', 'Vida Estudiantil', 'Institucional', 'Soporte y Tech']
   
+  const normalize = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+
   const filteredApoyo = apoyoItems.filter(item => {
     const matchCat = apoyoCategory === 'Todas' || item.category === apoyoCategory;
-    const matchStr = item.title.toLowerCase().includes(apoyoSearch.toLowerCase()) || item.subtitle.toLowerCase().includes(apoyoSearch.toLowerCase());
+    const q = normalize(apoyoSearch)
+    const matchStr = normalize(item.title).includes(q) || normalize(item.subtitle).includes(q);
     return matchCat && matchStr;
   });
 
   const cftAreaFilters = ['Todas', ...CFT_CARRERA_AREAS] as const
   const filteredCftCarreras = ACADEMIC_CFT_CARRERAS_PDFS.filter((item) => {
     const matchArea = cftArea === 'Todas' || item.area === cftArea
-    const q = cftSearch.trim().toLowerCase()
+    const q = normalize(cftSearch)
     const matchStr =
       !q ||
-      item.title.toLowerCase().includes(q) ||
-      item.subtitle.toLowerCase().includes(q) ||
-      item.area.toLowerCase().includes(q)
+      normalize(item.title).includes(q) ||
+      normalize(item.subtitle).includes(q) ||
+      normalize(item.area).includes(q)
     return matchArea && matchStr
   })
   useEffect(() => {

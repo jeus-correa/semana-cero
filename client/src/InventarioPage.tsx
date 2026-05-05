@@ -353,8 +353,12 @@ function InventarioPage() {
       const ae = document.activeElement as HTMLElement | null
       // Si el foco ya está en el campo de escaneo, dejamos que el input normal maneje Enter/Tab.
       if (ae === scanCaptureInputRef.current) return
-      // Si estás escribiendo en cualquier otro input (lote, planilla, búsqueda, etc.), no capturamos.
-      if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return
+
+      // Si el usuario está escribiendo en otro campo (modal, etc.), 
+      // pero las teclas vienen muy rápido (es un escáner), capturamos para el código de barra.
+      const now = performance.now()
+      const isFast = now - hardwareScanLastKeyAtRef.current < 50 // Teclas muy rápidas = escáner
+
       if (e.key === 'Enter' || e.key === 'Tab') {
         const scanned = hardwareScanBufferRef.current.trim()
         if (scanned.length >= 2) {
@@ -367,17 +371,27 @@ function InventarioPage() {
       }
 
       if (e.key.length === 1) {
-        const now = performance.now()
-        if (now - hardwareScanLastKeyAtRef.current > 220) {
-          hardwareScanBufferRef.current = ''
+        const isInputFocused = ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)
+        
+        if (!isInputFocused || isFast || hardwareScanBufferRef.current.length > 0) {
+          if (now - hardwareScanLastKeyAtRef.current > 200) {
+            hardwareScanBufferRef.current = ''
+          }
+          
+          hardwareScanLastKeyAtRef.current = now
+          hardwareScanBufferRef.current += e.key
+          setScanCapture(hardwareScanBufferRef.current)
+          
+          if (hardwareScanTimerRef.current) window.clearTimeout(hardwareScanTimerRef.current)
+          hardwareScanTimerRef.current = window.setTimeout(() => {
+            flushHardwareBuffer()
+          }, 150)
+
+          if (isInputFocused && (isFast || hardwareScanBufferRef.current.length > 1)) {
+            e.preventDefault()
+            e.stopPropagation()
+          }
         }
-        hardwareScanLastKeyAtRef.current = now
-        hardwareScanBufferRef.current += e.key
-        setScanCapture(hardwareScanBufferRef.current)
-        if (hardwareScanTimerRef.current) window.clearTimeout(hardwareScanTimerRef.current)
-        hardwareScanTimerRef.current = window.setTimeout(() => {
-          flushHardwareBuffer()
-        }, 180)
       }
     }
 
@@ -801,29 +815,37 @@ function InventarioPage() {
               Campo aparte del lote PDF: escribí acá o usá pistola/cámara. No modifica la base de arriba.
             </p>
             <div className="inv-barcode-actions">
-              <input
-                ref={scanCaptureInputRef}
-                className="inv-search"
-                type="text"
-                value={scanCapture}
-                placeholder="Código leído — pistola (Enter/Tab) o escribí manual"
-                onChange={(e) => setScanCapture(e.target.value.replace(/\s+/g, ''))}
-                onKeyDown={onScanCaptureKeyDown}
-                autoComplete="off"
-              />
-              <button
-                className="inv-btn inv-btn-secondary"
-                type="button"
-                onClick={() => {
-                  if (cameraReading) stopCameraReader()
-                  else void startCameraReader()
-                }}
-              >
-                {cameraReading ? 'Detener cámara' : 'Escanear con cámara'}
-              </button>
-              <button className="inv-btn" type="button" onClick={openEntryModal}>
-                Rellenar datos
-              </button>
+              <div className="inv-scanner-input-wrap">
+                <Barcode className="inv-scanner-ic" size={20} />
+                <input
+                  ref={scanCaptureInputRef}
+                  className="inv-search inv-scanner-bar"
+                  type="text"
+                  value={scanCapture}
+                  placeholder="Código leído — pistola (Enter/Tab) o manual"
+                  onChange={(e) => setScanCapture(e.target.value.replace(/\s+/g, ''))}
+                  onKeyDown={onScanCaptureKeyDown}
+                  autoComplete="off"
+                  autoFocus
+                />
+                <div className="inv-scanner-status-pulse" />
+              </div>
+
+              <div className="inv-scanner-actions-row">
+                <button
+                  className="inv-btn inv-btn-secondary"
+                  type="button"
+                  onClick={() => {
+                    if (cameraReading) stopCameraReader()
+                    else void startCameraReader()
+                  }}
+                >
+                  <Camera size={18} /> {cameraReading ? 'Detener cámara' : 'Escanear con cámara'}
+                </button>
+                <button className="inv-btn" type="button" onClick={openEntryModal}>
+                  <FilePlus size={18} /> Rellenar datos
+                </button>
+              </div>
             </div>
             <video ref={cameraVideoRef} className={`inv-camera ${cameraReading ? 'is-on' : ''}`} muted playsInline />
             {lastScan && (

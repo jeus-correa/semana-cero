@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx'
 import JsBarcode from 'jsbarcode'
 import { BrowserMultiFormatReader } from '@zxing/browser'
 import { jsPDF } from 'jspdf'
-import { LogOut, Barcode, Camera, Download, FilePlus, Search, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { LogOut, Barcode, Camera, Download, FilePlus, Search, AlertCircle, CheckCircle2, ShieldCheck } from 'lucide-react'
 import { listenInventarioSession, logoutInventario } from './lib/inventoryAuth'
 import {
   createInventoryUser,
@@ -623,31 +623,34 @@ function InventarioPage() {
   return (
     <div className="inv-page">
       <header className="inv-header">
-        <div>
-          <p className="inv-kicker">INSTITUTO PROFECIONAL SANTOTOMAS</p>
-          <h1>Registro de equipos informáticos</h1>
-          <p>
-            {sessionIsAdmin
-              ? 'Gestión del inventario: planilla Excel, códigos de barra, envío por correo y Drive.'
-              : 'Acceso solo a la planilla: importar, editar celdas y bajar el Excel a tu PC.'}
-          </p>
-          {sessionEmail && <p className="inv-session-user">Sesión: {sessionEmail}</p>}
-          {sessionIsAdmin && <p className="inv-session-user">Perfil administrador: sí</p>}
-          {!sessionIsAdmin && sessionEmail && (
-            <p className="inv-session-user inv-session-hint">
-              Modo planilla: podés escanear códigos y rellenar datos; no hay lote PDF ni envío a correo/Drive.
-            </p>
-          )}
+        <div className="inv-header-main">
+          <p className="inv-kicker">SISTEMA DE INVENTARIO TI</p>
+          <h1>Gestión de Equipos</h1>
+          <div className="inv-session-badge">
+            <div className="inv-session-dot" />
+            <span>{sessionEmail} {sessionIsAdmin ? '(Admin)' : '(Trabajador)'}</span>
+          </div>
         </div>
-        <button className="inv-logout" onClick={onLogout}>
-          <LogOut size={16} /> Cerrar sesión
-        </button>
+        <div className="inv-header-actions">
+          <button className="inv-logout-btn" onClick={onLogout}>
+            <LogOut size={18} /> Cerrar sesión
+          </button>
+        </div>
       </header>
 
       <main className="inv-main">
+        {!sessionIsAdmin && sessionEmail && (
+          <div className="inv-banner-hint">
+            <CheckCircle2 size={18} />
+            <span>Modo planilla activo: podés escanear códigos y rellenar datos. Las funciones de envío y lotes PDF están reservadas para administradores.</span>
+          </div>
+        )}
         {sessionIsAdmin && (
           <section className="inv-card">
-            <h2>Administrador de usuarios</h2>
+            <div className="inv-card-header">
+              <ShieldCheck size={20} className="inv-title-icon" />
+              <h2>Administrador de usuarios</h2>
+            </div>
             <div className="inv-user-admin-actions">
               <button
                 className={`inv-btn ${adminPanelView === 'create' ? '' : 'inv-btn-secondary'}`}
@@ -740,67 +743,82 @@ function InventarioPage() {
         )}
 
         <section className="inv-card">
-          <h2>{sessionIsAdmin ? 'Acciones' : 'Planilla Excel'}</h2>
-          {loadedFileName && <p className="inv-loaded-file">Archivo cargado: {loadedFileName}</p>}
-          <div className="inv-actions">
-            <label className="inv-btn">
-              Importar planilla
+          <div className="inv-card-header">
+            <Download size={20} className="inv-title-icon" />
+            <h2>{sessionIsAdmin ? 'Controles del Archivo' : 'Gestión de Planilla'}</h2>
+          </div>
+          {loadedFileName && (
+            <div className="inv-file-status">
+              <div className="inv-status-pill">Documento: {loadedFileName}</div>
+            </div>
+          )}
+          <div className="inv-actions-toolbar">
+            <label className="inv-btn-tool">
+              <Download size={18} /> Importar Excel
               <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" hidden onChange={onImport} />
             </label>
             {sessionIsAdmin && (
               <>
-                <button type="button" className="inv-btn" onClick={() => void onSendByEmail()}>
-                  Enviar por correo
+                <button className="inv-btn-tool" type="button" disabled={uploadingDrive} onClick={() => void onSendByEmail()}>
+                  <Search size={18} /> Enviar por correo
                 </button>
-                <button type="button" className="inv-btn" onClick={() => void onSaveToDrive()} disabled={uploadingDrive}>
-                  {uploadingDrive ? 'Subiendo a Drive...' : 'Guardar en Drive'}
+                <button className="inv-btn-tool" type="button" disabled={uploadingDrive} onClick={() => void onSaveToDrive()}>
+                  <Download size={18} /> Guardar en Drive
                 </button>
               </>
             )}
-            <button type="button" className="inv-btn" onClick={onSaveToPc}>
-              Guardar en PC
+            <button className="inv-btn-tool" type="button" onClick={onSaveToPc}>
+              <Download size={18} /> Exportar PC
             </button>
-            <button type="button" className="inv-btn inv-btn-secondary" onClick={addColumn}>
-              Nueva columna
+            <button className="inv-btn-tool" type="button" onClick={addColumn}>
+              <FilePlus size={18} /> Nueva columna
             </button>
-            <button type="button" className="inv-btn inv-btn-secondary" onClick={addRow}>
-              Nueva fila
+            <button className="inv-btn-tool" type="button" onClick={addRow}>
+              <FilePlus size={18} /> Nueva fila
             </button>
-            <button type="button" className="inv-btn inv-btn-danger" onClick={clearData}>
-              Limpiar Excel completo
+            <button className="inv-btn-tool inv-btn-danger" type="button" onClick={clearData}>
+              <AlertCircle size={18} /> Limpiar Todo
             </button>
           </div>
         </section>
 
         <section className="inv-card">
-          <h2>Códigos de barra</h2>
+          <div className="inv-card-header">
+            <Barcode size={20} className="inv-title-icon" />
+            <h2>Códigos de barra</h2>
+          </div>
 
           {sessionIsAdmin && (
             <div className="inv-barcode-box inv-barcode-lote-block">
-              <p className="inv-barcode-label">Generar lote PDF CODE128 (solo administrador)</p>
+              <div className="inv-barcode-label-row">
+                <p className="inv-barcode-label">Generar lote PDF CODE128</p>
+                <span className="inv-admin-badge">Solo Admin</span>
+              </div>
               <p className="inv-scan-result">
-                Este bloque es independiente del escaneo: acá definís la base numérica para imprimir etiquetas (no se llena con la pistola abajo).
+                Define la base numérica para imprimir etiquetas en serie. No se llena con la pistola.
               </p>
-              <input
-                className="inv-search"
-                type="text"
-                value={barcodeValue}
-                placeholder="Base para lote, ej: IPST2026010001"
-                onChange={(e) => setBarcodeValue(e.target.value.replace(/\s+/g, ''))}
-              />
-              <div className="inv-batch-grid">
+              <div className="inv-batch-controls">
                 <input
                   className="inv-search"
-                  type="number"
-                  min={1}
-                  max={200}
-                  value={barcodeCount}
-                  onChange={(e) => setBarcodeCount(Number(e.target.value))}
-                  placeholder="Cant."
+                  type="text"
+                  value={barcodeValue}
+                  placeholder="Base para lote, ej: IPST2026010001"
+                  onChange={(e) => setBarcodeValue(e.target.value.replace(/\s+/g, ''))}
                 />
-                <button className="inv-btn inv-btn-secondary" onClick={() => void onDownloadBatchBarcodes()}>
-                  <Download size={18} /> Generar lote PDF
-                </button>
+                <div className="inv-batch-grid">
+                  <input
+                    className="inv-search"
+                    type="number"
+                    min={1}
+                    max={200}
+                    value={barcodeCount}
+                    onChange={(e) => setBarcodeCount(Number(e.target.value))}
+                    placeholder="Cant."
+                  />
+                  <button className="inv-btn inv-btn-tool" onClick={() => void onDownloadBatchBarcodes()}>
+                    <Download size={18} /> Generar PDF
+                  </button>
+                </div>
               </div>
 
               <div className="inv-barcode-preview">
@@ -810,9 +828,9 @@ function InventarioPage() {
           )}
 
           <div className="inv-barcode-box inv-barcode-scan-block">
-            <p className="inv-barcode-label">Escanear código (pistola o cámara)</p>
+            <p className="inv-barcode-label">Escanear código (Pistola o Cámara)</p>
             <p className="inv-scan-result">
-              Campo aparte del lote PDF: escribí acá o usá pistola/cámara. No modifica la base de arriba.
+              Usa la pistola directamente o activa la cámara para registrar equipos.
             </p>
             <div className="inv-barcode-actions">
               <div className="inv-scanner-input-wrap">
@@ -822,7 +840,7 @@ function InventarioPage() {
                   className="inv-search inv-scanner-bar"
                   type="text"
                   value={scanCapture}
-                  placeholder="Código leído — pistola (Enter/Tab) o manual"
+                  placeholder="Esperando escaneo..."
                   onChange={(e) => setScanCapture(e.target.value.replace(/\s+/g, ''))}
                   onKeyDown={onScanCaptureKeyDown}
                   autoComplete="off"
@@ -833,16 +851,16 @@ function InventarioPage() {
 
               <div className="inv-scanner-actions-row">
                 <button
-                  className="inv-btn inv-btn-secondary"
+                  className="inv-btn-tool"
                   type="button"
                   onClick={() => {
                     if (cameraReading) stopCameraReader()
                     else void startCameraReader()
                   }}
                 >
-                  <Camera size={18} /> {cameraReading ? 'Detener cámara' : 'Escanear con cámara'}
+                  <Camera size={18} /> {cameraReading ? 'Detener cámara' : 'Cámara'}
                 </button>
-                <button className="inv-btn" type="button" onClick={openEntryModal}>
+                <button className="inv-btn-tool" type="button" onClick={openEntryModal}>
                   <FilePlus size={18} /> Rellenar datos
                 </button>
               </div>
@@ -851,7 +869,7 @@ function InventarioPage() {
             {lastScan && (
               <p className="inv-scan-result">
                 <CheckCircle2 size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} />
-                Último código leído: <strong>{lastScan}</strong>
+                Último código: <strong>{lastScan}</strong>
               </p>
             )}
             {scanError && (
@@ -864,7 +882,10 @@ function InventarioPage() {
         </section>
 
         <section className="inv-card">
-          <h2>Búsqueda</h2>
+          <div className="inv-card-header">
+            <Search size={20} className="inv-title-icon" />
+            <h2>Búsqueda y Tabla</h2>
+          </div>
           <div className="inv-scanner-input-wrap">
             <Search className="inv-scanner-ic" size={18} />
             <input

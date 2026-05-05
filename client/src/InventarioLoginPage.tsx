@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ShieldCheck, Eye, EyeOff } from 'lucide-react'
-import { loginInventario, getInventoryAdminEmail } from './lib/inventoryAuth'
+import { loginInventario } from './lib/inventoryAuth'
 import './inventario.css'
 
 function InventarioLoginPage() {
@@ -71,7 +71,6 @@ function InventarioLoginPage() {
             <ShieldCheck size={16} /> {loading ? 'Ingresando...' : 'Ingresar a Inventario'}
           </button>
         </form>
-        <p className="inv-login-lead">Administrador por defecto: {getInventoryAdminEmail()}</p>
         <Link to="/" className="inv-back-home">
           Volver al inicio
         </Link>

@@ -31,12 +31,6 @@ export default defineConfig({
           // Iconos
           if (id.includes('lucide-react')) return 'icons'
 
-          // React core separado del resto del vendor
-          if (
-            id.includes('/react/') ||
-            id.includes('/react-dom/') ||
-            id.includes('react-is')
-          ) return 'react-core'
 
           // React Router
           if (id.includes('react-router')) return 'router'

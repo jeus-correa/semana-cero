@@ -13,8 +13,10 @@ export const LINKS = {
   conoceTomasinGemini: 'https://gemini.google.com/gem/7d22f9f82e12/b72da718780f6c73?usp=sharing',
   personajeSelloImg: 'https://i.imgur.com/0RRUTf8.jpeg',
   segurosDae: 'https://www.daesantotomas.cl/apoyo-estudiantil/seguros-para-estudiantes/',
-  pdfAficheSeguroEscolar: 'https://drive.google.com/file/d/1aSByy-VGFjmYbO_kgHpMkuKj6oHFwZb6/view',
-  pdfVolanteSeguroEscolar: 'https://drive.google.com/file/d/1STdSNQyrnSFwKTlTyscvp9JB8ohgrnAn/view',
+  pdfAficheSeguroEscolar:
+    'https://drive.google.com/drive/folders/1CLCisqueHR_XULRi4H2AZ0R-ke5i2aN1?usp=sharing',
+  pdfVolanteSeguroEscolar:
+    'https://drive.google.com/drive/folders/1dnSbiQUEoTBadhXGv0MNT60A2pA7UuSq?usp=sharing',
   recuperaClave: 'https://recuperatuclave.santotomas.cl/',
   actualizaClave: 'https://actualizatuclave.santotomas.cl/login',
   canalDenuncias: 'https://www.ust.cl/genero-e-inclusion/canal-de-denuncias',
@@ -50,9 +52,14 @@ export const LINKS = {
     'https://www.cftsantotomas.cl/informacion-institucional/politicas-y-reglamentos/politicas-reglamentos-y-documentos/',
   pdfInnovacionEmprendimiento: 'https://drive.google.com/drive/u/5/folders/1D_o_X77YzUgcbR8hNrmEPZ1zFkwQZ_UY',
   pdfVinculacionConElMedio: 'https://drive.google.com/drive/folders/1vD4hDhmlpp9IlHjLGKO2l7l1t5zcsiEp?usp=sharing',
-  /** Planos simbología emergencia — Sede Curicó */
-  pdfEvacPlanta3Emergencia: 'https://drive.google.com/file/d/11gInreHeFsxtcb5UyjG3o2wI7k5WZfAq/view',
-  pdfEvacPlanta4Emergencia: 'https://drive.google.com/file/d/148OnzJSSBaqWAo4x5SDTf2xiRtkSUFrI/view'
+  /** Planos simbología emergencia — Sede Curicó (carpetas Drive) */
+  pdfEvacPlanta3Emergencia:
+    'https://drive.google.com/drive/folders/1B1JSqjpQQqSrWDAwN-3RoEKcvUBP9YDW?usp=sharing',
+  pdfEvacPlanta4Emergencia:
+    'https://drive.google.com/drive/folders/1LdWt0ma0ynKQQLlZTbmg_aMDW2CcIgr1?usp=sharing',
+  /** Vías de evacuación — todos los videos (carpeta Drive, Sede Curicó) */
+  evacuacionVideosDrive:
+    'https://drive.google.com/drive/folders/1drql090mQXgsoH1ismeoI8bGGbk_iUIr?usp=sharing'
 } as const
 
 export type ApoyoPdfItem = {
@@ -337,38 +344,52 @@ export const EVACUATION_VIDEOS: { label: string; href: string }[] = [
   { label: 'Vías y salidas de emergencia', href: 'https://www.youtube.com/watch?v=UvHmr4BZImY' }
 ]
 
-export const COMITE_CURICO: { nombre: string; cargo: string; foto: string }[] = [
-  { nombre: 'Manuel Olmos Muñoz', cargo: 'Rector Sedes Rancagua y Curicó', foto: 'https://i.imgur.com/Mo5iMbo.png' },
-  { nombre: 'Nancy Rodas Flores', cargo: 'Directora Académica Sede Curicó', foto: 'https://i.imgur.com/G7IQvsn.jpeg' },
+export type ComiteMiembroCurico = {
+  nombre: string
+  cargo: string
+  curriculumUrl: string
+}
+
+export const COMITE_CURICO: ComiteMiembroCurico[] = [
   {
-    nombre: 'Roberto Zúñiga Bravo',
-    cargo: 'Director de Administración y Operaciones Sede Curicó',
-    foto: 'https://i.imgur.com/3yIv6Py.jpeg'
+    nombre: 'Manuel Olmos Muñoz',
+    cargo: 'Rector Sedes Rancagua y Curicó',
+    curriculumUrl: 'https://www.cftsantotomas.cl/personas/curriculum/manuel-olmos-munoz/'
+  },
+  {
+    nombre: 'Nancy Rodas Flores',
+    cargo: 'Directora Académica Sede Curicó',
+    curriculumUrl: 'https://www.cftsantotomas.cl/personas/curriculum/nancy-rodas-flores/'
   },
   {
     nombre: 'Adrián Castillo Parraguez',
     cargo: 'Director de Asuntos Estudiantiles Sede Curicó',
-    foto: 'https://i.imgur.com/PvzBuAJ.jpeg'
-  },
-  {
-    nombre: 'Margarita Rojas Abarca',
-    cargo: 'Directora de Comunicaciones y Extensión Sede Curicó',
-    foto: 'https://i.imgur.com/9KVB0bH.jpeg'
+    curriculumUrl: 'https://www.cftsantotomas.cl/personas/curriculum/adrian-castillo-parraguez/'
   },
   {
     nombre: 'Cindy Hernández Orellana',
     cargo: 'Directora de Admisión Sede Curicó',
-    foto: 'https://i.imgur.com/Pv7xBQV.jpeg'
+    curriculumUrl: 'https://www.cftsantotomas.cl/personas/curriculum/cindy-hernandez-orellana/'
+  },
+  {
+    nombre: 'Margarita Rojas Abarca',
+    cargo: 'Directora de Comunicaciones y Extensión Sede Curicó',
+    curriculumUrl: 'https://www.cftsantotomas.cl/personas/curriculum/margarita-rojas-abarca/'
   },
   {
     nombre: 'Lorena Hernández González',
     cargo: 'Directora de Formación e Identidad Sede Curicó',
-    foto: 'https://i.imgur.com/QKnOV1k.jpeg'
+    curriculumUrl: 'https://www.cftsantotomas.cl/personas/curriculum/lorena-hernandez-gonzalez/'
   },
   {
     nombre: 'María Elena Vergara Arriagada',
     cargo: 'Directora de Capacitación y Educación Continua Sede Curicó',
-    foto: 'https://i.imgur.com/Cl4tdNv.jpeg'
+    curriculumUrl: 'https://www.cftsantotomas.cl/personas/curriculum/maria-elena-vergara-arriagada/'
+  },
+  {
+    nombre: 'Roberto Zúñiga Bravo',
+    cargo: 'Director de Administración y Operaciones Sede Curicó',
+    curriculumUrl: 'https://www.cftsantotomas.cl/personas/curriculum/roberto-zuniga-bravo/'
   }
 ]
 

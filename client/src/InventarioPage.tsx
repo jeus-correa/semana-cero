@@ -753,6 +753,7 @@ function InventarioPage() {
           </section>
         )}
 
+<<<<<<< HEAD
         <section className="inv-card">
           <div className="inv-card-header">
             <Download size={20} className="inv-title-icon" />
@@ -766,6 +767,19 @@ function InventarioPage() {
           <div className="inv-actions-toolbar">
             <label className="inv-btn-tool">
               <Download size={18} /> Importar Excel
+=======
+        <section className="inv-card inv-card-soft">
+          <h2>{sessionIsAdmin ? 'Acciones' : 'Planilla Excel'}</h2>
+          <p className="inv-section-lead">
+            {sessionIsAdmin
+              ? 'Administra la planilla, guarda respaldos y comparte resultados en pocos pasos.'
+              : 'Importa, edita y guarda la planilla de forma simple.'}
+          </p>
+          {loadedFileName && <p className="inv-loaded-file">Archivo cargado: {loadedFileName}</p>}
+          <div className="inv-actions">
+            <label className="inv-btn">
+              Importar planilla
+>>>>>>> a31e9b9 (aa)
               <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" hidden onChange={onImport} />
             </label>
             {sessionIsAdmin && (
@@ -793,11 +807,17 @@ function InventarioPage() {
           </div>
         </section>
 
+<<<<<<< HEAD
         <section className="inv-card">
           <div className="inv-card-header">
             <Barcode size={20} className="inv-title-icon" />
             <h2>Códigos de barra</h2>
           </div>
+=======
+        <section className="inv-card inv-card-soft">
+          <h2>Códigos de barra</h2>
+          <p className="inv-section-lead">Paso 1: define lote (solo admin). Paso 2: escanea abajo y rellena datos.</p>
+>>>>>>> a31e9b9 (aa)
 
           {sessionIsAdmin && (
             <div className="inv-barcode-box inv-barcode-lote-block">
@@ -892,11 +912,17 @@ function InventarioPage() {
           </div>
         </section>
 
+<<<<<<< HEAD
         <section className="inv-card">
           <div className="inv-card-header">
             <Search size={20} className="inv-title-icon" />
             <h2>Búsqueda y Tabla</h2>
           </div>
+=======
+        <section className="inv-card inv-card-soft">
+          <h2>Búsqueda</h2>
+          <p className="inv-section-lead">Filtra rápidamente por cualquier dato de la planilla.</p>
+>>>>>>> a31e9b9 (aa)
           <div className="inv-scanner-input-wrap">
             <Search className="inv-scanner-ic" size={18} />
             <input

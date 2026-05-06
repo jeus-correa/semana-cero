@@ -2107,6 +2107,14 @@
   margin-bottom: 0.85rem;
 }
 
+/* Área académica: CFT + IP apilados (mismo patrón de panel) */
+.scp-academica-accordions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
 /* .scp-scard es flex row por defecto; el acordeón necesita columna o el cuerpo queda al lado y se corta */
 .scp-scard.scp-scard-expand {
   flex-direction: column;
@@ -2939,15 +2947,15 @@
 
 .scp-comite-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 0.75rem;
 }
 
 .scp-comite-card {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.7rem 0.75rem;
+  gap: 0.75rem;
+  padding: 0.85rem 0.9rem;
   border-radius: 12px;
   background: var(--scp-surface);
   border: 1px solid var(--scp-border-ui);
@@ -2956,16 +2964,19 @@
     border-color 0.4s var(--scp-ease),
     box-shadow 0.4s var(--scp-ease);
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.scp-comite-card:focus-visible {
+  outline: 2px solid var(--scp-accent-mid, #22da86);
+  outline-offset: 2px;
 }
 
 .scp-comite-card:hover {
   transform: translateY(-2px);
   border-color: var(--scp-accent-mid);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px var(--scp-accent-soft);
-}
-
-.scp-comite-card:hover img {
-  transform: scale(1.15);
 }
 
 [data-theme='light'] .scp-comite-card {
@@ -2984,48 +2995,67 @@
   box-shadow: 0 10px 26px rgba(0, 100, 75, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.72) inset;
 }
 
-.scp-comite-img-wrap {
-  width: 52px;
-  height: 52px;
+.scp-comite-card-ic {
+  width: 48px;
+  height: 48px;
   border-radius: 999px;
-  overflow: hidden;
   flex-shrink: 0;
-  border: 2px solid var(--scp-border-ui-soft);
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--scp-border-ui-soft);
+  color: rgba(255, 255, 255, 0.88);
 }
 
-.scp-comite-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.scp-comite-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.scp-comite-card-hint {
   display: block;
-  transition: transform 0.4s var(--scp-ease);
-}
-
-[data-theme='light'] .scp-comite-img-wrap {
-  border-color: var(--scp-border-ui);
-}
-
-.scp-comite-card strong {
-  display: block;
-  font-size: 0.82rem;
+  margin-top: 0.2rem;
+  font-size: 0.68rem;
   line-height: 1.25;
+  opacity: 0.82;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.scp-comite-card-external {
+  flex-shrink: 0;
+  opacity: 0.75;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme='light'] .scp-comite-card-ic {
+  background: rgba(6, 61, 46, 0.06);
+  border-color: var(--scp-border-ui);
+  color: #0d5c45;
+}
+
+[data-theme='light'] .scp-comite-card-hint {
+  color: rgba(16, 36, 29, 0.62);
+}
+
+[data-theme='light'] .scp-comite-card-external {
+  color: #0d5c45;
+  opacity: 0.85;
+}
+
+.scp-comite-card strong,
+.scp-comite-card .scp-comite-cargo-only {
+  display: block;
+  font-size: 0.84rem;
+  line-height: 1.3;
+  font-weight: 700;
   color: rgba(255, 255, 255, 0.95);
 }
 
-.scp-comite-card span {
-  font-size: 0.72rem;
-  opacity: 0.88;
-  line-height: 1.3;
-  color: rgba(255, 255, 255, 0.78);
-}
-
-[data-theme='light'] .scp-comite-card strong {
+[data-theme='light'] .scp-comite-card strong,
+[data-theme='light'] .scp-comite-card .scp-comite-cargo-only {
   color: #063d2e;
 }
 
-[data-theme='light'] .scp-comite-card span {
-  color: rgba(16, 36, 29, 0.72);
-}
 
 /* Incrustado en landing (sin página aparte) */
 .scp-page.scp-page--embed {

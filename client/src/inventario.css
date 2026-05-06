@@ -248,10 +248,21 @@
   border-color: rgba(16, 185, 129, 0.2);
 }
 
+.inv-card-soft {
+  border-color: rgba(167, 255, 217, 0.26);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(205, 255, 233, 0.08);
+}
+
 .inv-card h2 {
   margin-top: 0;
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.45rem;
   letter-spacing: 0.01em;
+}
+
+.inv-section-lead {
+  margin: 0 0 0.85rem;
+  color: #c7f2de;
+  font-size: 0.92rem;
 }
 
 .inv-actions {
@@ -519,7 +530,7 @@
 .inv-barcode-lote-block + .inv-barcode-scan-block {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(170, 255, 222, 0.2);
+  border-top: 1px solid rgba(170, 255, 222, 0.25);
 }
 
 .inv-barcode-label-row {
@@ -561,8 +572,9 @@
 
 .inv-barcode-label {
   margin: 0 0 0.55rem;
-  color: #d6f6e8;
-  font-weight: 600;
+  color: #e7fff4;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 .inv-barcode-actions {
@@ -715,6 +727,7 @@
   margin: 0.55rem 0 0;
   color: #c7f9e0;
   font-size: 0.92rem;
+  line-height: 1.35;
 }
 
 .inv-scan-error {

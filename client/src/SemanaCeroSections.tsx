@@ -46,7 +46,6 @@ import {
   Users,
   Video,
   Wallet,
-  X,
   User,
   Library,
   Search
@@ -355,9 +354,9 @@ const APOYO_AREAS = [
 
 function SemanaCeroFullSectionsInner() {
   const [cftPanelOpen, setCftPanelOpen] = useState(false)
+  const [ipPanelOpen, setIpPanelOpen] = useState(false)
   const [cftSearch, setCftSearch] = useState('')
   const [cftArea, setCftArea] = useState<string>('Todas')
-  const [selectedMember, setSelectedMember] = useState<{ nombre: string; cargo: string; foto: string } | null>(null)
   const [activeTab, setActiveTab] = useState<string>('mision')
   const [apoyoCategory, setApoyoCategory] = useState<string>('Todas')
   const [apoyoSearch, setApoyoSearch] = useState('')
@@ -428,6 +427,7 @@ function SemanaCeroFullSectionsInner() {
       normalize(item.area).includes(q)
     return matchArea && matchStr
   })
+
   useEffect(() => {
     const handleTabChange = (e: any) => {
       if (e.detail) setActiveTab(e.detail)
@@ -610,12 +610,12 @@ function SemanaCeroFullSectionsInner() {
               </a>
               <a className="scp-scard" href={LINKS.pdfAficheSeguroEscolar} target="_blank" rel="noopener noreferrer">
                 <Shield size={22} />
-                <div><strong>Afiche del seguro escolar de accidentes</strong><span>Material visual oficial (PDF)</span></div>
+                <div><strong>Afiche del seguro escolar de accidentes</strong><span>Material visual oficial (Google Drive)</span></div>
                 <ExternalLink size={16} />
               </a>
               <a className="scp-scard" href={LINKS.pdfVolanteSeguroEscolar} target="_blank" rel="noopener noreferrer">
                 <Shield size={22} />
-                <div><strong>Volante digital</strong><span>Resumen informativo seguro escolar (PDF)</span></div>
+                <div><strong>Volante digital</strong><span>Resumen informativo seguro escolar (Google Drive)</span></div>
                 <ExternalLink size={16} />
               </a>
             </div>
@@ -639,7 +639,7 @@ function SemanaCeroFullSectionsInner() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <span className="scp-evac-emergency-card-kicker">Plano PDF</span>
+                  <span className="scp-evac-emergency-card-kicker">Carpeta Drive</span>
                   <strong>Planta 3º piso</strong>
                   <span>Simbología de emergencia</span>
                   <span className="scp-evac-emergency-card-cta">
@@ -652,7 +652,7 @@ function SemanaCeroFullSectionsInner() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <span className="scp-evac-emergency-card-kicker">Plano PDF</span>
+                  <span className="scp-evac-emergency-card-kicker">Carpeta Drive</span>
                   <strong>Planta 4º piso</strong>
                   <span>Simbología de emergencia y zona segura (sismos)</span>
                   <span className="scp-evac-emergency-card-cta">
@@ -661,6 +661,21 @@ function SemanaCeroFullSectionsInner() {
                 </a>
               </div>
             </div>
+            <a
+              className="scp-feature scp-feature-neutral"
+              href={LINKS.evacuacionVideosDrive}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="scp-feature-ic scp-feature-ic-neutral">
+                <FolderOpen size={24} aria-hidden />
+              </div>
+              <div>
+                <strong>Nuestras vías de evacuación</strong>
+                <span>Todos los videos instructivos en Google Drive (pisos, salidas y vías de emergencia).</span>
+              </div>
+              <ArrowUpRight size={20} aria-hidden />
+            </a>
             <h3 className="scp-h3-inline"><Video size={16} aria-hidden /> Videos en YouTube</h3>
             <div className="scp-video-grid">
               {EVACUATION_VIDEOS.map((v) => (
@@ -844,9 +859,15 @@ function SemanaCeroFullSectionsInner() {
             <h2 id="sec-ac" className="scp-h2">Área académica</h2>
             <p className="scp-lead">Carreras, práctica, titulación y portal formativo CFT / IP.</p>
             
-            <div className="scp-cft-accordion-wrap">
+            <div className="scp-academica-accordions">
               <article className={`scp-scard scp-scard-expand scp-cft-panel ${cftPanelOpen ? 'is-open' : ''}`}>
-                <button type="button" className="scp-scard-head" onClick={() => setCftPanelOpen((v) => !v)} id="cft-panel-toggle">
+                <button
+                  type="button"
+                  className="scp-scard-head"
+                  onClick={() => setCftPanelOpen((v) => !v)}
+                  id="cft-panel-toggle"
+                  aria-expanded={cftPanelOpen}
+                >
                   <BookOpen size={22} />
                   <div>
                     <strong>Centro de Formación Técnica (CFT)</strong>
@@ -918,34 +939,47 @@ function SemanaCeroFullSectionsInner() {
                   </div>
                 )}
               </article>
-            </div>
-            
-            <a className="scp-feature" href={LINKS.aulasVirtuales} target="_blank" rel="noopener noreferrer">
-              <div className="scp-feature-ic"><BookOpen size={24} /></div>
-              <div><strong>Aulas virtuales — E-learning</strong><span>Accede a la plataforma oficial de cursos.</span></div>
-              <ArrowUpRight size={20} />
-            </a>
 
-            <h3 className="scp-h3"><GraduationCap size={18} aria-hidden /> Instituto Profesional (IP)</h3>
-            <div className="scp-linklist">
-              {ACADEMIC_IP_CARRERAS.map((l) => {
-                const infoHref = l.infoHref ?? l.href
-                const hasDualDestino = infoHref !== l.href
+              <article className={`scp-scard scp-scard-expand scp-cft-panel ${ipPanelOpen ? 'is-open' : ''}`}>
+                <button
+                  type="button"
+                  className="scp-scard-head"
+                  onClick={() => setIpPanelOpen((v) => !v)}
+                  id="ip-panel-toggle"
+                  aria-expanded={ipPanelOpen}
+                >
+                  <GraduationCap size={22} />
+                  <div>
+                    <strong>Instituto Profesional (IP)</strong>
+                    <span>PDF Semana Cero por carrera — despliega para ver el listado</span>
+                  </div>
+                  <ChevronDown size={16} className="scp-scard-chevron" />
+                </button>
+                {ipPanelOpen && (
+                  <div className="scp-scard-body scp-cft-panel-body" role="region" aria-labelledby="ip-panel-toggle">
+                    <div className="scp-linklist scp-cft-linklist">
+                      {ACADEMIC_IP_CARRERAS.map((l) => {
+                        const infoHref = l.infoHref ?? l.href
+                        const hasDualDestino = infoHref !== l.href
 
-                if (!hasDualDestino) {
-                  return <LinkRow key={l.href + l.title} title={l.title} subtitle={l.subtitle} href={infoHref} />
-                }
+                        if (!hasDualDestino) {
+                          return <LinkRow key={l.href + l.title} title={l.title} subtitle={l.subtitle} href={infoHref} />
+                        }
 
-                return (
-                  <CarreraAficheDualRow
-                    key={l.href + l.title}
-                    title={l.title}
-                    subtitle={l.subtitle}
-                    infoHref={infoHref}
-                    aficheHref={l.href}
-                  />
-                )
-              })}
+                        return (
+                          <CarreraAficheDualRow
+                            key={l.href + l.title}
+                            title={l.title}
+                            subtitle={l.subtitle}
+                            infoHref={infoHref}
+                            aficheHref={l.href}
+                          />
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+              </article>
             </div>
 
             <h3 className="scp-h3"><Sparkles size={18} aria-hidden /> Unidades transversales — LIM</h3>
@@ -963,6 +997,15 @@ function SemanaCeroFullSectionsInner() {
                 </a>
               ))}
             </div>
+
+            <a className="scp-feature" href={LINKS.aulasVirtuales} target="_blank" rel="noopener noreferrer">
+              <div className="scp-feature-ic"><BookOpen size={24} /></div>
+              <div>
+                <strong>Aulas virtuales — E-learning</strong>
+                <span>Accede a la plataforma oficial de cursos.</span>
+              </div>
+              <ArrowUpRight size={20} />
+            </a>
           </motion.section>
         )}
 
@@ -984,7 +1027,7 @@ function SemanaCeroFullSectionsInner() {
             <p className="scp-lead">Accede al material oficial de innovación y emprendimiento.</p>
             <a className="scp-feature" href={LINKS.pdfInnovacionEmprendimiento} target="_blank" rel="noopener noreferrer">
               <div className="scp-feature-ic"><Sparkles size={24} /></div>
-              <div><strong>Innovación y emprendimiento</strong><span>Documento oficial (PDF).</span></div>
+              <div><strong>Innovación y emprendimiento</strong><span>Material oficial (Google Drive).</span></div>
               <ArrowUpRight size={20} />
             </a>
           </motion.section>
@@ -993,13 +1036,29 @@ function SemanaCeroFullSectionsInner() {
         {activeTab === 'comite' && (
           <motion.section key="comite" className="scp-block" id="semana-comite" aria-labelledby="sec-com" {...secMotion}>
             <h2 id="sec-com" className="scp-h2">Comité directivo — Sede Curicó</h2>
-            <p className="scp-lead">Equipo liderando la gestión y excelencia académica en Santo Tomás.</p>
+            <p className="scp-lead">
+              Equipo que lidera la gestión en la sede. La foto y el detalle del currículum siempre están actualizados en
+              el sitio oficial del CFT Santo Tomás.
+            </p>
             <div className="scp-comite-grid">
               {COMITE_CURICO.map((p) => (
-                <article key={p.nombre} className="scp-comite-card" role="button" tabIndex={0} onClick={() => setSelectedMember(p)}>
-                  <div className="scp-comite-img-wrap"><img src={p.foto} alt="" loading="lazy" /></div>
-                  <div><strong>{p.nombre}</strong><span>{p.cargo}</span></div>
-                </article>
+                <a
+                  key={p.nombre}
+                  className="scp-comite-card"
+                  href={p.curriculumUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${p.nombre}. ${p.cargo}. Abrir currículum en CFT Santo Tomás.`}
+                >
+                  <div className="scp-comite-card-ic" aria-hidden>
+                    <User size={22} strokeWidth={2} />
+                  </div>
+                  <div className="scp-comite-card-body">
+                    <strong className="scp-comite-cargo-only">{p.cargo}</strong>
+                    <span className="scp-comite-card-hint">Ver perfil y foto en cftsantotomas.cl</span>
+                  </div>
+                  <ExternalLink size={18} className="scp-comite-card-external" aria-hidden />
+                </a>
               ))}
             </div>
           </motion.section>
@@ -1019,16 +1078,6 @@ function SemanaCeroFullSectionsInner() {
         </AnimatePresence>
       </div>
 
-      {selectedMember && (
-        <div className="scp-comite-modal-overlay" onClick={() => setSelectedMember(null)}>
-          <div className="scp-comite-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
-            <button className="scp-comite-modal-close" onClick={() => setSelectedMember(null)} aria-label="Cerrar"><X size={20} strokeWidth={2.5} /></button>
-            <img src={selectedMember.foto} alt={selectedMember.nombre} />
-            <h3>{selectedMember.nombre}</h3>
-            <p>{selectedMember.cargo}</p>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
